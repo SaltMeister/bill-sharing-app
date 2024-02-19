@@ -1,6 +1,7 @@
 # bill-sharing-app
 Group Members: Simon, Diego, Vedant, Josh
-Sprint Plan Meeting 1
+
+# Sprint Plan Meeting 1 (2/15/24)
 Planning out the app
 
 # App Description: 
@@ -21,3 +22,4 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 4) Research ML to learn more about how to get receipts from camera (Diego)
 5) Setting up backend API along with database (Simon)
 -------------------------------------------------------------------------------
+# Sprint Plan Meeting 2 (2/19/24)
