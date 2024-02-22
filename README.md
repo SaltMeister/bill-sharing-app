@@ -1,6 +1,7 @@
 # bill-sharing-app
 1) Group Members: Simon, Diego, Vedant, Josh 
-![image](https://github.com/SaltMeister/bill-sharing-app/assets/102931991/11366bd0-f569-40f5-aad6-62c716fdc3c0)
+<img src="https://github.com/SaltMeister/bill-sharing-app/assets/102931991/11366bd0-f569-40f5-aad6-62c716fdc3c0" alt="Image" width="200" height="200">
+
 
 # Sprint Plan Meeting 1 (2/15/24)
 Planning out the app
