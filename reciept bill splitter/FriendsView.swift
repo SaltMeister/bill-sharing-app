@@ -23,12 +23,14 @@ struct FriendsView: View {
         NavigationStack{
             VStack {
                 TextField("Search", text: $searchText)
+                    .autocapitalization(.none) // Disable automatic capitalization
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
                     .padding(.horizontal)
                 
-                List(friends.filter({ searchText.isEmpty ? true : $0.0.contains(searchText) }), id: \.0) { friend, username in
+                //List(friends.filter({ searchText.isEmpty ? true : $0.0.contains(searchText) }), id: \.0) { friend, username in
+                List(friends.filter({ searchText.isEmpty ? true : $0.0.contains(searchText) || $0.1.contains(searchText) }), id: \.0) { friend, username in
                     HStack {
                         Image(systemName: "person.circle")
                             .resizable()
