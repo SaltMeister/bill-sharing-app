@@ -1,5 +1,6 @@
 # bill-sharing-app
-Group Members: Simon, Diego, Vedant, Josh
+Group Members: Simon, Diego, Vedant, Josh 
+Github Handle: jlgvu (Josh)
 
 # Sprint Plan Meeting 1 (2/15/24)
 Planning out the app
