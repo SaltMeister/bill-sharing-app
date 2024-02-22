@@ -3,7 +3,7 @@
 Name: Josh <br>
 Git Handle: jlgvu <br>
 
-<img src="https://github.com/SaltMeister/bill-sharing-app/assets/25091890/4567b2b4-bfff-4d68-b8c0-a05dc16efe52" alt="Image of Human" width="150" height="200"> <br>
+<img src="https://github.com/SaltMeister/bill-sharing-app/assets/25091890/4567b2b4-bfff-4d68-b8c0-a05dc16efe52" alt="Image of Human" width="130" height="200"> <br>
 Name: Simon Huang <br>
 Git Handle: SaltMeister <br>
 
