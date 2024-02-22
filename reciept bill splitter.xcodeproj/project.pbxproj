@@ -107,6 +107,7 @@
 		32B1A4BD2B828F9400A20FDD /* reciept bill splitter */ = {
 			isa = PBXGroup;
 			children = (
+				32C3CD472B8711A700FB2BF1 /* UserAuthentication */,
 				32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */,
 				32B1A4C02B828F9400A20FDD /* ContentView.swift */,
 				32B1A4C22B828F9D00A20FDD /* Assets.xcassets */,
@@ -122,6 +123,13 @@
 				32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		32C3CD472B8711A700FB2BF1 /* UserAuthentication */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = UserAuthentication;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
