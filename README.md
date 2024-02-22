@@ -55,7 +55,6 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 4) Get receipt camera working in view 
 
 # Issues encountered
-1) Not enough time :(
 
 # Git Commits
 
