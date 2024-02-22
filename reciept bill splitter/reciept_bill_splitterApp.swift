@@ -28,7 +28,7 @@ struct reciept_bill_splitterApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LaunchScreenView()
         }
     }
 }
