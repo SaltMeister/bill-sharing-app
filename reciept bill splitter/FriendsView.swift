@@ -18,6 +18,10 @@ struct FriendsView: View {
         ("Emily", "emily_green"),
         ("Michael", "michael_brown"),
     ]
+    @State private var isContextMenuVisible = false // State variable to control visibility of context menu
+    @State private var friendToDelete: (String, String)? // Track the friend to delete
+    @State private var showingDeleteAlert = false // State variable to control visibility of delete confirmation alert
+
     
     var body: some View {
         NavigationStack{
@@ -28,8 +32,6 @@ struct FriendsView: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
                     .padding(.horizontal)
-                
-                //List(friends.filter({ searchText.isEmpty ? true : $0.0.contains(searchText) }), id: \.0) { friend, username in
                 List(friends.filter({ searchText.isEmpty ? true : $0.0.contains(searchText) || $0.1.contains(searchText) }), id: \.0) { friend, username in
                     HStack {
                         Image(systemName: "person.circle")
@@ -45,7 +47,25 @@ struct FriendsView: View {
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
+                        Spacer() // Add spacer to push button to the right
+                                
+                                Button(action: {
+                                    friendToDelete = (friend, username) // Set the friend to delete
+                                    showingDeleteAlert = true
+                                }) {
+                                    Image(systemName: "trash")
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                }
                     }
+                }
+                .alert(isPresented: $showingDeleteAlert) {
+                    Alert(title: Text("Delete Friend"), message: Text("Are you sure you want to delete \(friendToDelete?.0 ?? "")?"), primaryButton: .destructive(Text("Yes")) {
+                        // Handle delete action here
+                        if let friendToDelete = friendToDelete {
+                            deleteFriend(friendToDelete)
+                        }
+                    }, secondaryButton: .cancel(Text("Cancel")))
                 }
                 Button(action: {
                     isAddFriendsActive = true // Set isSignUpActive to true when button is tapped
@@ -64,6 +84,12 @@ struct FriendsView: View {
             }
         }
     }
+    func deleteFriend(_ friend: (String, String)) {
+            // Implement your logic to delete the friend here
+            if let index = friends.firstIndex(where: { $0 == friend }) {
+                friends.remove(at: index)
+            }
+        }
 }
 
 #Preview {
