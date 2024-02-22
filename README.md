@@ -3,6 +3,9 @@
 Name: Josh <br>
 Git Handle: jlgvu <br>
 
+<img src="https://github.com/SaltMeister/bill-sharing-app/assets/25091890/4567b2b4-bfff-4d68-b8c0-a05dc16efe52" alt="Image of Human" width="150" height="200"> <br>
+Name: Simon <br>
+Git Handle: SaltMeister <br>
 
 # Sprint Plan Meeting 1 (2/15/24)
 Planning out the app
