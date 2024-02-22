@@ -7,6 +7,9 @@ Git Handle: jlgvu <br>
 Name: Simon Huang <br>
 Git Handle: SaltMeister <br>
 
+<img src="https://github.com/SaltMeister/bill-sharing-app/assets/102931991/9cacae6e-2f68-4751-ad3d-712440286333)" alt="Image of Human" width="150" height="200"> <br>
+Name: Vedant Patel <br>
+Git Handle: ved-bot-hub <br>
 
 # Sprint Plan Meeting 1 (2/15/24)
 Planning out the app
