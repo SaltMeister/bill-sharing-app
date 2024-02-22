@@ -10,16 +10,19 @@ import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
 
-@main
 
 class AppDelegate: NSObject, UIApplicationDelegate {
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+      
     FirebaseApp.configure()
 
     return true
   }
 }
+@main
+
+
 
 struct reciept_bill_splitterApp: App {
     
@@ -28,7 +31,7 @@ struct reciept_bill_splitterApp: App {
     
     var body: some Scene {
         WindowGroup {
-            LaunchScreenView()
+           // LaunchScreenView()
         }
     }
 }

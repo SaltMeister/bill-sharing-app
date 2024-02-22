@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct SignUpLogInView: View {
-    @State private var username: String = ""
+    @State private var email: String = ""
     @State private var password: String = ""
+    
     @State private var errorMessage: String? = nil
     @State private var isSignUpActive: Bool = false
     @State private var isLogInActive: Bool = false
@@ -18,7 +19,7 @@ struct SignUpLogInView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                TextField("Username", text: $username)
+                TextField("Email", text: $email)
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(8.0)
@@ -43,7 +44,7 @@ struct SignUpLogInView: View {
                     if password == "123" {
                         isLogInActive = true
                         errorMessage = nil // Password is valid, clear error message
-                        print("Login successful with username: \(username)")
+                        print("Login successful with username: \(email)")
                     } else {
                         errorMessage = "Invalid username or password. Please try again."
                     }
