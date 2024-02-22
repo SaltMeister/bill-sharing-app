@@ -1,5 +1,5 @@
 //
-//  GroupView.swift
+//  AccountView.swift
 //  reciept bill splitter
 //
 //  Created by Josh Vu on 2/21/24.
@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct GroupView: View {
+struct AccountView: View {
     var body: some View {
-        Text("Group View")
+        Text("Account View")
     }
 }
 
 #Preview {
-    GroupView()
+    AccountView()
 }

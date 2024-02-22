@@ -9,9 +9,9 @@ import SwiftUI
 
 struct SignUpLogInView: View {
     @State private var username: String = ""
-        @State private var password: String = ""
-        @State private var errorMessage: String? = nil
-        @State private var isSignUpActive: Bool = false
+    @State private var password: String = ""
+    @State private var errorMessage: String? = nil
+    @State private var isSignUpActive: Bool = false
     @State private var isLogInActive: Bool = false
 
         
@@ -40,7 +40,7 @@ struct SignUpLogInView: View {
                 
                 Button(action: {
                     // Simulating password validation, replace with your validation logic
-                    if password == "password123" {
+                    if password == "123" {
                         isLogInActive = true
                         errorMessage = nil // Password is valid, clear error message
                         print("Login successful with username: \(username)")

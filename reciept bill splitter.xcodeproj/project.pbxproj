@@ -19,6 +19,8 @@
 		36E9BE6E2B86AD6E0020BE12 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */; };
 		36E9BE702B86AD8D0020BE12 /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */; };
 		36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE712B86B6240020BE12 /* SignUpView.swift */; };
+		36E9BE742B86C18D0020BE12 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE732B86C18D0020BE12 /* AccountView.swift */; };
+		36E9BE762B86CAEA0020BE12 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,8 @@
 		36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitView.swift; sourceTree = "<group>"; };
 		36E9BE712B86B6240020BE12 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		36E9BE732B86C18D0020BE12 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +81,8 @@
 				36E9BE6B2B86AD5D0020BE12 /* HistoryView.swift */,
 				36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */,
 				36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */,
+				36E9BE732B86C18D0020BE12 /* AccountView.swift */,
+				36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */,
 				32B1A4C22B828F9D00A20FDD /* Assets.xcassets */,
 				32B1A4C42B828F9D00A20FDD /* Preview Content */,
 			);
@@ -165,7 +171,9 @@
 				36E9BE6E2B86AD6E0020BE12 /* SettingsView.swift in Sources */,
 				36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */,
 				32B1A4C12B828F9400A20FDD /* LaunchScreenView.swift in Sources */,
+				36E9BE742B86C18D0020BE12 /* AccountView.swift in Sources */,
 				36E9BE6A2B86AD4C0020BE12 /* GroupView.swift in Sources */,
+				36E9BE762B86CAEA0020BE12 /* AddFriendView.swift in Sources */,
 				36E9BE702B86AD8D0020BE12 /* SplitView.swift in Sources */,
 				36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */,
 				36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */,
