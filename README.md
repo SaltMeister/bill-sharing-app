@@ -1,5 +1,4 @@
 # bill-sharing-app
-1) Group Members: Simon, Diego, Vedant, Josh 
 <img src="https://github.com/SaltMeister/bill-sharing-app/assets/102931991/11366bd0-f569-40f5-aad6-62c716fdc3c0" alt="Image" width="130" height="200"> <br>
 Name: Josh <br>
 Git Handle: jlgvu <br>
