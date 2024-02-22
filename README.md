@@ -11,6 +11,10 @@ Git Handle: SaltMeister <br>
 Name: Vedant Patel <br>
 Git Handle: ved-bot-hub <br>
 
+<img src="https://github.com/SaltMeister/bill-sharing-app/assets/141683174/604a0aa0-45f6-49a8-a98e-6026225189fc)" alt="Image of Human" width="150" height="200"> <br>
+Name: Diego Martinez <br>
+Git Handle: diegomtz5 <br>
+
 # Sprint Plan Meeting 1 (2/15/24)
 Planning out the app
 
