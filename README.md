@@ -1,6 +1,6 @@
 # bill-sharing-app
 <img src="https://github.com/SaltMeister/bill-sharing-app/assets/102931991/11366bd0-f569-40f5-aad6-62c716fdc3c0" alt="Image" width="130" height="200"> <br>
-Name: Josh <br>
+Name: Josh Vu <br>
 Git Handle: jlgvu <br>
 
 <img src="https://github.com/SaltMeister/bill-sharing-app/assets/25091890/4567b2b4-bfff-4d68-b8c0-a05dc16efe52" alt="Image of Human" width="140" height="200"> <br>
