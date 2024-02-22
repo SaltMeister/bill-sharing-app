@@ -8,14 +8,31 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State private var isSplitViewActive : Bool = false
     var body: some View {
-        VStack {
-            Spacer()
-            Text("HomeView")
-            Spacer()
-            
-            BottomToolbar()
-                .padding()
+        NavigationStack{
+            VStack {
+                Spacer()
+                Button(action: {
+                    isSplitViewActive = true
+                }){
+                    Text("Split")
+                        .font(.custom("Avenir", size: 30))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 20)
+                        .background(Color.black)
+                        .cornerRadius(1)
+                        
+                }
+                Spacer()
+                
+                BottomToolbar()
+                    .padding()
+            }
+        }
+        .navigationDestination(isPresented: $isSplitViewActive){
+            SplitView()
         }
     }
 }

@@ -60,7 +60,7 @@ struct FriendsView: View {
                     }
                 }
                 .alert(isPresented: $showingDeleteAlert) {
-                    Alert(title: Text("Delete Friend"), message: Text("Are you sure you want to delete \(friendToDelete?.0 ?? "")?"), primaryButton: .destructive(Text("Yes")) {
+                    Alert(title: Text("Delete Friend"), message: Text("Are you sure you want to delete \(friendToDelete?.1 ?? "")?"), primaryButton: .destructive(Text("Yes")) {
                         // Handle delete action here
                         if let friendToDelete = friendToDelete {
                             deleteFriend(friendToDelete)
