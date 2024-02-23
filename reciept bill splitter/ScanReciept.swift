@@ -1,14 +1,11 @@
 import SwiftUI
 import UIKit
-import MLKitTextRecognition
-import MLKitVision
-import CoreGraphics
-import CoreImage
+import Vision
 
 struct TextElement: Equatable {
     var text: String
     var frame: CGRect
-    var price: Double?  // Optional price if present on the same line
+    var price: Double?
 }
 
 struct ReceiptItem: Identifiable {
@@ -18,124 +15,119 @@ struct ReceiptItem: Identifiable {
 }
 
 class ScanReceipt: ObservableObject {
+    @Published private var extractedEntities: [String] = []
     @Published var receiptItems: [ReceiptItem] = []
     @Published var total: ReceiptItem?
     @Published var tax: ReceiptItem?
     @Published var isScanning = false  // Track scanning state
 
     var receiptItemsTemp: [ReceiptItem] = []
-
-    func scanReceipt(image: UIImage)  {
-        DispatchQueue.main.async {
-            self.tax = nil
+    
+    func scanReceipt(image: UIImage) async {
+        Task { @MainActor in
+            self.isScanning = true
             self.receiptItems = []
             self.total = nil
-            self.isScanning = true
+            self.tax = nil
         }
-        
-      
-        let latinOptions = TextRecognizerOptions()
-        let textRecognizer = TextRecognizer.textRecognizer(options: latinOptions)
-        DispatchQueue.global(qos: .userInitiated).async {
-            guard let preprocessedImage = self.preprocessImage(image) else {
-                return
-            }
-            let visionImage = VisionImage(image: preprocessedImage)
-            textRecognizer.process(visionImage) { result, error in
-                guard let result = result, error == nil else {
-                    return
-                }
-                self.processTextRecognitionResult(result)
-            }
-        }
-   
-        
+        await runModel(image: image)
+     
     }
-    
-    private func processTextRecognitionResult(_ result: MLKitTextRecognition.Text) {
-        var items = [TextElement]()  // Items found in the receipt
-        var prices = [TextElement]() // Prices found in the receipt
-        
-        result.blocks.forEach { block in
-            block.lines.forEach { line in
-                let lineText = line.text.lowercased()
-                let lineFrame = line.frame
-                if self.isPriceLine(lineText) {
-                    prices.append(TextElement(text: lineText, frame: lineFrame))
-                } else {
-                    items.append(TextElement(text: lineText, frame: lineFrame))
-                }
+    private func runModel(image: UIImage) async {
+        guard let preprocessedImage = preprocessImage(image), let cgImage = preprocessedImage.cgImage else { return }
+        let request = createTextRecognitionRequest(with: image.size)
+        let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        do {
+            try requestHandler.perform([request])
+        } catch {
+            print("Failed to perform text recognition request: \(error)")
+        }
+    }
+    private func createTextRecognitionRequest(with originalImageSize: CGSize) -> VNRecognizeTextRequest {
+        let textRequest = VNRecognizeTextRequest { (request, error) in
+            if let results = request.results as? [VNRecognizedTextObservation] {
+                self.splitPricesAndItems(results, in: originalImageSize)
             }
         }
-        
-        self.associatePricesWithItems(items: items, prices: prices)
+        textRequest.usesLanguageCorrection = true
+        return textRequest
     }
-    
+
+    private func splitPricesAndItems(_ observations: [VNRecognizedTextObservation], in imageSize: CGSize) {
+        var items = [TextElement]()
+        var prices = [TextElement]()
+
+        for observation in observations {
+            guard let topCandidate = observation.topCandidates(1).first else { continue }
+            let text = topCandidate.string
+            let frame = self.convertFromNormalizedRect(observation.boundingBox, imageSize: imageSize)
+            print(text)
+            if (isPriceLine(text)) {
+                prices.append(TextElement(text: text, frame: frame, price: nil))
+                print("price")
+            } else {
+                items.append(TextElement(text: text, frame: frame, price: nil))
+                print("item")
+            }
+        }
+        associatePricesWithItems(items: items, prices: prices)
+    }
+
+    private func convertFromNormalizedRect(_ normalizedRect: CGRect, imageSize: CGSize) -> CGRect {
+        return CGRect(x: normalizedRect.minX * imageSize.width,
+                      y: (1 - normalizedRect.maxY) * imageSize.height,
+                      width: normalizedRect.width * imageSize.width,
+                      height: normalizedRect.height * imageSize.height)
+    }
+
     private func associatePricesWithItems(items: [TextElement], prices: [TextElement]) {
-        // Logic to associate prices with items here...
-      
         var associatedItems: [ReceiptItem] = []
-        var availableItems = items // Copy of items to keep track of unpaired items
-        var availablePrices = prices // Copy of prices to keep track of unpaired prices
-        
+
+        var unmatchedPrices = prices
+
         for price in prices {
-            var closestItem: TextElement?
-            var minDistance = CGFloat.greatestFiniteMagnitude
-            
-            for item in availableItems {
-                let distance = abs(price.frame.minX - item.frame.maxX)
-                
-                // Ensure the item is to the left and within the same line or a nearby line
-                if distance < minDistance && abs(price.frame.midY - item.frame.midY) < 50 { // Adjust the value as needed
-                    closestItem = item
-                    minDistance = distance
+            var itemsToLeft: [(item: TextElement, distance: CGFloat)] = []
+            for item in items {
+                let distance = price.frame.minX - item.frame.maxX
+
+                if distance > 0 && abs(price.frame.midY - item.frame.midY) < 60 { // Vertical range threshold can be adjusted
+                    itemsToLeft.append((item, distance))
                 }
             }
+
+            itemsToLeft.sort(by: { $0.distance > $1.distance })
+
+            let fullItemName = itemsToLeft.map { $0.item.text }.joined(separator: " ")
             
-            if let item = closestItem, let priceIndex = availablePrices.firstIndex(of: price), let itemIndex = availableItems.firstIndex(of: item) {
-                // Remove all non-numeric characters except the decimal point from the price text
-                let filteredPriceText = price.text.filter { "0123456789.".contains($0) }
-                if let priceValue = Double(filteredPriceText) {
-                    // Create a new ReceiptItem with a unique ID for each item
-                    let receiptItem = ReceiptItem(id: UUID(), name: item.text, price: priceValue)
-                    associatedItems.append(receiptItem)
-                    
-                    // Remove the paired item and price from the available lists
-                    availablePrices.remove(at: priceIndex)
-                    availableItems.remove(at: itemIndex)
-                }
+            if !itemsToLeft.isEmpty, let priceValue = Double(price.text.filter("0123456789.".contains)) {
+                let receiptItem = ReceiptItem(id: UUID(), name: fullItemName, price: priceValue)
+                associatedItems.append(receiptItem)
+
+                unmatchedPrices.removeAll { $0 == price }
             }
         }
-        
-        // After processing, call completion
+
         receiptItemsTemp = associatedItems
-        extractItems(from: self.receiptItemsTemp)
+        extractTaxAndTotal(from: self.receiptItemsTemp)
     }
-    
-    // Implement the rest of your utility methods here...
     
     private func isPriceLine(_ text: String) -> Bool {
-        let pattern = "\\$[0-9]+(\\.[0-9]{2})?[A-Za-z]?"
+        let pattern = "\\$?[0-9]+\\.\\s?[0-9]{1,2}[A-Za-z]?"
         let regex = try? NSRegularExpression(pattern: pattern)
         
         let range = NSRange(text.startIndex..<text.endIndex, in: text)
-        return regex?.firstMatch(in: text, options: [], range: range) != nil
+        return regex?.firstMatch(in: text, options: [], range: range) != nil && !text.contains("%")
     }
     
     private func preprocessImage(_ image: UIImage) -> UIImage? {
-        // Your image preprocessing logic here...
         let targetSize = CGSize(width: 720, height: 1280) // Adjust based on your needs
         let scaledImage = image.scalePreservingAspectRatio(targetSize: targetSize)
-        
-        // Apply binarization - This is a simplified example, you might need a more complex approach
         guard let binaryImage = scaledImage.convertToGrayscale()?.binarize() else { return nil }
-        
-        return binaryImage
+       return binaryImage
     }
     
-    // Additional methods for tax processing, filtering out payment methods, etc.
-    func filterOutPaymentMethods(from items: [ReceiptItem]) -> [ReceiptItem] {
-        let paymentKeywords = ["credit", "debit", "cash", "card", "change", "visa", "amex", "mastercard", "discover"]
+    func removePaymentMethods(from items: [ReceiptItem]) -> [ReceiptItem] {
+        let paymentKeywords = ["credit", "debit", "cash", "card", "change", "visa", "amex", "mastercard", "discover", "american express", "subtotal"]
         return items.filter { item in
             !paymentKeywords.contains(where: { keyword in
                 item.name.lowercased().contains(keyword)
@@ -143,44 +135,34 @@ class ScanReceipt: ObservableObject {
         }
     }
     
-    
     func isTaxLine(_ text: String) -> Bool {
         let lowercasedText = text.lowercased()
         return lowercasedText.contains("tax")
     }
-    func extractItems(from items: [ReceiptItem]){
+    
+    func extractTaxAndTotal(from items: [ReceiptItem]){
         let taxItems = items.filter { isTaxLine($0.name) }
         let itemsWithoutTax = items.filter { !isTaxLine($0.name) }
-        let finalTax = finalizeTaxItems(taxItems)
+        let finalTax = extractTax(taxItems)
         
         self.receiptItemsTemp = itemsWithoutTax
-        self.receiptItemsTemp = filterOutPaymentMethods(from: self.receiptItemsTemp)
-        let (finalItems, finalTotal) = finalizeReceiptItems(self.receiptItemsTemp)
-        
+        self.receiptItemsTemp = removePaymentMethods(from: self.receiptItemsTemp)
+        let (finalItems, finalTotal) = extractTotal(self.receiptItemsTemp)
         DispatchQueue.main.async {
-            // Logic to associate prices with items and update @Published properties...
             self.tax = finalTax
             self.receiptItems = finalItems
             self.total = finalTotal
             self.isScanning = false
         }
-
-        
     }
-    func finalizeTaxItems(_ taxItems: [ReceiptItem]) -> ReceiptItem? {
+    
+    func extractTax(_ taxItems: [ReceiptItem]) -> ReceiptItem? {
         let totalTaxAmount = taxItems.reduce(0) { $0 + $1.price }
         return taxItems.isEmpty ? nil : ReceiptItem(id: UUID(), name: "Total Tax", price: totalTaxAmount)
-        
-        // If you only want to take the highest tax line (uncomment if needed):
-        // return taxItems.max(by: { $0.price < $1.price })
     }
-    
-    
-    
-    func finalizeReceiptItems(_ items: [ReceiptItem]) -> (items: [ReceiptItem], finalTotal: ReceiptItem?) {
+    func extractTotal(_ items: [ReceiptItem]) -> (items: [ReceiptItem], finalTotal: ReceiptItem?) {
         var finalItems = [ReceiptItem]()
         var potentialTotals = [ReceiptItem]()
-        // Separate potential total/balance lines from regular item lines
         for item in items {
             if isTotalLine(item.name) {
                 potentialTotals.append(item)
@@ -188,22 +170,20 @@ class ScanReceipt: ObservableObject {
                 finalItems.append(item)
             }
         }
-        // Determine the highest total from potential totals
         let finalTotal = potentialTotals.max(by: { $0.price < $1.price })
-        
-        // Remove the final total from the list of items if it's among them
         if let finalTotal = finalTotal, let index = finalItems.firstIndex(where: { $0.id == finalTotal.id }) {
             finalItems.remove(at: index)
         }
-        
         return (finalItems, finalTotal)
     }
+    
     func isTotalLine(_ text: String) -> Bool {
         let lowercasedText = text.lowercased()
-        return lowercasedText.contains("total") || lowercasedText.contains("balance")
+        return !lowercasedText.contains("sub") && (lowercasedText.contains("total") || lowercasedText.contains("balance"))
     }
+    
     func extractPrice(from text: String) -> Double? {
-        let pattern = "\\$[0-9]+(\\.[0-9]{2})?[A-Za-z]?" // Regular expression pattern for price
+        let pattern = "\\$?[0-9]+\\.\\s?[0-9]{1,2}[A-Za-z]?"
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(text.startIndex..<text.endIndex, in: text)
         if let match = regex?.firstMatch(in: text, options: [], range: range) {
@@ -213,6 +193,5 @@ class ScanReceipt: ObservableObject {
         }
         return nil
     }
-    
 }
 

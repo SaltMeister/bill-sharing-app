@@ -1,34 +1,33 @@
 import SwiftUI
 import UIKit
-import MLKitTextRecognition
-import MLKitVision
-import CoreGraphics
-import CoreImage
+import Vision
+
 
 struct ContentView: View {
-    @StateObject var scanReceipt = ScanReceipt()  // Holds the instance of ScanReceipt
-    @State private var isScanning = false  // Tracks whether scanning is in progress
-    @State var turboMode: Bool = false      // To show scanning is running in background
-    
+    @StateObject var scanReceipt = ScanReceipt()
+    @State private var isScanning = false
+    @State var turboMode: Bool = false
+    @State private var extractedEntities: [String] = []
+
     var body: some View {
         VStack {
             Text("Receipt Items")
-            List(scanReceipt.receiptItems) { item in  // Directly use scanReceipt.receiptItems here
+            List(scanReceipt.receiptItems) { item in
                 Text("\(item.name): $\(item.price, specifier: "%.2f")")
             }
-            
-            if let tax = scanReceipt.tax {  // Directly use scanReceipt.tax here
-                Text("Tax: \(tax.name): $\(tax.price, specifier: "%.2f")")
+        
+            if let tax = scanReceipt.tax {
+                Text("Tax: $\(tax.price, specifier: "%.2f")")
                     .foregroundColor(.red)
             }
-            if let total = scanReceipt.total {  // Directly use scanReceipt.total here
+            
+            if let total = scanReceipt.total {
                 Text("Total: $\(total.price, specifier: "%.2f")")
                     .foregroundColor(.red)
             }
-         
+            
             Toggle("Turbo mode", isOn: $turboMode)
-
-            // Progress view that appears while scanning
+            
             if scanReceipt.isScanning {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle(tint: .blue))
@@ -37,13 +36,13 @@ struct ContentView: View {
             }
 
             Button("Scan Receipt") {
-                guard let image = UIImage(named: "Test6") else {
-                    print("Error loading Image")
-                    return
+                Task{
+                    guard let image = UIImage(named: "Test6") else {
+                        print("Error loading Image")
+                        return
+                    }
+                    await scanReceipt.scanReceipt(image: image)
                 }
-                
-                scanReceipt.scanReceipt(image: image)
-
             }
         }
     }
