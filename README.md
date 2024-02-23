@@ -48,7 +48,7 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 
 # Tasks Done
 1) Diego: Was able to use Google MLK to scan image, used words returned to put together receipt items
-2) Simon: Set up the project and connected it to GitHub
+2) Simon: Set up the project and connected it to GitHub, Connect Firebase Packages into project
 3) Vedant: 
 4) Josh: created mock up: https://www.figma.com/file/e8JIsAHS9rVOgDQX1TOI9g/ECS-189E-Bill-Sharing-App-Mock-Up?type=design&node-id=0%3A1&mode=design&t=CycsuvaaEpIAyaun-1
 
