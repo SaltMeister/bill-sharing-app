@@ -61,5 +61,8 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 # Issues encountered
 
 # Git Commits
-
-
+Simon:
+  https://github.com/SaltMeister/bill-sharing-app/commit/e957179f9026e4e3eece325df0114f3e449246a5
+  https://github.com/SaltMeister/bill-sharing-app/commit/38d89b2d30b648ded0378b6742a738c6eb036500
+  https://github.com/SaltMeister/bill-sharing-app/commit/ccb1b22404f97dc6d4b85242a964da3c57f203c8
+  
