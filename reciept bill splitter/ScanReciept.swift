@@ -15,14 +15,15 @@ struct ReceiptItem: Identifiable {
 }
 
 class ScanReceipt: ObservableObject {
-    @Published private var extractedEntities: [String] = []
-    @Published var receiptItems: [ReceiptItem] = []
-    @Published var total: ReceiptItem?
-    @Published var tax: ReceiptItem?
-    @Published var isScanning = false  // Track scanning state
-
-    var receiptItemsTemp: [ReceiptItem] = []
-    
+    @Published  var receiptItems: [ReceiptItem] = []
+    @Published  var total: ReceiptItem?
+    @Published  var tax: ReceiptItem?
+    @Published  var isScanning = false
+    private var finalTax: ReceiptItem?
+    private var finalTotal: ReceiptItem?
+    private var finalItems: [ReceiptItem] = []
+    private var receiptItemsTemp: [ReceiptItem] = []
+        
     func scanReceipt(image: UIImage) async {
         Task { @MainActor in
             self.isScanning = true
@@ -30,9 +31,17 @@ class ScanReceipt: ObservableObject {
             self.total = nil
             self.tax = nil
         }
+        
         await runModel(image: image)
-     
+        
+        Task { @MainActor in
+            self.tax = finalTax
+            self.receiptItems = finalItems
+            self.total = finalTotal
+            self.isScanning = false
+        }
     }
+    
     private func runModel(image: UIImage) async {
         guard let preprocessedImage = preprocessImage(image), let cgImage = preprocessedImage.cgImage else { return }
         let request = createTextRecognitionRequest(with: image.size)
@@ -43,6 +52,7 @@ class ScanReceipt: ObservableObject {
             print("Failed to perform text recognition request: \(error)")
         }
     }
+    
     private func createTextRecognitionRequest(with originalImageSize: CGSize) -> VNRecognizeTextRequest {
         let textRequest = VNRecognizeTextRequest { (request, error) in
             if let results = request.results as? [VNRecognizedTextObservation] {
@@ -73,13 +83,6 @@ class ScanReceipt: ObservableObject {
         associatePricesWithItems(items: items, prices: prices)
     }
 
-    private func convertFromNormalizedRect(_ normalizedRect: CGRect, imageSize: CGSize) -> CGRect {
-        return CGRect(x: normalizedRect.minX * imageSize.width,
-                      y: (1 - normalizedRect.maxY) * imageSize.height,
-                      width: normalizedRect.width * imageSize.width,
-                      height: normalizedRect.height * imageSize.height)
-    }
-
     private func associatePricesWithItems(items: [TextElement], prices: [TextElement]) {
         var associatedItems: [ReceiptItem] = []
 
@@ -90,7 +93,7 @@ class ScanReceipt: ObservableObject {
             for item in items {
                 let distance = price.frame.minX - item.frame.maxX
 
-                if distance > 0 && abs(price.frame.midY - item.frame.midY) < 60 { // Vertical range threshold can be adjusted
+                if distance > 0 && abs(price.frame.midY - item.frame.midY) < 60 {
                     itemsToLeft.append((item, distance))
                 }
             }
@@ -111,21 +114,6 @@ class ScanReceipt: ObservableObject {
         extractTaxAndTotal(from: self.receiptItemsTemp)
     }
     
-    private func isPriceLine(_ text: String) -> Bool {
-        let pattern = "\\$?[0-9]+\\.\\s?[0-9]{1,2}[A-Za-z]?"
-        let regex = try? NSRegularExpression(pattern: pattern)
-        
-        let range = NSRange(text.startIndex..<text.endIndex, in: text)
-        return regex?.firstMatch(in: text, options: [], range: range) != nil && !text.contains("%")
-    }
-    
-    private func preprocessImage(_ image: UIImage) -> UIImage? {
-        let targetSize = CGSize(width: 720, height: 1280) // Adjust based on your needs
-        let scaledImage = image.scalePreservingAspectRatio(targetSize: targetSize)
-        guard let binaryImage = scaledImage.convertToGrayscale()?.binarize() else { return nil }
-       return binaryImage
-    }
-    
     func removePaymentMethods(from items: [ReceiptItem]) -> [ReceiptItem] {
         let paymentKeywords = ["credit", "debit", "cash", "card", "change", "visa", "amex", "mastercard", "discover", "american express", "subtotal"]
         return items.filter { item in
@@ -135,31 +123,21 @@ class ScanReceipt: ObservableObject {
         }
     }
     
-    func isTaxLine(_ text: String) -> Bool {
-        let lowercasedText = text.lowercased()
-        return lowercasedText.contains("tax")
-    }
-    
     func extractTaxAndTotal(from items: [ReceiptItem]){
         let taxItems = items.filter { isTaxLine($0.name) }
         let itemsWithoutTax = items.filter { !isTaxLine($0.name) }
-        let finalTax = extractTax(taxItems)
+        self.finalTax = extractTax(taxItems)
         
         self.receiptItemsTemp = itemsWithoutTax
         self.receiptItemsTemp = removePaymentMethods(from: self.receiptItemsTemp)
-        let (finalItems, finalTotal) = extractTotal(self.receiptItemsTemp)
-        DispatchQueue.main.async {
-            self.tax = finalTax
-            self.receiptItems = finalItems
-            self.total = finalTotal
-            self.isScanning = false
-        }
+        (finalItems, finalTotal) = extractTotal(self.receiptItemsTemp)
     }
     
     func extractTax(_ taxItems: [ReceiptItem]) -> ReceiptItem? {
         let totalTaxAmount = taxItems.reduce(0) { $0 + $1.price }
         return taxItems.isEmpty ? nil : ReceiptItem(id: UUID(), name: "Total Tax", price: totalTaxAmount)
     }
+    
     func extractTotal(_ items: [ReceiptItem]) -> (items: [ReceiptItem], finalTotal: ReceiptItem?) {
         var finalItems = [ReceiptItem]()
         var potentialTotals = [ReceiptItem]()
@@ -177,11 +155,6 @@ class ScanReceipt: ObservableObject {
         return (finalItems, finalTotal)
     }
     
-    func isTotalLine(_ text: String) -> Bool {
-        let lowercasedText = text.lowercased()
-        return !lowercasedText.contains("sub") && (lowercasedText.contains("total") || lowercasedText.contains("balance"))
-    }
-    
     func extractPrice(from text: String) -> Double? {
         let pattern = "\\$?[0-9]+\\.\\s?[0-9]{1,2}[A-Za-z]?"
         let regex = try? NSRegularExpression(pattern: pattern)
@@ -193,5 +166,38 @@ class ScanReceipt: ObservableObject {
         }
         return nil
     }
+    
+    func isTotalLine(_ text: String) -> Bool {
+        let lowercasedText = text.lowercased()
+        return !lowercasedText.contains("sub") && (lowercasedText.contains("total") || lowercasedText.contains("balance"))
+    }
+    
+    func isTaxLine(_ text: String) -> Bool {
+        let lowercasedText = text.lowercased()
+        return lowercasedText.contains("tax")
+    }
+    
+    private func isPriceLine(_ text: String) -> Bool {
+        let pattern = "\\$?[0-9]+\\.\\s?[0-9]{1,2}[A-Za-z]?"
+        let regex = try? NSRegularExpression(pattern: pattern)
+        
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+        return regex?.firstMatch(in: text, options: [], range: range) != nil && !text.contains("%")
+    }
+    
+    private func preprocessImage(_ image: UIImage) -> UIImage? {
+        let targetSize = CGSize(width: 720, height: 1280) // Adjust based on your needs
+        let scaledImage = image.scalePreservingAspectRatio(targetSize: targetSize)
+        guard let binaryImage = scaledImage.convertToGrayscale()?.binarize() else { return nil }
+       return binaryImage
+    }
+    
+    private func convertFromNormalizedRect(_ normalizedRect: CGRect, imageSize: CGSize) -> CGRect {
+        return CGRect(x: normalizedRect.minX * imageSize.width,
+                      y: (1 - normalizedRect.maxY) * imageSize.height,
+                      width: normalizedRect.width * imageSize.width,
+                      height: normalizedRect.height * imageSize.height)
+    }
+
 }
 

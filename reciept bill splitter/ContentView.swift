@@ -37,7 +37,7 @@ struct ContentView: View {
 
             Button("Scan Receipt") {
                 Task{
-                    guard let image = UIImage(named: "Test6") else {
+                    guard let image = UIImage(named: "Test3") else {
                         print("Error loading Image")
                         return
                     }
