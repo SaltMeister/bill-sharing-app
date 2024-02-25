@@ -12,9 +12,12 @@ struct LaunchScreenView: View {
     @State private var size = 0.8
     @State private var opacity = 0.5
 
+    @ObservedObject var user = UserViewModel()
+    
     var body: some View {
         if isActive {
             SignUpLogInView()
+                .environmentObject(user)
         } else {
                 VStack {
                     VStack{

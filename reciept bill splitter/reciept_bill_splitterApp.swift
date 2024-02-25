@@ -9,15 +9,19 @@ import SwiftUI
 import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
-
+import FirebaseAppCheck
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
       
-    FirebaseApp.configure()
+      let providerFactory = AppCheckDebugProviderFactory()
+      AppCheck.setAppCheckProviderFactory(providerFactory)
+      
+      FirebaseApp.configure()
 
-    return true
+      return true
   }
 }
 @main
@@ -31,7 +35,7 @@ struct reciept_bill_splitterApp: App {
     
     var body: some Scene {
         WindowGroup {
-           // LaunchScreenView()
+            LaunchScreenView()
         }
     }
 }

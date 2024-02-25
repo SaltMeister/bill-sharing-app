@@ -15,7 +15,8 @@ struct SignUpLogInView: View {
     @State private var isSignUpActive: Bool = false
     @State private var isLogInActive: Bool = false
 
-        
+    @EnvironmentObject var user: UserViewModel
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -41,13 +42,19 @@ struct SignUpLogInView: View {
                 
                 Button(action: {
                     // Simulating password validation, replace with your validation logic
-                    if password == "123" {
-                        isLogInActive = true
-                        errorMessage = nil // Password is valid, clear error message
-                        print("Login successful with username: \(email)")
+                    if password.count >= 6 {
+                        let didCreateAccount = user.createUser(email: email, password: password)
+                        
+                        if didCreateAccount {
+                            errorMessage = "Success"
+                        }
+//                        isLogInActive = true
+//                        errorMessage = nil // Password is valid, clear error message
+//                        print("Login successful with username: \(email)")
                     } else {
                         errorMessage = "Invalid username or password. Please try again."
                     }
+                    
                 }) {
                     Text("Login")
                         .foregroundColor(.white)

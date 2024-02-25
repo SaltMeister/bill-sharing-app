@@ -17,6 +17,7 @@
 		32C3CD2E2B86F1C600FB2BF1 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 32C3CD2D2B86F1C600FB2BF1 /* FirebaseFirestoreSwift */; };
 		32C3CD3E2B86F1C700FB2BF1 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = 32C3CD3D2B86F1C700FB2BF1 /* FirebasePerformance */; };
 		32C3CD492B8721AC00FB2BF1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 32C3CD482B8721AC00FB2BF1 /* GoogleService-Info.plist */; };
+		32E58BD82B8A9B1300F9B44E /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */; };
 		36E9BE642B86ACE00020BE12 /* SignUpLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */; };
 		36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE652B86AD1C0020BE12 /* HomeView.swift */; };
 		36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE672B86AD3F0020BE12 /* FriendsView.swift */; };
@@ -36,6 +37,7 @@
 		32B1A4C22B828F9D00A20FDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		32C3CD482B8721AC00FB2BF1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 		36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLogInView.swift; sourceTree = "<group>"; };
 		36E9BE652B86AD1C0020BE12 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		36E9BE672B86AD3F0020BE12 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		32C3CD472B8711A700FB2BF1 /* UserAuthentication */ = {
 			isa = PBXGroup;
 			children = (
+				32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */,
 			);
 			path = UserAuthentication;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 				36E9BE762B86CAEA0020BE12 /* AddFriendView.swift in Sources */,
 				36E9BE702B86AD8D0020BE12 /* SplitView.swift in Sources */,
 				36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */,
+				32E58BD82B8A9B1300F9B44E /* UserViewModel.swift in Sources */,
 				36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */,
 				36E9BE642B86ACE00020BE12 /* SignUpLogInView.swift in Sources */,
 				32B1A4BF2B828F9400A20FDD /* reciept_bill_splitterApp.swift in Sources */,
@@ -269,6 +273,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -326,6 +331,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
