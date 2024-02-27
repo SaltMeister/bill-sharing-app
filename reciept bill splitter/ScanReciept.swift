@@ -1,12 +1,5 @@
-import SwiftUI
 import UIKit
 import Vision
-
-struct TextElement: Equatable {
-    var text: String
-    var frame: CGRect
-    var price: Double?
-}
 
 struct ReceiptItem: Identifiable {
     let id: UUID
@@ -14,6 +7,25 @@ struct ReceiptItem: Identifiable {
     var price: Double
 }
 
+struct TextElement: Equatable {
+    var text: String
+    var frame: CGRect
+    var price: Double?
+}
+extension CGRect {
+    // Add a computed property to CGRect to easily get the center point
+    var center: CGPoint {
+        return CGPoint(x: midX, y: midY)
+    }
+
+    // Add a method to scale CGRect
+    func scaled(to size: CGSize) -> CGRect {
+        return CGRect(x: self.origin.x * size.width,
+                      y: self.origin.y * size.height,
+                      width: self.width * size.width,
+                      height: self.height * size.height)
+    }
+}
 class ScanReceipt: ObservableObject {
     @Published  var receiptItems: [ReceiptItem] = []
     @Published  var total: ReceiptItem?
@@ -23,15 +35,21 @@ class ScanReceipt: ObservableObject {
     private var finalTotal: ReceiptItem?
     private var finalItems: [ReceiptItem] = []
     private var receiptItemsTemp: [ReceiptItem] = []
-        
+    @Published var uiImage: UIImage?
+    private var tempimage: UIImage?
     func scanReceipt(image: UIImage) async {
         Task { @MainActor in
             self.isScanning = true
             self.receiptItems = []
             self.total = nil
             self.tax = nil
+            finalTax = nil
+            finalTotal = nil
+            finalItems = []
+            receiptItemsTemp = []
+            uiImage = nil
         }
-        
+        print("here")
         await runModel(image: image)
         
         Task { @MainActor in
@@ -39,12 +57,22 @@ class ScanReceipt: ObservableObject {
             self.receiptItems = finalItems
             self.total = finalTotal
             self.isScanning = false
+            self.uiImage = tempimage
         }
     }
     
     private func runModel(image: UIImage) async {
-        guard let preprocessedImage = preprocessImage(image), let cgImage = preprocessedImage.cgImage else { return }
-        let request = createTextRecognitionRequest(with: image.size)
+        // Step 1: Detect receipt corners and correct perspective
+        print("run")
+        // Step 2: Apply additional preprocessing like scaling and binarization if needed
+        guard let preprocessedImage = preprocessImage(image) else { return }
+        print("processed image")
+        guard let correctedImage = preprocessedImage.preprocessForPerspectiveCorrection() else { return }
+        print("corrected image")
+        tempimage = correctedImage
+        guard let cgImage = correctedImage.cgImage else { return }
+        // Step 3: Prepare and perform the text recognition request
+        let request = createTextRecognitionRequest(with: correctedImage.size)
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         do {
             try requestHandler.perform([request])
@@ -52,68 +80,61 @@ class ScanReceipt: ObservableObject {
             print("Failed to perform text recognition request: \(error)")
         }
     }
-    
     private func createTextRecognitionRequest(with originalImageSize: CGSize) -> VNRecognizeTextRequest {
         let textRequest = VNRecognizeTextRequest { (request, error) in
             if let results = request.results as? [VNRecognizedTextObservation] {
-                self.splitPricesAndItems(results, in: originalImageSize)
+                self.splitPricesAndItems2(results, in: originalImageSize)
             }
         }
+        textRequest.recognitionLevel = .accurate // Use accurate recognition level
         textRequest.usesLanguageCorrection = true
         return textRequest
     }
+ 
 
-    private func splitPricesAndItems(_ observations: [VNRecognizedTextObservation], in imageSize: CGSize) {
-        var items = [TextElement]()
-        var prices = [TextElement]()
+    private func splitPricesAndItems2(_ observations: [VNRecognizedTextObservation], in imageSize: CGSize) {
+        var receiptItems: [ReceiptItem] = []
 
         for observation in observations {
-            guard let topCandidate = observation.topCandidates(1).first else { continue }
-            let text = topCandidate.string
-            let frame = self.convertFromNormalizedRect(observation.boundingBox, imageSize: imageSize)
+            guard let recognizedText = observation.topCandidates(1).first else { continue }
+            let text = recognizedText.string
             print(text)
-            if (isPriceLine(text)) {
-                prices.append(TextElement(text: text, frame: frame, price: nil))
-                print("price")
-            } else {
-                items.append(TextElement(text: text, frame: frame, price: nil))
-                print("item")
-            }
-        }
-        associatePricesWithItems(items: items, prices: prices)
-    }
-
-    private func associatePricesWithItems(items: [TextElement], prices: [TextElement]) {
-        var associatedItems: [ReceiptItem] = []
-
-        var unmatchedPrices = prices
-
-        for price in prices {
-            var itemsToLeft: [(item: TextElement, distance: CGFloat)] = []
-            for item in items {
-                let distance = price.frame.minX - item.frame.maxX
-
-                if distance > 0 && abs(price.frame.midY - item.frame.midY) < 60 {
-                    itemsToLeft.append((item, distance))
+            // Check if the text represents a price
+            if isPriceLine(text) {
+                print(text)
+                let priceFrame = convertFromNormalizedRect(observation.boundingBox, imageSize: imageSize)
+                let lineHeight = priceFrame.height * 0.5 // Use the price's bounding box height as the line height
+                
+                // Find items to the left of the price within the same line height
+                var lineItems: [String] = []
+                for otherObservation in observations {
+                    guard let otherText = otherObservation.topCandidates(1).first?.string,
+                          otherObservation != observation else { continue }
+                    
+                    let otherFrame = convertFromNormalizedRect(otherObservation.boundingBox, imageSize: imageSize)
+                    
+                    // Check if otherText is on the same line as the price
+                    if abs(otherFrame.midY - priceFrame.midY) < lineHeight {
+                        // Check if otherText is to the left of the price
+                        if otherFrame.maxX <= priceFrame.minX {
+                            lineItems.append(otherText)
+                        }
+                    }
+                }
+                
+                let itemName = lineItems.joined(separator: " ")
+                if let price = extractPrice(from: text) {
+                    let receiptItem = ReceiptItem(id: UUID(), name: itemName, price: price)
+                    receiptItems.append(receiptItem)
                 }
             }
-
-            itemsToLeft.sort(by: { $0.distance > $1.distance })
-
-            let fullItemName = itemsToLeft.map { $0.item.text }.joined(separator: " ")
-            
-            if !itemsToLeft.isEmpty, let priceValue = Double(price.text.filter("0123456789.".contains)) {
-                let receiptItem = ReceiptItem(id: UUID(), name: fullItemName, price: priceValue)
-                associatedItems.append(receiptItem)
-
-                unmatchedPrices.removeAll { $0 == price }
-            }
         }
-
-        receiptItemsTemp = associatedItems
-        extractTaxAndTotal(from: self.receiptItemsTemp)
+        for item in receiptItems {
+            print("Item: \(item.name), Price: \(item.price)")
+        }
+        extractTaxAndTotal(from: receiptItems)
     }
-    
+
     func removePaymentMethods(from items: [ReceiptItem]) -> [ReceiptItem] {
         let paymentKeywords = ["credit", "debit", "cash", "card", "change", "visa", "amex", "mastercard", "discover", "american express", "subtotal"]
         return items.filter { item in
@@ -132,7 +153,25 @@ class ScanReceipt: ObservableObject {
         self.receiptItemsTemp = removePaymentMethods(from: self.receiptItemsTemp)
         (finalItems, finalTotal) = extractTotal(self.receiptItemsTemp)
     }
-    
+    func isPriceLine2(_ text: String) -> Bool {
+        // Regular expression pattern to match strictly price lines
+        // This includes an optional dollar sign, followed by digits, a decimal point, and two digits
+        // It may also allow for a single trailing character which could be an artifact from OCR
+        let pattern = "^\\$?[0-9]+\\.\\s?[0-9]{2}[A-Za-z]?$"
+
+        // Attempt to create a regular expression object with the pattern
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+
+        // Define the range of the text to check
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+
+        // Search for the first match of the pattern within the text
+        let match = regex.firstMatch(in: text, options: [], range: range)
+
+        // If a match is found and it covers the entire range of the text, it's considered a price line
+        return match != nil && match?.range == range
+    }
+
     func extractTax(_ taxItems: [ReceiptItem]) -> ReceiptItem? {
         let totalTaxAmount = taxItems.reduce(0) { $0 + $1.price }
         return taxItems.isEmpty ? nil : ReceiptItem(id: UUID(), name: "Total Tax", price: totalTaxAmount)
@@ -169,7 +208,7 @@ class ScanReceipt: ObservableObject {
     
     func isTotalLine(_ text: String) -> Bool {
         let lowercasedText = text.lowercased()
-        return !lowercasedText.contains("sub") && (lowercasedText.contains("total") || lowercasedText.contains("balance"))
+        return !lowercasedText.contains("sub") && (lowercasedText.contains("total") || lowercasedText.contains("balance") || lowercasedText.contains("amount"))
     }
     
     func isTaxLine(_ text: String) -> Bool {
@@ -191,7 +230,7 @@ class ScanReceipt: ObservableObject {
         guard let binaryImage = scaledImage.convertToGrayscale()?.binarize() else { return nil }
        return binaryImage
     }
-    
+
     private func convertFromNormalizedRect(_ normalizedRect: CGRect, imageSize: CGSize) -> CGRect {
         return CGRect(x: normalizedRect.minX * imageSize.width,
                       y: (1 - normalizedRect.maxY) * imageSize.height,
@@ -201,3 +240,40 @@ class ScanReceipt: ObservableObject {
 
 }
 
+class ReceiptDetector {
+    
+    func detectReceipt(in image: UIImage, completion: @escaping (VNRectangleObservation?) -> Void) {
+        guard let cgImage = image.cgImage else {
+            completion(nil)
+            return
+        }
+        
+        let request = VNDetectRectanglesRequest { request, error in
+            guard error == nil else {
+                print("Rectangle detection error: \(String(describing: error))")
+                completion(nil)
+                return
+            }
+            
+            // Assuming the receipt is the largest rectangle found
+            let receiptObservation = request.results?.first as? VNRectangleObservation
+            completion(receiptObservation)
+        }
+        
+        // Configure the request
+        request.minimumConfidence = 0.8 // Adjust based on your needs
+        request.maximumObservations = 1 // Assuming only one receipt is present
+        request.minimumAspectRatio = 0.3 // Adjust to match the expected aspect ratio of a receipt
+        
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try handler.perform([request])
+            } catch {
+                print("Failed to perform rectangle detection: \(error.localizedDescription)")
+                completion(nil)
+            }
+        }
+    }
+    
+}
