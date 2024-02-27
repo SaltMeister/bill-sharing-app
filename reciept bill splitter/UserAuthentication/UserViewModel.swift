@@ -37,11 +37,26 @@ class UserViewModel : ObservableObject {
         return isSuccess ? true : false
     }
     
-    func login(email: String, password: String) {
+    func login(email: String, password: String) -> Bool {
         print(email, password)
         
-//        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error
-//            guard let strongSelf = self else { return }
-//        }
+        @State var isSuccess = false
+        
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+          guard let strongSelf = self else { return }
+            if let result = authResult {
+//                print(result.credential)
+//                print(result.user.uid, result.user.email)
+                print("Signed In Account")
+                isSuccess = true
+            } else {
+                if let x = error {
+                    print(x)
+                    print("Failed to Sign in")
+                }
+            }
+        }
+        
+        return isSuccess ? true : false
     }
 }

@@ -13,13 +13,16 @@ struct SignUpLogInView: View {
     
     @State private var errorMessage: String? = nil
     @State private var isSignUpActive: Bool = false
-    @State private var isLogInActive: Bool = false
+    
+    @Binding var isLoggedIn: Bool
 
     @EnvironmentObject var user: UserViewModel
     
     var body: some View {
         NavigationStack {
             VStack {
+                Text("Log In")
+                
                 TextField("Email", text: $email)
                     .padding()
                     .background(Color.gray.opacity(0.2))
@@ -40,22 +43,23 @@ struct SignUpLogInView: View {
                         .padding(.bottom, 20)
                 }
                 
-                Button(action: {
+                Button {
                     // Simulating password validation, replace with your validation logic
                     if password.count >= 6 {
-                        let didCreateAccount = user.createUser(email: email, password: password)
+                        let didLogin = user.login(email: email, password: password)
                         
-                        if didCreateAccount {
-                            errorMessage = "Success"
+                        if didLogin {
+                            print("Successful login")
+                            isLoggedIn = true
                         }
-//                        isLogInActive = true
+
 //                        errorMessage = nil // Password is valid, clear error message
 //                        print("Login successful with username: \(email)")
                     } else {
                         errorMessage = "Invalid username or password. Please try again."
                     }
                     
-                }) {
+                } label: {
                     Text("Login")
                         .foregroundColor(.white)
                         .padding()
@@ -64,9 +68,10 @@ struct SignUpLogInView: View {
                         .cornerRadius(8.0)
                         .padding(.horizontal, 20)
                 }
-                Button(action: {
+                
+                Button {
                     isSignUpActive = true // Set isSignUpActive to true when button is tapped
-                }) {
+                } label: {
                     Text("Don't have an account? Sign Up!")
                         .foregroundColor(.blue)
                         .padding()
@@ -75,15 +80,12 @@ struct SignUpLogInView: View {
             }
             .padding(.top, 100)
             .navigationDestination(isPresented: $isSignUpActive){
-                SignUpView()
-            }
-            .navigationDestination(isPresented: $isLogInActive){
-                HomeView()
+                SignUpView(isLoggedIn: $isLoggedIn)
             }
         }
     }
 }
 
 #Preview {
-    SignUpLogInView()
+    SignUpLogInView(isLoggedIn: .constant(false))
 }
