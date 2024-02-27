@@ -7,13 +7,28 @@
 
 import SwiftUI
 
+
+
 struct LaunchScreenView: View {
     @State private var isActive = false //bool variable indicating whether or not to go to ContentView
     @State private var size = 0.8
     @State private var opacity = 0.5
+    
+    @State private var isLoggedIn = false
+    
+    @ObservedObject var user = UserViewModel()
+    
     var body: some View {
         if isActive {
-            SignUpLogInView()
+            NavigationStack {
+                if isLoggedIn {
+                    HomeView()
+                } else {
+                    SignUpLogInView(isLoggedIn: $isLoggedIn)
+                }
+            }
+            .environmentObject(user)
+
         } else {
                 VStack {
                     VStack{
