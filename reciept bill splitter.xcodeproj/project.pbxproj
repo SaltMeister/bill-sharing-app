@@ -11,6 +11,8 @@
 		32B1A4C12B828F9400A20FDD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B1A4C02B828F9400A20FDD /* ContentView.swift */; };
 		32B1A4C32B828F9D00A20FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B1A4C22B828F9D00A20FDD /* Assets.xcassets */; };
 		32B1A4C62B828F9D00A20FDD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */; };
+		E59A18892B841BD600233B50 /* ScanReciept.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59A18882B841BD600233B50 /* ScanReciept.swift */; };
+		E59A188B2B841C0E00233B50 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59A188A2B841C0E00233B50 /* UIImageExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,8 @@
 		32B1A4C02B828F9400A20FDD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		32B1A4C22B828F9D00A20FDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E59A18882B841BD600233B50 /* ScanReciept.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanReciept.swift; sourceTree = "<group>"; };
+		E59A188A2B841C0E00233B50 /* UIImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,6 +41,7 @@
 			children = (
 				32B1A4BD2B828F9400A20FDD /* reciept bill splitter */,
 				32B1A4BC2B828F9400A20FDD /* Products */,
+				C864C170DBAE04BC52CC2CF3 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -53,6 +58,8 @@
 			children = (
 				32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */,
 				32B1A4C02B828F9400A20FDD /* ContentView.swift */,
+				E59A18882B841BD600233B50 /* ScanReciept.swift */,
+				E59A188A2B841C0E00233B50 /* UIImageExtension.swift */,
 				32B1A4C22B828F9D00A20FDD /* Assets.xcassets */,
 				32B1A4C42B828F9D00A20FDD /* Preview Content */,
 			);
@@ -65,6 +72,13 @@
 				32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		C864C170DBAE04BC52CC2CF3 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,7 +152,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				32B1A4C12B828F9400A20FDD /* ContentView.swift in Sources */,
+				E59A18892B841BD600233B50 /* ScanReciept.swift in Sources */,
 				32B1A4BF2B828F9400A20FDD /* reciept_bill_splitterApp.swift in Sources */,
+				E59A188B2B841C0E00233B50 /* UIImageExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,8 +288,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"reciept bill splitter/Preview Content\"";
+				DEVELOPMENT_TEAM = S3PTQ97NTN;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -284,6 +303,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.simon647.reciept-bill-splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -300,8 +320,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"reciept bill splitter/Preview Content\"";
+				DEVELOPMENT_TEAM = S3PTQ97NTN;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -312,6 +335,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.simon647.reciept-bill-splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
