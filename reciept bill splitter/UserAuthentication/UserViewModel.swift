@@ -34,18 +34,17 @@ class UserViewModel : ObservableObject {
         }
         
         
-        return isSuccess ? true : false
+        return isSuccess
     }
     
     func login(email: String, password: String) -> Bool {
         print(email, password)
         
         @State var isSuccess = false
-        
+        // Handle Completion of signing function with completion function parameter
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
           guard let strongSelf = self else { return }
             if let result = authResult {
-//                print(result.credential)
 //                print(result.user.uid, result.user.email)
                 print("Signed In Account")
                 isSuccess = true
@@ -57,6 +56,6 @@ class UserViewModel : ObservableObject {
             }
         }
         
-        return isSuccess ? true : false
+        return isSuccess
     }
 }

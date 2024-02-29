@@ -47,6 +47,7 @@ struct SignUpLogInView: View {
                     // Simulating password validation, replace with your validation logic
                     if password.count >= 6 {
                         let didLogin = user.login(email: email, password: password)
+                        print(didLogin)
                         
                         if didLogin {
                             print("Successful login")
