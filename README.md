@@ -90,7 +90,8 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 4)
 
 # Issues encountered
-  spent a bit too long trying to make a firebase function async, when should have done a simple fix and move on with progress.
+  1) spent a bit too long trying to make a firebase function async, when should have done a simple fix and move on with progress.
+  2) Merge conflicts with Xcode and misaligned file references.
   
 # Git Commits
 Simon:
