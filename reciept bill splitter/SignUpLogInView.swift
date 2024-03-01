@@ -18,6 +18,8 @@ struct SignUpLogInView: View {
 
     @EnvironmentObject var user: UserViewModel
     
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -71,6 +73,7 @@ struct SignUpLogInView: View {
                             
                             print("Successful login")
                             isLoggedIn = true
+                            dismiss() // Back out of navigation destination
                         }
 
 //                        errorMessage = nil // Password is valid, clear error message

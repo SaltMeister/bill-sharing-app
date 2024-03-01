@@ -43,46 +43,30 @@ class UserViewModel : ObservableObject {
     
     @Published var isLoggedIn = false
     
-    @Published var FriendList: [Friend]?
-    @Published var GroupList: [Group]?
-    
-    
-    func createUser(email: String, password: String) -> Void {
-        print(email, password)
-        
-        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-                if let result = authResult {
-                    print(result)
-                    print("Created Account")
-                    
-                } else {
-                    if let x = error {
-                        print(x)
-                    }
-                }
-            }
-    }
-    
-    private func setIsLoggedIn() -> Void {
-        DispatchQueue.main.async {
-            self.isLoggedIn = true
-        }
-    }
+    @Published var friendList: [Friend]?
+    @Published var groupList: [Group]?
+    //@Published var transactionList: [Trans]
     
     // Creates user in database
     func createUserInDB() async -> Void {
         // Check if User exists
-        guard let user = Auth.auth().currentUser else { return }
+        guard let user = Auth.auth().currentUser else { 
+            print("User Does not exist")
+            return
+        }
         
         do {
             try await Firestore.firestore().collection("users").document(user.uid).setData([
                 "email": user.email ?? "",
                 "userName": "UnNamed",
-                "friends": [],
-                "groups": [],
-                
+                "friends": [], // reference document  id of other users uid
+                "groups": [], // group collection document ids
+                "completedTransactions": [], // History of completed user transactions
+//                "activeRequests": []
           ])
           print("Document created")
+            
+            
         } catch {
           print("Error adding document: \(error)")
         }

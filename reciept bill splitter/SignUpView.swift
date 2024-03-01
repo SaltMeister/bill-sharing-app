@@ -56,7 +56,13 @@ struct SignUpView: View {
                         print("Created Account")
                         
                         print("Successful login")
-                        isLoggedIn = true
+                        
+                        // Create Database user before loading into home
+                        Task {
+                            await user.createUserInDB()
+                            print("user is true")
+                            isLoggedIn = true
+                        }
                     }
                     
                 } else {
