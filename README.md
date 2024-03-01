@@ -78,7 +78,7 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 3) Create groups of users that want to split a bill
 
 # Tasks Done
-1) Diego: 
+1) Diego: Perspective adjustment / Discount Filter 
 2) Simon: User Authentication / Signup, Write / Read to Firestore DB
 3) Vedant: 
 4) Josh: 
@@ -86,7 +86,7 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 # Goals by next week
 1) Allow users to invite members into groups
 2) Allow users to create groups, and transactions and the associated changes in the database.
-3)
+3) Set up payment transactions
 4)
 
 # Issues encountered
