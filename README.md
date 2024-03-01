@@ -47,15 +47,9 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 3) Create groups of users that want to split a bill
 
 # Tasks Done
-<<<<<<< HEAD
 1) Diego: Was able to use Google MLK to scan image, used words returned to put together receipt items
 2) Simon: Set up the project and connected it to GitHub, Connect Firebase Packages into project
 3) Vedant: Researched about how to connect Stripe API to our app and how to do it for different types of businesses.
-=======
-1) Diego: Was able to use Google MLKit TextRecognizer to scan image, used words returned to put together receipt items
-2) Simon: Set up the project and connected it to GitHub
-3) Vedant: 
->>>>>>> ReceiptScan
 4) Josh: created mock up: https://www.figma.com/file/e8JIsAHS9rVOgDQX1TOI9g/ECS-189E-Bill-Sharing-App-Mock-Up?type=design&node-id=0%3A1&mode=design&t=CycsuvaaEpIAyaun-1
 
 # Goals by next week
@@ -71,4 +65,34 @@ Simon:
   https://github.com/SaltMeister/bill-sharing-app/commit/e957179f9026e4e3eece325df0114f3e449246a5
   https://github.com/SaltMeister/bill-sharing-app/commit/38d89b2d30b648ded0378b6742a738c6eb036500
   https://github.com/SaltMeister/bill-sharing-app/commit/ccb1b22404f97dc6d4b85242a964da3c57f203c8
+
+
+# Sprint Plan Meeting 3 2/29/24
+
+# Trello: 
+https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E9/ecs-189e-bill-sharing-app
+
+# App features
+1) Send money to other users, integrated into bank account
+2) User can take picture of receipt -> user can upload pic of receipt, display list of items purchased, different users can choose to pay for whatever items and be able to split individual items between users
+3) Create groups of users that want to split a bill
+
+# Tasks Done
+1) Diego: 
+2) Simon: User Authentication / Signup, Write / Read to Firestore DB
+3) Vedant: 
+4) Josh: 
+
+# Goals by next week
+1) Allow users to invite members into groups
+2) Allow users to create groups, and transactions and the associated changes in the database.
+3)
+4)
+
+# Issues encountered
+  spent a bit too long trying to make a firebase function async, when should have done a simple fix and move on with progress.
   
+# Git Commits
+Simon:
+
+
