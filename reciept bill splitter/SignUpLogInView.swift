@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import FirebaseAuth
 struct SignUpLogInView: View {
     @State private var email: String = ""
     @State private var password: String = ""
@@ -17,6 +17,8 @@ struct SignUpLogInView: View {
     @Binding var isLoggedIn: Bool
 
     @EnvironmentObject var user: UserViewModel
+    
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         NavigationStack {
@@ -46,12 +48,32 @@ struct SignUpLogInView: View {
                 Button {
                     // Simulating password validation, replace with your validation logic
                     if password.count >= 6 {
-                        let didLogin = user.login(email: email, password: password)
-                        print(didLogin)
-                        
-                        if didLogin {
+                        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+//                          guard let strongSelf = self else { return }
+                            
+                            guard let result = authResult else {
+                                if let x = error {
+                                    print(x)
+                                    print("Failed to Sign in")
+                                    errorMessage = "Failed to Sign In"
+                                }
+                                return
+                            }
+                            
+                            print(result)
+                            print("Signed In Account")
+                            
+                            let user = Auth.auth().currentUser
+                            if let user = user {
+                                let uid = user.uid
+                                let email = user.email ?? ""
+                                print(uid)
+                                print(email)
+                            }
+                            
                             print("Successful login")
                             isLoggedIn = true
+                            dismiss() // Back out of navigation destination
                         }
 
 //                        errorMessage = nil // Password is valid, clear error message

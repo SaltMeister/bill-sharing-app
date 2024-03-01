@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct SignUpView: View {
     @State private var email: String = ""
@@ -44,17 +45,27 @@ struct SignUpView: View {
             Button {
                 // Simulating password validation, replace with your validation logic
                 if password.count >= 6 {
-                    let didCreateAccount = user.createUser(email: email, password: password)
-                    
-                    // todo log in to user after account is created
-                    // CouldFirebase create account
-                    if didCreateAccount {
-                        errorMessage = "Success"
-                        isLoggedIn = true
+                    Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+                        guard let result = authResult else {
+                            if let x = error { print(x) }
+                            return
+                        }
+                        
+                        
+                        print(result)
+                        print("Created Account")
+                        
+                        print("Successful login")
+                        
+                        // Create Database user before loading into home
+                        Task {
+                            await user.createUserInDB()
+                            print("user is true")
+                            isLoggedIn = true
+                        }
                     }
                     
-                }
-                else {
+                } else {
                     errorMessage = "Password should have at least a length of 6"
                 }
             } label: {

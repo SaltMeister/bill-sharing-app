@@ -18,9 +18,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
       
       let providerFactory = AppCheckDebugProviderFactory()
       AppCheck.setAppCheckProviderFactory(providerFactory)
+
+      
       
       FirebaseApp.configure()
-
+      
+      let db = Firestore.firestore()
+      
       return true
   }
 }

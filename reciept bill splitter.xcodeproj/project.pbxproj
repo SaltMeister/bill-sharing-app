@@ -102,7 +102,7 @@
 				32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */,
 				36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */,
 				36E9BE712B86B6240020BE12 /* SignUpView.swift */,
-				32C3CD472B8711A700FB2BF1 /* UserAuthentication */,
+				32C3CD472B8711A700FB2BF1 /* ViewModels */,
 				32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */,
 				32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */,
 				36E9BE652B86AD1C0020BE12 /* HomeView.swift */,
@@ -130,12 +130,12 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		32C3CD472B8711A700FB2BF1 /* UserAuthentication */ = {
+		32C3CD472B8711A700FB2BF1 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
 				32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */,
 			);
-			path = UserAuthentication;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
