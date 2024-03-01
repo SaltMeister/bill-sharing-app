@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var user: UserViewModel
     @State private var isSplitViewActive : Bool = false
+    @State private var isJoinGroupViewActive : Bool = false
     var body: some View {
         NavigationStack{
             VStack {
@@ -25,14 +27,28 @@ struct HomeView: View {
                         .cornerRadius(1)
                         
                 }
+                Button(action: {
+                    isJoinGroupViewActive = true
+                }){
+                    Text("Enter Group Code")
+                        .font(.custom("Avenir", size: 30))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 20)
+                        .background(Color.black)
+                        .cornerRadius(1)
+                        
+                }
                 Spacer()
-                
                 BottomToolbar()
                     .padding()
             }
         }
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
+        }
+        .navigationDestination(isPresented: $isJoinGroupViewActive){
+            JoinGroupView()
         }
     }
 }
@@ -64,8 +80,10 @@ struct ToolbarItem: View {
             VStack {
                 Image(systemName: iconName)
                     .font(.system(size: 24))
+                    .foregroundColor(.black)
                 Text(text)
                     .font(.caption)
+                    .foregroundColor(.black)
             }
             .padding(.horizontal, 20)
         }

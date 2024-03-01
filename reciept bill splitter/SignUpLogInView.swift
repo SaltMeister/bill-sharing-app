@@ -40,10 +40,26 @@ struct SignUpLogInView: View {
                 
                 Button(action: {
                     // Simulating password validation, replace with your validation logic
+<<<<<<< Updated upstream
                     if password == "123" {
                         isLogInActive = true
                         errorMessage = nil // Password is valid, clear error message
                         print("Login successful with username: \(username)")
+=======
+                    if password.count >= 6 {
+                        let didLogin = user.login(email: email, password: password)
+                        
+                        if didLogin {
+                            print("Successful login")
+                            isLoggedIn = true
+                        }
+                        
+                        //WARNING REMOVE LATER, JUST TO PROCEED FOR NOW!!!!!
+                        isLoggedIn = true
+
+//                        errorMessage = nil // Password is valid, clear error message
+//                        print("Login successful with username: \(email)")
+>>>>>>> Stashed changes
                     } else {
                         errorMessage = "Invalid username or password. Please try again."
                     }
@@ -70,6 +86,9 @@ struct SignUpLogInView: View {
                 SignUpView()
             }
             .navigationDestination(isPresented: $isLogInActive){
+                HomeView()
+            }
+            .navigationDestination(isPresented: $isLoggedIn){
                 HomeView()
             }
         }
