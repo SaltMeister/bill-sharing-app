@@ -20,6 +20,7 @@ struct GroupMember : Codable {
 
 struct Group : Codable {
     var groupName: String
+    var groupID: String
     var members: [GroupMember]
     //   var
 }
@@ -28,6 +29,14 @@ struct Transaction : Codable {
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
     var name: String
     
+}
+
+struct User : Codable {
+    var email: String
+    var userName: String
+    var groups: [String]?
+    var friends: [String]?
+    var completedTransactions: [String]?
 }
 
 struct Item : Codable {
@@ -41,11 +50,26 @@ class UserViewModel : ObservableObject {
     @Published var email = ""
     @Published var password = ""
     
-    @Published var isLoggedIn = false
+    @Published var groups: [String]?
+    @Published var friends: [String]?
+    @Published var completedTransactions: [String]?
     
-    @Published var friendList: [Friend]?
-    @Published var groupList: [Group]?
     //@Published var transactionList: [Trans]
+    
+    
+    func getUserData() async -> Void {
+        let userData = await DatabaseAPI.grabUserData()
+        
+        guard let userData = userData else { return }
+        
+        DispatchQueue.main.async {
+            self.email = userData.email
+            self.groups = userData.groups
+            self.friends = userData.friends
+            self.completedTransactions = userData.completedTransactions
+        }
+        
+    }
     
     // Creates user in database
     func createUserInDB() async -> Void {
