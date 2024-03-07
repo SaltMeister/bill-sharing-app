@@ -17,6 +17,7 @@ class DatabaseAPI {
     // https://stackoverflow.com/questions/26845307/generate-random-alphanumeric-string-in-swift
     static func randomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        // WAIT FIX THIS ITS FORCE UNWRAP
         return String((0..<length).map{ _ in letters.randomElement()! })
       }
     static func grabUserData() async ->  User? {
@@ -114,5 +115,50 @@ class DatabaseAPI {
           print("Error creating group: \(error)")
         }
     }
-
+    
+    
+    static func getGroupData() async -> [Group]? {
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return nil
+        }
+        
+        do {
+            
+            let querySnapshots = db.collection("groups").whereField("owner_id", isEqualTo: user.uid)
+            
+            let documents = try await querySnapshots.getDocuments()
+            
+            var foundGroups: [Group] = []
+            
+            print("Trying to find document")
+            for document in documents.documents {
+                
+                let data = document.data()
+                
+                let groupID = document.documentID
+                let group_name = data["group_name"] as? String ?? ""
+                let members = data["members"] as? [String] ?? []
+                
+                let invite_code = data["invite_code"] as? String ?? ""
+                let owner_id = data["owner_id"] as? String ?? ""
+                // Add Transaction Data in future
+                
+                var groupMemberList: [GroupMember] = []
+                for member in members {
+                    groupMemberList.append(GroupMember(id: member))
+                }
+                let newGroup = Group(groupID: groupID, group_name: group_name, members: groupMemberList, invite_code: invite_code, owner_id: owner_id, transactions: [])
+                
+                foundGroups.append(newGroup)
+            }
+            print(foundGroups)
+            return foundGroups
+            
+        } catch {
+            print("Error finding User: \(error)")
+        }
+        
+        return nil
+    }
 }

@@ -15,13 +15,16 @@ struct Friend : Codable {
 }
 
 struct GroupMember : Codable {
-    var username: String
+    var id: String
 }
 
 struct Group : Codable {
-    var groupName: String
     var groupID: String
+    var group_name: String
     var members: [GroupMember]
+    var invite_code: String
+    var owner_id: String
+    var transactions: [String] // Fix Later
     //   var
 }
 
@@ -50,9 +53,13 @@ class UserViewModel : ObservableObject {
     @Published var email = ""
     @Published var password = ""
     
-    @Published var groups: [String]?
+    @Published var groups: [Group] = []
+    
+    @Published var groups_id: [String]?
     @Published var friends: [String]?
     @Published var completedTransactions: [String]?
+    
+    @Published var selectedGroupIndex = 0
     
     //@Published var transactionList: [Trans]
     
@@ -64,11 +71,12 @@ class UserViewModel : ObservableObject {
         
         DispatchQueue.main.async {
             self.email = userData.email
-            self.groups = userData.groups
+            self.groups_id = userData.groups
             self.friends = userData.friends
             self.completedTransactions = userData.completedTransactions
         }
         
+        await setUserGroupData()
     }
     
     // Creates user in database
@@ -96,4 +104,15 @@ class UserViewModel : ObservableObject {
         }
     }
     
+    private func setUserGroupData() async -> Void {
+        let data = await DatabaseAPI.getGroupData()
+        
+        if let groupData = data {
+            DispatchQueue.main.async {
+                print("Updated GRoups")
+                self.groups = groupData
+            }
+        }
+         
+    }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var isSplitViewActive : Bool = false
+    @State private var isViewingGroups = false
     
     @State private var isEmptyDisplayFormat = true
     
@@ -22,7 +23,11 @@ struct HomeView: View {
                 if isEmptyDisplayFormat {
                     
                     Button {
-                        print("Create Group")
+                        Task {
+                           await DatabaseAPI.createGroup()
+                           await user.getUserData()
+                            
+                        }
                     } label: {Text("Create Group") }
                         .font(.custom("Avenir", size: 30))
                         .foregroundColor(.white)
@@ -42,21 +47,16 @@ struct HomeView: View {
                         .cornerRadius(1)
                 }
                 else {
-                    
-                    Button(action: {
-                        isSplitViewActive = true
-                    }) {
-                        Text("Split")
-                            .font(.custom("Avenir", size: 30))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 40)
-                            .padding(.vertical, 20)
-                            .background(Color.black)
-                            .cornerRadius(1)
-                        
+                    // Display all groups
+                    ForEach(Array(user.groups.enumerated()), id: \.offset) { index, element in
+                        HStack {
+                            Text(element.group_name)
+                            Text(element.invite_code)
+                        }
                     }
                 }
                 Spacer()
+                
                 BottomToolbar()
                     .padding()
             }
@@ -67,16 +67,17 @@ struct HomeView: View {
                 await user.getUserData()
                 
                 // Check if user groups is empty
-                if let groups = user.groups {
-                    if groups.count > 0 {
-                        isEmptyDisplayFormat = false
-                    }
+                if user.groups.count > 0 {
+                    isEmptyDisplayFormat = false
                 }
             }
         }
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
         }
+//        .navigationDestination(isPresented: $isViewingGroups) {
+//            GroupView()
+//        }
     }
 }
 
