@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+   
     @State private var isSplitViewActive : Bool = false
     @State private var isViewingGroup = false
     
@@ -74,11 +75,8 @@ struct HomeView: View {
                         .background(Color.black)
                         .cornerRadius(15)
                     
+
                 }
-                Spacer()
-                
-                BottomToolbar()
-                    .padding()
             }
         }
         // Load Groups or create one
@@ -94,12 +92,14 @@ struct HomeView: View {
         }
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
+
         }
         .navigationDestination(isPresented: $isViewingGroup) {
             GroupView()
         }
     }
-}
+
+
 
 struct BottomToolbar: View {
     var body: some View {
