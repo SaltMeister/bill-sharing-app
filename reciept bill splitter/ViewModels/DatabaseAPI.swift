@@ -19,7 +19,7 @@ class DatabaseAPI {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         // WAIT FIX THIS ITS FORCE UNWRAP
         return String((0..<length).map{ _ in letters.randomElement()! })
-      }
+    }
     static func grabUserData() async ->  User? {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -78,10 +78,10 @@ class DatabaseAPI {
             }
             
         } catch {
-          print("Error creating group: \(error)")
+            print("Error creating group: \(error)")
         }
     }
-
+    
     static func joinGroup(groupJoinId: String) async -> Void {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -101,7 +101,7 @@ class DatabaseAPI {
                 break
             }
         } catch {
-          print("Error creating group: \(error)")
+            print("Error creating group: \(error)")
         }
         
         let docRef = db.collection("groups").document(groupDocumentId)
@@ -109,7 +109,7 @@ class DatabaseAPI {
         do {
             // Firestore Transaction to ensure both documents are written together or both fail
             let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
-
+                
                 
                 let gDoc: DocumentSnapshot
                 do {
@@ -128,7 +128,7 @@ class DatabaseAPI {
             })
             
         } catch {
-          print("Error creating group: \(error)")
+            print("Error creating group: \(error)")
         }
     }
     
@@ -177,5 +177,47 @@ class DatabaseAPI {
         }
         
         return nil
+    }
+    
+    // Provided a transaction and create data for transaction
+    static func createTransaction(transactionData: Transaction, groupID: String) async -> Void {
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return
+        }
+        
+        let groupRef = db.collection("groups").document(groupID)
+        
+        // Create Transaction Document in collection and relate it to group document
+        do {
+            let groupDocument = try await groupRef.getDocument()
+            
+            if groupDocument.exists {
+                let data = groupDocument.data()
+                
+                let members = data?["members"] as? [String] ?? []
+                
+                // Create transaction document and add group members to item bidders
+                var itemBidderArray: [[String]] = [[]]
+                for i in 0..<transactionData.itemList.count {
+                    itemBidderArray.append(members)
+                }
+                print(itemBidderArray)
+                
+                let transactionDocument = try await db.collection("transactions").addDocument(data: [
+                    "name": "Unnamed Transaction",
+                    "items": transactionData.itemList,
+                    "itemBidders": itemBidderArray,
+                    "group_id": groupID
+                ])
+            }
+            //
+        } catch {
+            print("Error creating group: \(error)")
+        }
+    }
+    
+    static func grabAllTransactionsForGroup() async -> Void {
+        
     }
 }

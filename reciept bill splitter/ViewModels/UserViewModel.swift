@@ -34,6 +34,12 @@ struct Transaction : Codable {
     
 }
 
+struct Item : Codable {
+    var priceInCents: Int
+    var name: String
+    // Todo Add Functions to convert price to string like in HW
+}
+
 struct User : Codable {
     var email: String
     var userName: String
@@ -42,12 +48,7 @@ struct User : Codable {
     var completedTransactions: [String]?
 }
 
-struct Item : Codable {
-    var priceInCents: Int
-    var name: String
-    var biddingMembers: [GroupMember]?
-    // Todo Add Functions to convert price to string like in HW
-}
+
 
 class UserViewModel : ObservableObject {
     @Published var email = ""
