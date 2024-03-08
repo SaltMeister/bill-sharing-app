@@ -109,7 +109,7 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 3) Create groups of users that want to split a bill
 
 # Tasks Done
-1) Diego: Nothing
+1) Diego: Overlay lines on camera.
 2) Simon: Group Creation / Select Individual Groups that user is in
 3) Vedant: 
 4) Josh: Nothing :(
