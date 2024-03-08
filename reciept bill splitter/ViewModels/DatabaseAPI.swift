@@ -88,25 +88,41 @@ class DatabaseAPI {
             return
         }
         
-        let groupRef = db.collection("groups").document(groupJoinId)
+        let groupRef = db.collection("groups").whereField("invite_code", isEqualTo: groupJoinId)
         let userRef = db.collection("users").document(user.uid)
+        
+        var groupDocumentId = ""
+        
+        // Find Document ID from invite code and user Document ID to find group
+        do {
+            let queryResult = try await groupRef.getDocuments()
+            for document in queryResult.documents {
+                groupDocumentId = document.documentID
+                break
+            }
+        } catch {
+          print("Error creating group: \(error)")
+        }
+        
+        let docRef = db.collection("groups").document(groupDocumentId)
         
         do {
             // Firestore Transaction to ensure both documents are written together or both fail
             let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
 
-                let groupDocument: DocumentSnapshot
                 
+                let gDoc: DocumentSnapshot
                 do {
-                    try groupDocument = transaction.getDocument(groupRef)
+                    try gDoc = transaction.getDocument(docRef)
+                    
                 } catch let fetchError as NSError {
                     errorPointer?.pointee = fetchError
                     return nil
                 }
                 // Add user id to group memebers
-                transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: groupRef)
+                transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
                 // Add group id to user groups
-                transaction.updateData(["groups": FieldValue.arrayUnion([groupDocument.documentID])], forDocument: userRef)
+                transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
                 print("Success Join Group Transaction")
                 return nil
             })
@@ -117,6 +133,7 @@ class DatabaseAPI {
     }
     
     
+    // Grabs user group data from database
     static func getGroupData() async -> [Group]? {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")

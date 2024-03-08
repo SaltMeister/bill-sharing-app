@@ -52,6 +52,7 @@ struct Item : Codable {
 class UserViewModel : ObservableObject {
     @Published var email = ""
     @Published var password = ""
+    @Published var user_id = ""
     
     @Published var groups: [Group] = []
     
@@ -74,6 +75,7 @@ class UserViewModel : ObservableObject {
             self.groups_id = userData.groups
             self.friends = userData.friends
             self.completedTransactions = userData.completedTransactions
+            self.user_id = Auth.auth().currentUser?.uid ?? ""
         }
         
         await setUserGroupData()

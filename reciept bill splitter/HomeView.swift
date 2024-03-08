@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var isSplitViewActive : Bool = false
-    @State private var isViewingGroups = false
+    @State private var isViewingGroup = false
     
     @State private var isEmptyDisplayFormat = true
     
@@ -53,6 +53,11 @@ struct HomeView: View {
                             Text(element.group_name)
                             Text(element.invite_code)
                         }
+                        .onTapGesture {
+                            user.selectedGroupIndex = index
+                            isViewingGroup = true
+                            // Open Group View and display group data
+                        }
                     }
                 }
                 Spacer()
@@ -75,9 +80,9 @@ struct HomeView: View {
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
         }
-//        .navigationDestination(isPresented: $isViewingGroups) {
-//            GroupView()
-//        }
+        .navigationDestination(isPresented: $isViewingGroup) {
+            GroupView()
+        }
     }
 }
 
