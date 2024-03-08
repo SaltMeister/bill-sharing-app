@@ -12,7 +12,7 @@ struct HomeView: View {
     @State private var isCameraPresented = false
     @State private var selectedImage: UIImage?
     @State private var isTaken = false // Assuming this flag is set to true when an image is captured
-   @State var uiImage: UIImage? // Assuming you have a UIImage
+     @State var uiImage: UIImage? // Assuming you have a UIImage
 
     var body: some View {
         VStack {
