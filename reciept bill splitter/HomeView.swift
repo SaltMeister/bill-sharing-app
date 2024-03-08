@@ -28,7 +28,7 @@ struct HomeView: View {
                            await user.getUserData()
                             
                         }
-                    } label: {Text("Create Group") }
+                    } label: { Text("Create Group") }
                         .font(.custom("Avenir", size: 30))
                         .foregroundColor(.white)
                         .padding(.horizontal, 40)
@@ -38,7 +38,7 @@ struct HomeView: View {
                     
                     Button {
                         print("Join Group")
-                    } label: {Text("Join Group") }
+                    } label: { Text("Join Group") }
                         .font(.custom("Avenir", size: 30))
                         .foregroundColor(.white)
                         .padding(.horizontal, 40)
@@ -51,7 +51,7 @@ struct HomeView: View {
                     ForEach(Array(user.groups.enumerated()), id: \.offset) { index, element in
                         HStack {
                             Text(element.group_name)
-                            Text(element.invite_code)
+                            Text("Invite Code \(element.invite_code)")
                         }
                         .onTapGesture {
                             user.selectedGroupIndex = index
@@ -59,6 +59,21 @@ struct HomeView: View {
                             // Open Group View and display group data
                         }
                     }
+                    
+                    Button {
+                        Task {
+                           await DatabaseAPI.createGroup()
+                           await user.getUserData()
+                            
+                        }
+                    } label: {Text("Create Group") }
+                        .font(.custom("Avenir", size: 15))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 10)
+                        .background(Color.black)
+                        .cornerRadius(15)
+                    
                 }
                 Spacer()
                 
