@@ -8,105 +8,94 @@
 import SwiftUI
 
 struct HomeView: View {
-    @StateObject var scanReceipt = ScanReceipt()
-    @State private var isCameraPresented = false
-    @State private var selectedImage: UIImage?
-    @State private var isTaken = false // Assuming this flag is set to true when an image is captured
-   @State var uiImage: UIImage? // Assuming you have a UIImage
-
+   
+    @State private var isSplitViewActive : Bool = false
+    @State private var isViewingGroup = false
+    
+    @State private var isEmptyDisplayFormat = true
+    
+    @EnvironmentObject var user: UserViewModel
+    
     var body: some View {
-        VStack {
-            // Your existing UI components
-            if let title = scanReceipt.title {
-                HStack {
-                    Text(title)
-                        .font(.headline) // Make the amount stand out
-                        .foregroundColor(.green) // Consistent color for discounts
-                }
-                .padding() // Add some padding for better spacing
-            }
-            List(scanReceipt.receiptItems) { item in
-                HStack {
-                    Text(item.name)
-                        .font(.body) // Customize the font as needed
-                        .foregroundColor(.primary) // Adjust the text color
-                        .padding(.leading, 10) // Add some padding for better alignment
-
-                    Spacer() // This pushes the name and price to opposite sides of the HStack
-
-                    Text("$\(item.price, specifier: "%.2f")")
-                        .font(.headline) // Customize the font as needed
-                        .foregroundColor(.secondary) // Adjust the text color for the price
-                        .padding(.trailing, 10) // Add some padding for better alignment
-                }
-                .padding(.vertical, 5) // Add vertical padding to each list item for better spacing
-            }
-            .listStyle(PlainListStyle()) // Use a list style that suits your needs
-
-            // For Discounts
-            if let discount = scanReceipt.discount {
-                HStack {
-                    Text("Discounts:")
-                        .font(.headline) // Make the label stand out
-                        .foregroundColor(.green) // Use green to indicate savings
-                    Spacer() // Pushes the text to the left and the amount to the right
-                    Text("$\(discount.price, specifier: "%.2f")")
-                        .font(.headline) // Make the amount stand out
-                        .foregroundColor(.green) // Consistent color for discounts
-                }
-                .padding() // Add some padding for better spacing
-            }
-
-            // For Tax
-            if let tax = scanReceipt.tax {
-                HStack {
-                    Text("Tax:")
-                        .font(.headline) // Make the label stand out
-                        .foregroundColor(.red) // Red can indicate an additional charge
-                    Spacer()
-                    Text("$\(tax.price, specifier: "%.2f")")
-                        .font(.headline) // Make the amount stand out
-                        .foregroundColor(.red) // Consistent color for tax
-                }
-                .padding() // Add some padding for better spacing
-            }
-
-            // For Total
-            if let total = scanReceipt.total {
-                HStack {
-                    Text("Total:")
-                        .font(.headline) // Make the label stand out
-                        .foregroundColor(.blue) // Blue for the final total
-                    Spacer()
-                    Text("$\(total.price, specifier: "%.2f")")
-                        .font(.headline) // Make the amount stand out
-                        .foregroundColor(.blue) // Consistent color for the total
-                }
-                .padding() // Add some padding for better spacing
-            }
-                  
-                  if scanReceipt.isScanning {
-                      ProgressView()
-                          .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                          .scaleEffect(1.5)
-                          .padding()
-                  }
-          
-            Button("Create Transaction") {
-                isCameraPresented = true
-            }
-            .sheet(isPresented: $isCameraPresented) {
-                CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
-            }
-            .onChange(of: isTaken) {
-                    if let imageToScan = selectedImage {
+        NavigationStack{
+            VStack {
+                Spacer()
+                
+                if isEmptyDisplayFormat {
+                    
+                    Button {
                         Task {
-                            await scanReceipt.scanReceipt(image: imageToScan)
+                           await DatabaseAPI.createGroup()
+                           await user.getUserData()
+                            
+                        }
+                    } label: { Text("Create Group") }
+                        .font(.custom("Avenir", size: 30))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 20)
+                        .background(Color.black)
+                        .cornerRadius(1)
+                    
+                    Button {
+                        print("Join Group")
+                    } label: { Text("Join Group") }
+                        .font(.custom("Avenir", size: 30))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 20)
+                        .background(Color.black)
+                        .cornerRadius(1)
+                }
+                else {
+                    // Display all groups
+                    ForEach(Array(user.groups.enumerated()), id: \.offset) { index, element in
+                        HStack {
+                            Text(element.group_name)
+                            Text("Invite Code \(element.invite_code)")
+                        }
+                        .onTapGesture {
+                            user.selectedGroupIndex = index
+                            isViewingGroup = true
+                            // Open Group View and display group data
                         }
                     }
-                    isTaken = false // Reset the flag
+                    
+                    Button {
+                        Task {
+                           await DatabaseAPI.createGroup()
+                           await user.getUserData()
+                            
+                        }
+                    } label: {Text("Create Group") }
+                        .font(.custom("Avenir", size: 15))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 10)
+                        .background(Color.black)
+                        .cornerRadius(15)
+                    
+
                 }
             }
+        }
+        // Load Groups or create one
+        .onAppear {
+            Task {
+                await user.getUserData()
+                
+                // Check if user groups is empty
+                if user.groups.count > 0 {
+                    isEmptyDisplayFormat = false
+                }
+            }
+        }
+        .navigationDestination(isPresented: $isSplitViewActive){
+            SplitView()
+
+        }
+        .navigationDestination(isPresented: $isViewingGroup) {
+            GroupView()
         }
     }
 
