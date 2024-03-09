@@ -24,7 +24,6 @@ struct HomeView: View {
                         Task {
                             await DatabaseAPI.createGroup()
                             await user.getUserData()
-                           
                         }
                         
                     } label: { Text("Create Group") }
@@ -84,23 +83,9 @@ struct HomeView: View {
                 }
             }
         }
-        // Load Groups or create one
-        .onAppear {
-            Task {
-                await user.getUserData()
-                
-                // Check if user groups is empty
-                if user.groups.count > 0 {
-                    isEmptyDisplayFormat = false
-                }
-            }
-        }
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
             
-        }
-        .navigationDestination(isPresented: $isViewingGroup) {
-            GroupView()
         }
         .navigationDestination(isPresented: $isViewingGroup) {
             GroupView()

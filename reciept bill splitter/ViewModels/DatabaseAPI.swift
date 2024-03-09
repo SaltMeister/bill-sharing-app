@@ -203,6 +203,7 @@ class DatabaseAPI {
                 
                 // Create transaction document and add group members to item bidders
                 var itemBidderArray: [[String]] = [[]]
+                
                 for i in 0..<transactionData.itemList.count {
                     itemBidderArray.append(members)
                 }
@@ -221,7 +222,35 @@ class DatabaseAPI {
         }
     }
     
-    static func grabAllTransactionsForGroup() async -> Void {
+    static func grabAllTransactionsForGroup(groupID: String?) async -> Transaction? {
+        guard let groupID = groupID else {
+            print("GroupID Null")
+            return nil
+        }
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return nil
+        }
         
+        var transactionList: [Transaction]?
+        
+        do {
+            let transactionQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
+            
+            let documents = try await transactionQuery.getDocuments()
+            
+            for document in documents.documents {
+                let data = document.data()
+                // Create Transaction
+                let name = data["name"] as? String ?? ""
+                //let items = data["items"] as? [[String : Any]] ?? [[]]
+                let itemBidders = data["itemBidders"]
+            }
+            
+        } catch {
+            print("Error finding User: \(error)")
+        }
+        
+        return nil
     }
 }

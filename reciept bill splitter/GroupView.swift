@@ -9,7 +9,8 @@ import SwiftUI
 
 struct GroupView: View {
     @State var selectedGroup: Group?
-
+    @State var existingTransactions: Transaction?
+    
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
     var body: some View {
@@ -48,6 +49,10 @@ struct GroupView: View {
            let newTransaction = Transaction(itemList: transactionItems, name: "New Transaction from Receipt")
             await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup?.groupID)
        }
+    private func loadTransactions() async {
+        
+        
+    }
 }
 
 struct GroupView_Previews: PreviewProvider {
