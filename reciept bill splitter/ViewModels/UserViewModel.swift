@@ -48,16 +48,6 @@ struct Item : Codable {
     // Todo Add Functions to convert price to string like in HW
 }
 
-struct User : Codable {
-    var email: String
-    var userName: String
-    var groups: [String]?
-    var friends: [String]?
-    var completedTransactions: [String]?
-}
-
-
-
 class UserViewModel : ObservableObject {
     @Published var email = ""
     @Published var password = ""

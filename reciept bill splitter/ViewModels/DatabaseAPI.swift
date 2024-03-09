@@ -20,7 +20,7 @@ class DatabaseAPI {
         // WAIT FIX THIS ITS FORCE UNWRAP
         return String((0..<length).map{ _ in letters.randomElement()! })
     }
-    static func grabUserData() async ->  User? {
+    static func grabUserData() async -> User? {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return nil
@@ -179,11 +179,16 @@ class DatabaseAPI {
     }
     
     // Provided a transaction and create data for transaction
-    static func createTransaction(transactionData: Transaction, groupID: String) async -> Void {
+    static func createTransaction(transactionData: Transaction, groupID: String?) async -> Void {
+        guard let groupID = groupID else {
+            print("GroupID Null")
+            return
+        }
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return
         }
+        
         
         let groupRef = db.collection("groups").document(groupID)
         
