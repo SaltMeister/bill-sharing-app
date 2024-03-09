@@ -15,12 +15,16 @@ struct Friend : Codable {
 }
 
 struct GroupMember : Codable {
-    var username: String
+    var id: String
 }
 
 struct Group : Codable {
-    var groupName: String
+    var groupID: String
+    var group_name: String
     var members: [GroupMember]
+    var invite_code: String
+    var owner_id: String
+    var transactions: [String] // Fix Later
     //   var
 }
 
@@ -28,6 +32,14 @@ struct Transaction : Codable {
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
     var name: String
     
+}
+
+struct User : Codable {
+    var email: String
+    var userName: String
+    var groups: [String]?
+    var friends: [String]?
+    var completedTransactions: [String]?
 }
 
 struct Item : Codable {
@@ -40,12 +52,34 @@ struct Item : Codable {
 class UserViewModel : ObservableObject {
     @Published var email = ""
     @Published var password = ""
+    @Published var user_id = ""
     
-    @Published var isLoggedIn = false
+    @Published var groups: [Group] = []
     
-    @Published var friendList: [Friend]?
-    @Published var groupList: [Group]?
+    @Published var groups_id: [String]?
+    @Published var friends: [String]?
+    @Published var completedTransactions: [String]?
+    
+    @Published var selectedGroupIndex = 0
+    
     //@Published var transactionList: [Trans]
+    
+    
+    func getUserData() async -> Void {
+        let userData = await DatabaseAPI.grabUserData()
+        
+        guard let userData = userData else { return }
+        
+        DispatchQueue.main.async {
+            self.email = userData.email
+            self.groups_id = userData.groups
+            self.friends = userData.friends
+            self.completedTransactions = userData.completedTransactions
+            self.user_id = Auth.auth().currentUser?.uid ?? ""
+        }
+        
+        await setUserGroupData()
+    }
     
     // Creates user in database
     func createUserInDB() async -> Void {
@@ -72,4 +106,15 @@ class UserViewModel : ObservableObject {
         }
     }
     
+    private func setUserGroupData() async -> Void {
+        let data = await DatabaseAPI.getGroupData()
+        
+        if let groupData = data {
+            DispatchQueue.main.async {
+                print("Updated GRoups")
+                self.groups = groupData
+            }
+        }
+         
+    }
 }

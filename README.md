@@ -78,7 +78,7 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 3) Create groups of users that want to split a bill
 
 # Tasks Done
-1) Diego: 
+1) Diego: Perspective adjustment / Discount Filter 
 2) Simon: User Authentication / Signup, Write / Read to Firestore DB
 3) Vedant: 
 4) Josh: 
@@ -86,12 +86,42 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 # Goals by next week
 1) Allow users to invite members into groups
 2) Allow users to create groups, and transactions and the associated changes in the database.
-3)
+3) Set up payment transactions
 4)
 
 # Issues encountered
   1) spent a bit too long trying to make a firebase function async, when should have done a simple fix and move on with progress.
   2) Merge conflicts with Xcode and misaligned file references.
+  
+# Git Commits
+Simon:
+
+
+
+# Sprint Plan Meeting 4 3/07/24
+
+# Trello: 
+https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E9/ecs-189e-bill-sharing-app
+
+# App features
+1) Send money to other users, integrated into bank account
+2) User can take picture of receipt -> user can upload pic of receipt, display list of items purchased, different users can choose to pay for whatever items and be able to split individual items between users
+3) Create groups of users that want to split a bill
+
+# Tasks Done
+1) Diego: 
+2) Simon: Group Creation / Select Individual Groups that user is in
+3) Vedant: 
+4) Josh: 
+
+# Goals by next week
+1) Allow users to invite members into groups
+2) Allow creating transactions and member selection of bills.
+3) Set up payment transactions
+4)
+
+# Issues encountered
+  1) Handling matching struct data with database query data
   
 # Git Commits
 Simon:
