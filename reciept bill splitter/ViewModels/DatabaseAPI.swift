@@ -154,16 +154,17 @@ class DatabaseAPI {
                 
                 let groupID = document.documentID
                 let group_name = data["group_name"] as? String ?? ""
-                let members = data["members"] as? [String] ?? []
+                let members = data["members"] as? [Int:String] ?? [:]
                 
                 let invite_code = data["invite_code"] as? String ?? ""
                 let owner_id = data["owner_id"] as? String ?? ""
                 // Add Transaction Data in future
                 
                 var groupMemberList: [GroupMember] = []
-                for member in members {
+                for (index, member) in members {
                     groupMemberList.append(GroupMember(id: member))
                 }
+                
                 let newGroup = Group(groupID: groupID, group_name: group_name, members: groupMemberList, invite_code: invite_code, owner_id: owner_id, transactions: [])
                 
                 foundGroups.append(newGroup)
@@ -200,23 +201,23 @@ class DatabaseAPI {
                 let data = groupDocument.data()
                 
                 let members = data?["members"] as? [String] ?? []
-                
+                print("MEMBER LIST", members)
                 // Create transaction document and add group members to item bidders
-                var itemBidderArray: [[String]] = [[]]
+                var itemBidderDict: [Int: [String]] = [:]
                 
-                for _ in 0..<transactionData.itemList.count {
-                    itemBidderArray.append(members)
+                for i in 0..<transactionData.itemList.count {
+                    itemBidderDict.updateValue(members, forKey: i)
                 }
-                print(itemBidderArray)
+                print("BIDDER ID FOR ITEMS", itemBidderDict)
                 
-                let transactionDocument = try await db.collection("transactions").addDocument(data: [
+                try await db.collection("transactions").addDocument(data: [
                     "name": "Unnamed Transaction",
                     "items": transactionData.itemList,
-                    "itemBidders": itemBidderArray,
+                    "itemBidders": itemBidderDict,
                     "group_id": groupID
                 ])
             }
-            //
+            
         } catch {
             print("Error creating group: \(error)")
         }
@@ -252,7 +253,7 @@ class DatabaseAPI {
                     newItemList.append(newItem)
                 }
                 
-                let itemBidders = data["itemBidders"] as? [[String]] ?? [[]]
+                let itemBidders = data["itemBidders"] as? [Int:[String]] ?? [:]
                 
                 let newTransaction = Transaction(itemList: newItemList, itemBidders: itemBidders, name: name)
                 
