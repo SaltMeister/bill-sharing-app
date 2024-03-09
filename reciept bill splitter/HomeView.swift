@@ -24,6 +24,7 @@ struct HomeView: View {
                         Task {
                             await DatabaseAPI.createGroup()
                             await user.getUserData()
+                            isEmptyDisplayFormat = false
                         }
                         
                     } label: { Text("Create Group") }
@@ -70,6 +71,8 @@ struct HomeView: View {
                         .background(Color.black)
                         .cornerRadius(15)
                 }
+                Spacer()
+                BottomToolbar()
             }
         }
         // Load Groups or create one

@@ -204,7 +204,7 @@ class DatabaseAPI {
                 // Create transaction document and add group members to item bidders
                 var itemBidderArray: [[String]] = [[]]
                 
-                for i in 0..<transactionData.itemList.count {
+                for _ in 0..<transactionData.itemList.count {
                     itemBidderArray.append(members)
                 }
                 print(itemBidderArray)
@@ -222,7 +222,8 @@ class DatabaseAPI {
         }
     }
     
-    static func grabAllTransactionsForGroup(groupID: String?) async -> Transaction? {
+    // Create Transaction Struct List and return
+    static func grabAllTransactionsForGroup(groupID: String?) async -> [Transaction]? {
         guard let groupID = groupID else {
             print("GroupID Null")
             return nil
@@ -232,7 +233,7 @@ class DatabaseAPI {
             return nil
         }
         
-        var transactionList: [Transaction]?
+        var transactionList: [Transaction] = []
         
         do {
             let transactionQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
@@ -243,10 +244,22 @@ class DatabaseAPI {
                 let data = document.data()
                 // Create Transaction
                 let name = data["name"] as? String ?? ""
-                //let items = data["items"] as? [[String : Any]] ?? [[]]
-                let itemBidders = data["itemBidders"]
+                let items = data["items"] as? [[String : Any]] ?? [[:]]
+                
+                var newItemList: [Item] = []
+                for item in items {
+                    let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
+                    newItemList.append(newItem)
+                }
+                
+                let itemBidders = data["itemBidders"] as? [[String]] ?? [[]]
+                
+                let newTransaction = Transaction(itemList: newItemList, itemBidders: itemBidders, name: name)
+                
+                transactionList.append(newTransaction)
             }
             
+            return transactionList
         } catch {
             print("Error finding User: \(error)")
         }
