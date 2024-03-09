@@ -34,6 +34,14 @@ struct Transaction : Codable {
     
 }
 
+struct User : Codable {
+    var email: String
+    var userName: String
+    var groups: [String]?
+    var friends: [String]?
+    var completedTransactions: [String]?
+}
+
 struct Item : Codable {
     var priceInCents: Int
     var name: String

@@ -110,7 +110,6 @@ class DatabaseAPI {
             // Firestore Transaction to ensure both documents are written together or both fail
             let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
                 
-                
                 let gDoc: DocumentSnapshot
                 do {
                     try gDoc = transaction.getDocument(docRef)

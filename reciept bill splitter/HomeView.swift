@@ -19,15 +19,14 @@ struct HomeView: View {
         NavigationStack{
             VStack {
                 Spacer()
-                
                 if isEmptyDisplayFormat {
-                    
                     Button {
                         Task {
-                           await DatabaseAPI.createGroup()
-                           await user.getUserData()
-                            
+                            await DatabaseAPI.createGroup()
+                            await user.getUserData()
+                           
                         }
+                        
                     } label: { Text("Create Group") }
                         .font(.custom("Avenir", size: 30))
                         .foregroundColor(.white)
@@ -59,12 +58,10 @@ struct HomeView: View {
                             // Open Group View and display group data
                         }
                     }
-                    
                     Button {
                         Task {
-                           await DatabaseAPI.createGroup()
-                           await user.getUserData()
-                            
+                            await DatabaseAPI.createGroup()
+                            await user.getUserData()
                         }
                     } label: {Text("Create Group") }
                         .font(.custom("Avenir", size: 15))
@@ -73,12 +70,18 @@ struct HomeView: View {
                         .padding(.vertical, 10)
                         .background(Color.black)
                         .cornerRadius(15)
-                    
                 }
-                Spacer()
+            }
+        }
+        // Load Groups or create one
+        .onAppear {
+            Task {
+                await user.getUserData()
                 
-                BottomToolbar()
-                    .padding()
+                // Check if user groups is empty
+                if user.groups.count > 0 {
+                    isEmptyDisplayFormat = false
+                }
             }
         }
         // Load Groups or create one
@@ -94,30 +97,16 @@ struct HomeView: View {
         }
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
+            
+        }
+        .navigationDestination(isPresented: $isViewingGroup) {
+            GroupView()
         }
         .navigationDestination(isPresented: $isViewingGroup) {
             GroupView()
         }
     }
 }
-
-struct BottomToolbar: View {
-    var body: some View {
-        NavigationStack{
-            HStack(spacing: 0.2) {
-                ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
-                ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
-                ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-                ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
-            }
-            .frame(height: 50)
-            .background(Color(UIColor.systemBackground))
-            .cornerRadius(10)
-            .shadow(radius: 3)
-        }
-    }
-}
-
 struct ToolbarItem: View {
     let iconName: String
     let text: String
@@ -132,6 +121,22 @@ struct ToolbarItem: View {
                     .font(.caption)
             }
             .padding(.horizontal, 20)
+        }
+    }
+}
+struct BottomToolbar: View {
+    var body: some View {
+        NavigationStack{
+            HStack(spacing: 0.2) {
+                ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
+                ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
+                ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
+                ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
+            }
+            .frame(height: 50)
+            .background(Color(UIColor.systemBackground))
+            .cornerRadius(10)
+            .shadow(radius: 3)
         }
     }
 }

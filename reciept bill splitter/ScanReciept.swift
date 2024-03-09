@@ -30,9 +30,13 @@ class ScanReceipt: ObservableObject {
     @Published  var receiptItems: [ReceiptItem] = []
     @Published  var total: ReceiptItem?
     @Published  var tax: ReceiptItem?
+    @Published  var discount: ReceiptItem?
     @Published  var isScanning = false
+    @Published var title: String?
     private var finalTax: ReceiptItem?
     private var finalTotal: ReceiptItem?
+    private var finalDiscount: ReceiptItem?
+    private var titleTemp: String?
     private var finalItems: [ReceiptItem] = []
     private var receiptItemsTemp: [ReceiptItem] = []
     @Published var uiImage: UIImage?
@@ -45,19 +49,24 @@ class ScanReceipt: ObservableObject {
             self.tax = nil
             finalTax = nil
             finalTotal = nil
+            finalDiscount = nil
             finalItems = []
             receiptItemsTemp = []
             uiImage = nil
+            titleTemp = nil
         }
         print("here")
         await runModel(image: image)
         
         Task { @MainActor in
+            self.discount = finalDiscount
             self.tax = finalTax
             self.receiptItems = finalItems
             self.total = finalTotal
             self.isScanning = false
             self.uiImage = tempimage
+            self.title = titleTemp
+            
         }
     }
     
@@ -91,28 +100,71 @@ class ScanReceipt: ObservableObject {
         return textRequest
     }
  
-
     private func splitPricesAndItems2(_ observations: [VNRecognizedTextObservation], in imageSize: CGSize) {
         var receiptItems: [ReceiptItem] = []
+        var priceMaxXValues: [CGFloat] = []
+        var priceWidths: [CGFloat] = []
+        var potentialTitleObservations: [VNRecognizedTextObservation] = []
+
+        // Collect potential title observations and price information
+        for observation in observations.prefix(5) {
+            guard let recognizedText = observation.topCandidates(1).first else { continue }
+            print(recognizedText.string)
+            if !isPriceLine(recognizedText.string) {
+                potentialTitleObservations.append(observation)
+            }
+        }
+        
+        for observation in observations {
+            guard let recognizedText = observation.topCandidates(1).first, let priceFrame = isPriceLine(recognizedText.string) ? convertFromNormalizedRect(observation.boundingBox, imageSize: imageSize) : nil else { continue }
+            priceMaxXValues.append(priceFrame.maxX)
+            priceWidths.append(priceFrame.width)
+        }
+
+        // Identify potential title based on height
+        let titleObservation = potentialTitleObservations.max(by: { convertFromNormalizedRect($0.boundingBox, imageSize: imageSize).height < convertFromNormalizedRect($1.boundingBox, imageSize: imageSize).height })
+
+        // Calculate average height excluding the title observation
+        let nonTitleObservations = potentialTitleObservations.filter { $0 != titleObservation }
+        let averageHeight = nonTitleObservations.map { convertFromNormalizedRect($0.boundingBox, imageSize: imageSize).height }.reduce(0, +) / CGFloat(nonTitleObservations.count)
+
+        // Validate and set title
+        if let titleObservation = titleObservation, convertFromNormalizedRect(titleObservation.boundingBox, imageSize: imageSize).height >= 2 * averageHeight {
+            titleTemp = titleObservation.topCandidates(1).first?.string
+        }
+
+
+        // Find the maximum maxX value and calculate the average width
+        let maxMaxX = priceMaxXValues.max() ?? 0
+        let averageWidth = priceWidths.reduce(0, +) / CGFloat(priceWidths.count)
+
+        // Adjust the maximum maxX by subtracting the average width to set a threshold
+        let thresholdMaxX = maxMaxX - (averageWidth)
 
         for observation in observations {
             guard let recognizedText = observation.topCandidates(1).first else { continue }
             let text = recognizedText.string
             print(text)
+            
             // Check if the text represents a price
             if isPriceLine(text) {
-                print(text)
                 let priceFrame = convertFromNormalizedRect(observation.boundingBox, imageSize: imageSize)
-                let lineHeight = priceFrame.height * 0.5 // Use the price's bounding box height as the line height
                 
+                // Skip prices to the left of the threshold
+                if priceFrame.maxX < thresholdMaxX {
+                    continue
+                }
+
+                let lineHeight = priceFrame.height * 0.4 // Adjust the line height if necessary
+
                 // Find items to the left of the price within the same line height
                 var lineItems: [String] = []
                 for otherObservation in observations {
                     guard let otherText = otherObservation.topCandidates(1).first?.string,
                           otherObservation != observation else { continue }
-                    
+
                     let otherFrame = convertFromNormalizedRect(otherObservation.boundingBox, imageSize: imageSize)
-                    
+
                     // Check if otherText is on the same line as the price
                     if abs(otherFrame.midY - priceFrame.midY) < lineHeight {
                         // Check if otherText is to the left of the price
@@ -121,7 +173,7 @@ class ScanReceipt: ObservableObject {
                         }
                     }
                 }
-                
+
                 let itemName = lineItems.joined(separator: " ")
                 if let price = extractPrice(from: text) {
                     let receiptItem = ReceiptItem(id: UUID(), name: itemName, price: price)
@@ -129,11 +181,13 @@ class ScanReceipt: ObservableObject {
                 }
             }
         }
+        
         for item in receiptItems {
             print("Item: \(item.name), Price: \(item.price)")
         }
         extractTaxAndTotal(from: receiptItems)
     }
+
 
     func removePaymentMethods(from items: [ReceiptItem]) -> [ReceiptItem] {
         let paymentKeywords = ["credit", "debit", "cash", "card", "change", "visa", "amex", "mastercard", "discover", "american express", "subtotal"]
@@ -147,36 +201,26 @@ class ScanReceipt: ObservableObject {
     func extractTaxAndTotal(from items: [ReceiptItem]){
         let taxItems = items.filter { isTaxLine($0.name) }
         let itemsWithoutTax = items.filter { !isTaxLine($0.name) }
+        let discountItems = itemsWithoutTax.filter { $0.price < 0 }
+        let itemsWithoutDiscountItems = itemsWithoutTax.filter { $0.price > 0 }
+        self.finalDiscount = calculateTotalDiscounts(from: discountItems)
         self.finalTax = extractTax(taxItems)
         
-        self.receiptItemsTemp = itemsWithoutTax
+        self.finalDiscount = calculateTotalDiscounts(from: discountItems)
+        self.receiptItemsTemp = itemsWithoutDiscountItems
         self.receiptItemsTemp = removePaymentMethods(from: self.receiptItemsTemp)
         (finalItems, finalTotal) = extractTotal(self.receiptItemsTemp)
-    }
-    func isPriceLine2(_ text: String) -> Bool {
-        // Regular expression pattern to match strictly price lines
-        // This includes an optional dollar sign, followed by digits, a decimal point, and two digits
-        // It may also allow for a single trailing character which could be an artifact from OCR
-        let pattern = "^\\$?[0-9]+\\.\\s?[0-9]{2}[A-Za-z]?$"
-
-        // Attempt to create a regular expression object with the pattern
-        guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
-
-        // Define the range of the text to check
-        let range = NSRange(text.startIndex..<text.endIndex, in: text)
-
-        // Search for the first match of the pattern within the text
-        let match = regex.firstMatch(in: text, options: [], range: range)
-
-        // If a match is found and it covers the entire range of the text, it's considered a price line
-        return match != nil && match?.range == range
     }
 
     func extractTax(_ taxItems: [ReceiptItem]) -> ReceiptItem? {
         let totalTaxAmount = taxItems.reduce(0) { $0 + $1.price }
         return taxItems.isEmpty ? nil : ReceiptItem(id: UUID(), name: "Total Tax", price: totalTaxAmount)
     }
-    
+    func calculateTotalDiscounts(from items: [ReceiptItem]) -> ReceiptItem? {
+        // Filter out negative prices and sum them up
+        let totalDiscount = items.reduce(0) { $0 + $1.price }
+        return items.isEmpty ? nil : ReceiptItem(id: UUID(), name: "Total Discounts", price: totalDiscount)
+    }
     func extractTotal(_ items: [ReceiptItem]) -> (items: [ReceiptItem], finalTotal: ReceiptItem?) {
         var finalItems = [ReceiptItem]()
         var potentialTotals = [ReceiptItem]()
@@ -195,16 +239,28 @@ class ScanReceipt: ObservableObject {
     }
     
     func extractPrice(from text: String) -> Double? {
-        let pattern = "\\$?[0-9]+\\.\\s?[0-9]{1,2}[A-Za-z]?"
+        // Include an optional minus sign either at the start or the end of the pattern
+        let pattern = "-?\\$?\\s?[0-9]+(\\.\\s?[0-9]{1,2})?\\s?-?"
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(text.startIndex..<text.endIndex, in: text)
         if let match = regex?.firstMatch(in: text, options: [], range: range) {
-            let matchedString = (text as NSString).substring(with: match.range)
-            let filteredPriceText = matchedString.filter { "0123456789.".contains($0) }
+            var matchedString = (text as NSString).substring(with: match.range)
+            
+            // Check if the minus sign is at the end and move it to the start
+            if matchedString.hasSuffix("-") {
+                matchedString.removeLast() // Remove the trailing minus
+                matchedString.insert("-", at: matchedString.startIndex) // Insert it at the start
+            }
+            
+            // Ensure the matched string is filtered correctly to remove any non-numeric characters except the minus sign
+            let filteredPriceText = matchedString.filter { "-0123456789.".contains($0) }
             return Double(filteredPriceText)
         }
         return nil
     }
+
+ 
+
     
     func isTotalLine(_ text: String) -> Bool {
         let lowercasedText = text.lowercased()
