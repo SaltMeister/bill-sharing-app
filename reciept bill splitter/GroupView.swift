@@ -15,9 +15,7 @@ struct GroupView: View {
     @EnvironmentObject var user: UserViewModel
     var body: some View {
         VStack {
-            List(scanReceipt.receiptItems) { item in
-                Text("\(item.name): $\(item.price, specifier: "%.2f")")
-            }
+          
             Text(selectedGroup?.group_name ?? "None")
             if (selectedGroup?.owner_id == user.user_id) {
                 Button {
@@ -54,10 +52,7 @@ struct GroupView: View {
     }
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
-        print("scanneditmes")
-        print(scannedItems)
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
-        
         let newTransaction = Transaction(itemList: transactionItems, itemBidders: [:], name: "New Transaction from Receipt")
         await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup?.groupID)
        }
