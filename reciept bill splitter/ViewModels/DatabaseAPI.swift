@@ -199,20 +199,23 @@ class DatabaseAPI {
             
             if groupDocument.exists {
                 let data = groupDocument.data()
-                
                 let members = data?["members"] as? [String] ?? []
-                print("MEMBER LIST", members)
+                
                 // Create transaction document and add group members to item bidders
-                var itemBidderDict: [Int: [String]] = [:]
+                var itemBidderDict: [String: [String]] = [:]
+                var itemList = [[String : Any]]()
                 
                 for i in 0..<transactionData.itemList.count {
-                    itemBidderDict.updateValue(members, forKey: i)
+                    itemBidderDict.updateValue(members, forKey: String(i))
+                    itemList.append([
+                        "priceInCents" : transactionData.itemList[i].priceInCents,
+                        "name": transactionData.itemList[i].name
+                    ])
                 }
-                print("BIDDER ID FOR ITEMS", itemBidderDict)
-                
+            
                 try await db.collection("transactions").addDocument(data: [
-                    "name": "Unnamed Transaction",
-                    "items": transactionData.itemList,
+                    "name": transactionData.name,
+                    "items": itemList,
                     "itemBidders": itemBidderDict,
                     "group_id": groupID
                 ])
