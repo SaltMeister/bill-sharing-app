@@ -28,7 +28,7 @@ struct GroupView: View {
 
             
             Spacer()
-            BottomToolbar()
+            //BottomToolbar()
                 .padding()
         }
         .onAppear {

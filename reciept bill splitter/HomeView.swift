@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct HomeView: View {
-   
+    
     @State private var isSplitViewActive : Bool = false
     @State private var isViewingGroup = false
-    
+    @State private var inviteCode = ""
     @State private var isEmptyDisplayFormat = true
     
     @EnvironmentObject var user: UserViewModel
@@ -25,8 +25,8 @@ struct HomeView: View {
                     
                     Button {
                         Task {
-                           await DatabaseAPI.createGroup()
-                           await user.getUserData()
+                            await DatabaseAPI.createGroup()
+                            await user.getUserData()
                             
                         }
                     } label: { Text("Create Group") }
@@ -37,7 +37,7 @@ struct HomeView: View {
                         .background(Color.black)
                         .cornerRadius(1)
                     
-                    Button {
+                    /*Button {
                         print("Join Group")
                     } label: { Text("Join Group") }
                         .font(.custom("Avenir", size: 30))
@@ -45,7 +45,25 @@ struct HomeView: View {
                         .padding(.horizontal, 40)
                         .padding(.vertical, 20)
                         .background(Color.black)
-                        .cornerRadius(1)
+                        .cornerRadius(1)*/
+                    /*Button {
+                        Task {
+                            // Prompt user for invite code
+                            let inviteCode = "grTAMp" // Replace with actual invite code
+                            
+                            // Call the joinGroup method with the invite code
+                            await DatabaseAPI.joinGroup(groupJoinId: inviteCode)
+                            
+                            // Refresh user data after joining the group
+                            await user.getUserData()
+                        }
+                    } label: { Text("Join Group") }
+                        .font(.custom("Avenir", size: 30))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 20)
+                        .background(Color.black)
+                        .cornerRadius(1)*/
                 }
                 else {
                     // Display all groups
@@ -63,8 +81,8 @@ struct HomeView: View {
                     
                     Button {
                         Task {
-                           await DatabaseAPI.createGroup()
-                           await user.getUserData()
+                            await DatabaseAPI.createGroup()
+                            await user.getUserData()
                             
                         }
                     } label: {Text("Create Group") }
@@ -75,7 +93,34 @@ struct HomeView: View {
                         .background(Color.black)
                         .cornerRadius(15)
                     
-
+                    TextField("Enter Invite Code", text: $inviteCode)
+                                       .padding()
+                                       .background(Color(UIColor.systemBackground))
+                                       .cornerRadius(10)
+                                       .padding(.horizontal)
+                                   
+                                   Button {
+                                       Task {
+                                           if !inviteCode.isEmpty {
+                                               // Call the joinGroup method with the invite code
+                                               await DatabaseAPI.joinGroup(groupJoinId: inviteCode)
+                                               
+                                               // Refresh user data after joining the group
+                                               await user.getUserData()
+                                           } else {
+                                               // Handle case where invite code is empty
+                                               print("Invite code is empty")
+                                           }
+                                       }
+                                   } label: { Text("Join Group") }
+                                       .font(.custom("Avenir", size: 30))
+                                       .foregroundColor(.white)
+                                       .padding(.horizontal, 40)
+                                       .padding(.vertical, 20)
+                                       .background(Color.black)
+                                       .cornerRadius(1)
+                    
+                    
                 }
             }
         }
@@ -92,46 +137,47 @@ struct HomeView: View {
         }
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
-
+            
         }
         .navigationDestination(isPresented: $isViewingGroup) {
             GroupView()
         }
     }
-
-
-
-struct BottomToolbar: View {
-    var body: some View {
-        NavigationStack{
-            HStack(spacing: 0.2) {
-                ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
-                ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
-                ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-                ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
+    
+    
+    
+    struct BottomToolbar: View {
+        var body: some View {
+            NavigationStack{
+                HStack(spacing: 0.2) {
+                    ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
+                    ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
+                    ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
+                    ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
+                }
+                .frame(height: 50)
+                .background(Color(UIColor.systemBackground))
+                .cornerRadius(10)
+                .shadow(radius: 3)
             }
-            .frame(height: 50)
-            .background(Color(UIColor.systemBackground))
-            .cornerRadius(10)
-            .shadow(radius: 3)
         }
     }
-}
-
-struct ToolbarItem: View {
-    let iconName: String
-    let text: String
-    let destination: AnyView
     
-    var body: some View {
-        NavigationLink(destination: destination) {
-            VStack {
-                Image(systemName: iconName)
-                    .font(.system(size: 24))
-                Text(text)
-                    .font(.caption)
+    struct ToolbarItem: View {
+        let iconName: String
+        let text: String
+        let destination: AnyView
+        
+        var body: some View {
+            NavigationLink(destination: destination) {
+                VStack {
+                    Image(systemName: iconName)
+                        .font(.system(size: 24))
+                    Text(text)
+                        .font(.caption)
+                }
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20)
         }
     }
 }
