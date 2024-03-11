@@ -81,11 +81,11 @@ class DatabaseAPI {
           print("Error creating group: \(error)")
         }
     }
-
-    static func joinGroup(groupJoinId: String) async -> Void {
+    
+    static func joinGroup(groupJoinId: String) async -> Result<Void, Error> {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
-            return
+            return .failure(NSError(domain: "UserDoesNotExist", code: 0, userInfo: nil))
         }
         
         let groupRef = db.collection("groups").whereField("invite_code", isEqualTo: groupJoinId)
@@ -93,15 +93,18 @@ class DatabaseAPI {
         
         var groupDocumentId = ""
         
-        // Find Document ID from invite code and user Document ID to find group
         do {
             let queryResult = try await groupRef.getDocuments()
-            for document in queryResult.documents {
-                groupDocumentId = document.documentID
-                break
+            guard let document = queryResult.documents.first else {
+                // Handle case where no group matches the invite code
+                print("No group found with the provided invite code")
+                return .failure(NSError(domain: "GroupNotFound", code: 0, userInfo: nil))
             }
+            groupDocumentId = document.documentID
         } catch {
-          print("Error creating group: \(error)")
+            // Handle error while querying groups
+            print("Error querying groups: \(error)")
+            return .failure(error)
         }
         
         let docRef = db.collection("groups").document(groupDocumentId)
@@ -109,17 +112,16 @@ class DatabaseAPI {
         do {
             // Firestore Transaction to ensure both documents are written together or both fail
             let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
-
                 
                 let gDoc: DocumentSnapshot
                 do {
                     try gDoc = transaction.getDocument(docRef)
-                    
                 } catch let fetchError as NSError {
                     errorPointer?.pointee = fetchError
                     return nil
                 }
-                // Add user id to group memebers
+                
+                // Add user id to group members
                 transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
                 // Add group id to user groups
                 transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
@@ -127,10 +129,14 @@ class DatabaseAPI {
                 return nil
             })
             
+            return .success(())
         } catch {
-          print("Error creating group: \(error)")
+            // Handle error during transaction
+            print("Error joining group: \(error)")
+            return .failure(error)
         }
     }
+
     
     
     // Grabs user group data from database
