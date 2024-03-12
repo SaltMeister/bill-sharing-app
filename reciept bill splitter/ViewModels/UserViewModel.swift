@@ -30,6 +30,7 @@ struct Group : Codable {
 
 struct Transaction : Codable {
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
+    var itemBidders: [String:[String]]
     var name: String
     
 }
@@ -45,7 +46,6 @@ struct User : Codable {
 struct Item : Codable {
     var priceInCents: Int
     var name: String
-    var biddingMembers: [GroupMember]?
     // Todo Add Functions to convert price to string like in HW
 }
 
@@ -64,7 +64,7 @@ class UserViewModel : ObservableObject {
     
     //@Published var transactionList: [Trans]
     
-    
+    // Initialize Env Variable Data
     func getUserData() async -> Void {
         let userData = await DatabaseAPI.grabUserData()
         
@@ -106,6 +106,8 @@ class UserViewModel : ObservableObject {
         }
     }
     
+    
+    // Set Env Variable Group Data for use called in GetUserData()
     private func setUserGroupData() async -> Void {
         let data = await DatabaseAPI.getGroupData()
         

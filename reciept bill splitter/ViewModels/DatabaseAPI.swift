@@ -19,8 +19,8 @@ class DatabaseAPI {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         // WAIT FIX THIS ITS FORCE UNWRAP
         return String((0..<length).map{ _ in letters.randomElement()! })
-      }
-    static func grabUserData() async ->  User? {
+    }
+    static func grabUserData() async -> User? {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return nil
@@ -78,10 +78,9 @@ class DatabaseAPI {
             }
             
         } catch {
-          print("Error creating group: \(error)")
+            print("Error creating group: \(error)")
         }
     }
-    
     static func joinGroup(groupJoinId: String) async -> Result<Void, Error> {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -161,16 +160,17 @@ class DatabaseAPI {
                 
                 let groupID = document.documentID
                 let group_name = data["group_name"] as? String ?? ""
-                let members = data["members"] as? [String] ?? []
+                let members = data["members"] as? [Int:String] ?? [:]
                 
                 let invite_code = data["invite_code"] as? String ?? ""
                 let owner_id = data["owner_id"] as? String ?? ""
                 // Add Transaction Data in future
                 
                 var groupMemberList: [GroupMember] = []
-                for member in members {
+                for (index, member) in members {
                     groupMemberList.append(GroupMember(id: member))
                 }
+                
                 let newGroup = Group(groupID: groupID, group_name: group_name, members: groupMemberList, invite_code: invite_code, owner_id: owner_id, transactions: [])
                 
                 foundGroups.append(newGroup)
@@ -178,6 +178,98 @@ class DatabaseAPI {
             print(foundGroups)
             return foundGroups
             
+        } catch {
+            print("Error finding User: \(error)")
+        }
+        
+        return nil
+    }
+    
+    // Provided a transaction and create data for transaction
+    static func createTransaction(transactionData: Transaction, groupID: String?) async -> Void {
+        guard let groupID = groupID else {
+            print("GroupID Null")
+            return
+        }
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return
+        }
+        
+        
+        let groupRef = db.collection("groups").document(groupID)
+        
+        // Create Transaction Document in collection and relate it to group document
+        do {
+            let groupDocument = try await groupRef.getDocument()
+            
+            if groupDocument.exists {
+                let data = groupDocument.data()
+                let members = data?["members"] as? [String] ?? []
+                
+                // Create transaction document and add group members to item bidders
+                var itemBidderDict: [String: [String]] = [:]
+                var itemList = [[String : Any]]()
+                
+                for i in 0..<transactionData.itemList.count {
+                    itemBidderDict.updateValue(members, forKey: String(i))
+                    itemList.append([
+                        "priceInCents" : transactionData.itemList[i].priceInCents,
+                        "name": transactionData.itemList[i].name
+                    ])
+                }
+            
+                try await db.collection("transactions").addDocument(data: [
+                    "name": transactionData.name,
+                    "items": itemList,
+                    "itemBidders": itemBidderDict,
+                    "group_id": groupID
+                ])
+            }
+            
+        } catch {
+            print("Error creating group: \(error)")
+        }
+    }
+    
+    // Create Transaction Struct List and return
+    static func grabAllTransactionsForGroup(groupID: String?) async -> [Transaction]? {
+        guard let groupID = groupID else {
+            print("GroupID Null")
+            return nil
+        }
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return nil
+        }
+        
+        var transactionList: [Transaction] = []
+        
+        do {
+            let transactionQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
+            
+            let documents = try await transactionQuery.getDocuments()
+            
+            for document in documents.documents {
+                let data = document.data()
+                // Create Transaction
+                let name = data["name"] as? String ?? ""
+                let items = data["items"] as? [[String : Any]] ?? [[:]]
+                
+                var newItemList: [Item] = []
+                for item in items {
+                    let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
+                    newItemList.append(newItem)
+                }
+                
+                let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
+                
+                let newTransaction = Transaction(itemList: newItemList, itemBidders: itemBidders, name: name)
+                
+                transactionList.append(newTransaction)
+            }
+            
+            return transactionList
         } catch {
             print("Error finding User: \(error)")
         }
