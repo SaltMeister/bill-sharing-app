@@ -63,9 +63,9 @@ class ScanReceipt: ObservableObject {
             self.tax = finalTax
             self.receiptItems = finalItems
             self.total = finalTotal
-            self.isScanning = false
             self.uiImage = tempimage
             self.title = titleTemp
+            self.isScanning = false
             
         }
     }

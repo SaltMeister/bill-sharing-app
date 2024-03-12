@@ -6,10 +6,17 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseFunctions
+import SafariServices
 
 struct HomeView: View {
+    
     @State private var isSplitViewActive : Bool = false
     @State private var isViewingGroup = false
+    
+    @State private var showSafari = false
+    @State private var accountLinkURL: URL?
     
     @State private var isEmptyDisplayFormat = true
     
@@ -58,6 +65,15 @@ struct HomeView: View {
                             // Open Group View and display group data
                         }
                     }
+                    Button("Connect with Stripe") {
+                            print("creating account")
+                            createStripeAccountLink()
+                        }
+                        .sheet(isPresented: $showSafari) {
+                            if let url = accountLinkURL {
+                                SafariView(url: url)
+                            }
+                        }
                     Button {
                         Task {
                             await DatabaseAPI.createGroup()
@@ -94,6 +110,28 @@ struct HomeView: View {
             GroupView()
         }
     }
+    private func createStripeAccountLink() {
+        print(user.stripeAccountID)
+            let functions = Functions.functions()
+        functions.httpsCallable("createAccountLink").call(["accountId": user.stripeAccountID]) { result, error in
+                if let error = error as NSError? {
+                    // Handle error from Cloud Function call
+                    print(error.localizedDescription)
+                    return
+                }else {print("error creating link1")}
+
+                if let accountLinkURLString = (result?.data as? [String: Any])?["url"] as? String,
+                   let url = URL(string: accountLinkURLString) {
+                    print("url")
+                    
+                    DispatchQueue.main.async {
+                        self.accountLinkURL = url
+                        self.showSafari = true
+                    }
+                }else {print("error creating link2")}
+            }
+        
+        }
 }
 struct ToolbarItem: View {
     let iconName: String
@@ -127,4 +165,14 @@ struct BottomToolbar: View {
             .shadow(radius: 3)
         }
     }
+}
+
+struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
+        return SFSafariViewController(url: url)
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {}
 }
