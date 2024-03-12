@@ -223,7 +223,8 @@ class DatabaseAPI {
                     "name": transactionData.name,
                     "items": itemList,
                     "itemBidders": itemBidderDict,
-                    "group_id": groupID
+                    "group_id": groupID,
+                    "completed": false  // New boolean field with default value
                 ])
             }
             
@@ -231,7 +232,6 @@ class DatabaseAPI {
             print("Error creating group: \(error)")
         }
     }
-    
     // Create Transaction Struct List and return
     static func grabAllTransactionsForGroup(groupID: String?) async -> [Transaction]? {
         guard let groupID = groupID else {
@@ -276,4 +276,23 @@ class DatabaseAPI {
         
         return nil
     }
+    static func toggleGroupTransactionsCompletion(groupID: String, completion: Bool) async {
+        let transactionsQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
+        
+        do {
+            let documents = try await transactionsQuery.getDocuments()
+            
+            for document in documents.documents {
+                let transactionRef = db.collection("transactions").document(document.documentID)
+                
+                try await transactionRef.updateData([
+                    "completed": completion
+                ])
+            }
+            print("All transactions for group \(groupID) updated to completion status \(completion).")
+        } catch let error {
+            print("Error updating transactions for group: \(error)")
+        }
+    }
+
 }

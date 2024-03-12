@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct TransactionView: View {
+    @EnvironmentObject var user: UserViewModel
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button("Complete Transaction") {
+            Task {
+                await DatabaseAPI.toggleGroupTransactionsCompletion(groupID: user.groups_id?[user.selectedGroupIndex] ?? "", completion: true)
+            }
+        }
     }
 }
 
