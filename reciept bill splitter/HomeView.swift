@@ -141,23 +141,22 @@ struct HomeView: View {
     }
 }
 
-    struct BottomToolbar: View {
-        var body: some View {
-            NavigationStack{
-                HStack(spacing: 0.2) {
-                    ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
-                    ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
-                    ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-                    ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
-                }
-                .frame(height: 50)
-                .background(Color(UIColor.systemBackground))
-                .cornerRadius(10)
-                .shadow(radius: 3)
+struct BottomToolbar: View {
+    var body: some View {
+        NavigationStack{
+            HStack(spacing: 0.2) {
+                ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
+                ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
+                ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
+                ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
             }
+            .frame(height: 50)
+            .background(Color(UIColor.systemBackground))
+            .cornerRadius(10)
+            .shadow(radius: 3)
         }
     }
-
+}
 
 struct ToolbarItem: View {
     let iconName: String

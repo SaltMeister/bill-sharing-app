@@ -147,7 +147,7 @@ class DatabaseAPI {
         
         do {
             
-            let querySnapshots = db.collection("groups").whereField("owner_id", isEqualTo: user.uid)
+            let querySnapshots = db.collection("groups").whereField("members", arrayContains: user.uid)
             
             let documents = try await querySnapshots.getDocuments()
             
