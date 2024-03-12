@@ -1,10 +1,3 @@
-//
-//  GroupView.swift
-//  reciept bill splitter
-//
-//  Created by Josh Vu on 2/21/24.
-//
-
 import SwiftUI
 
 struct GroupView: View {
@@ -13,34 +6,44 @@ struct GroupView: View {
     
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
+    
     var body: some View {
         VStack {
-          
             Text(selectedGroup?.group_name ?? "None")
+            
+            if let transactions = existingTransactions {
+                List {
+                    ForEach(transactions.itemList.indices, id: \.self) { index in
+                        Text("\(transactions.itemList[index].name): $\(transactions.itemList[index].priceInCents / 100)")
+                    }
+                }
+            } else {
+                Text("No transactions found")
+            }
+            
             if (selectedGroup?.owner_id == user.user_id) {
                 Button {
                     // Create Transaction Flow / Camera => Picture
                     // => Upload Data to DB => Display'
-                    Task{
+                    Task {
                         guard let image = UIImage(named: "Test6") else {
                             print("Error loading Image")
                             return
                         }
-                            await scanReceipt.scanReceipt(image: image)
-                        
+                        await scanReceipt.scanReceipt(image: image)
                     }
-                }
-            label: {
-                Text("Create")
+                } label: {
+                    Text("Create")
                 }
             }
+            
             Spacer()
             //BottomToolbar()
                 .padding()
         }
-        .onChange(of: scanReceipt.isScanning){
-            if(!scanReceipt.isScanning){
-                Task{
+        .onChange(of: scanReceipt.isScanning) {
+            if !scanReceipt.isScanning {
+                Task {
                     await createTransaction()
                 }
             }
@@ -48,6 +51,9 @@ struct GroupView: View {
         .onAppear {
             print("DISPLAYING GROUP \(user.groups[user.selectedGroupIndex])")
             selectedGroup = user.groups[user.selectedGroupIndex]
+            Task {
+                await loadTransactions()
+            }
         }
     }
     
@@ -56,9 +62,7 @@ struct GroupView: View {
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
         let newTransaction = Transaction(itemList: transactionItems, itemBidders: [:], name: "New Transaction from Receipt")
         await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup?.groupID)
-       }
-    
-    
+    }
     
     private func loadTransactions() async {
         print("Loading transactions for group ID: \(selectedGroup?.groupID ?? "Unknown")")
