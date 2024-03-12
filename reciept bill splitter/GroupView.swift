@@ -3,7 +3,7 @@ import SwiftUI
 struct GroupView: View {
     @State var selectedGroup: Group?
     @State var existingTransactions: Transaction?
-    
+    @State private var totalSpent: Double = 0.0
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
     
@@ -14,8 +14,10 @@ struct GroupView: View {
             if let transactions = existingTransactions {
                 List {
                     ForEach(transactions.itemList.indices, id: \.self) { index in
-                        Text("\(transactions.itemList[index].name): $\(transactions.itemList[index].priceInCents / 100)")
+                        Text("\(transactions.itemList[index].name): $\(String(format: "%.2f", Double(transactions.itemList[index].priceInCents) / 100))")
+
                     }
+                    
                 }
             } else {
                 Text("No transactions found")
@@ -38,6 +40,9 @@ struct GroupView: View {
             }
             
             Spacer()
+            
+            Text("Total Spent: $\(String(format: "%.2f", totalSpent))") // Added this line
+                            .padding(.bottom) // Added this line
             //BottomToolbar()
                 .padding()
         }
@@ -69,6 +74,8 @@ struct GroupView: View {
         
         if let transactions = try await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
             existingTransactions = transactions.first // Store the first transaction in the array
+            totalSpent = transactions.map { $0.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +) }.reduce(0, +)
+
         } else {
             print("No transactions found for group \(selectedGroup?.groupID ?? "")")
         }
