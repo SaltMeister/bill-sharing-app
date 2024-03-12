@@ -256,7 +256,7 @@ class DatabaseAPI {
                     newItemList.append(newItem)
                 }
                 
-                let itemBidders = data["itemBidders"] as? [Int:[String]] ?? [:]
+                let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
                 
                 let newTransaction = Transaction(itemList: newItemList, itemBidders: itemBidders, name: name)
                 
