@@ -34,34 +34,32 @@ struct HomeView: View {
                         .padding(.vertical, 20)
                         .background(Color.black)
                         .cornerRadius(1)
-                    
-                    /*Button {
-                        print("Join Group")
-                    } label: { Text("Join Group") }
-                        .font(.custom("Avenir", size: 30))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 20)
-                        .background(Color.black)
-                        .cornerRadius(1)*/
-                    /*Button {
-                        Task {
-                            // Prompt user for invite code
-                            let inviteCode = "grTAMp" // Replace with actual invite code
-                            
-                            // Call the joinGroup method with the invite code
-                            await DatabaseAPI.joinGroup(groupJoinId: inviteCode)
-                            
-                            // Refresh user data after joining the group
-                            await user.getUserData()
-                        }
-                    } label: { Text("Join Group") }
-                        .font(.custom("Avenir", size: 30))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 20)
-                        .background(Color.black)
-                        .cornerRadius(1)*/
+                    TextField("Enter Invite Code", text: $inviteCode)
+                                       .padding()
+                                       .background(Color(UIColor.systemBackground))
+                                       .cornerRadius(10)
+                                       .padding(.horizontal)
+                                   
+                                   Button {
+                                       Task {
+                                           if !inviteCode.isEmpty {
+                                               // Call the joinGroup method with the invite code
+                                               await DatabaseAPI.joinGroup(groupJoinId: inviteCode)
+                                               
+                                               // Refresh user data after joining the group
+                                               await user.getUserData()
+                                           } else {
+                                               // Handle case where invite code is empty
+                                               print("Invite code is empty")
+                                           }
+                                       }
+                                   } label: { Text("Join Group") }
+                                       .font(.custom("Avenir", size: 30))
+                                       .foregroundColor(.white)
+                                       .padding(.horizontal, 40)
+                                       .padding(.vertical, 20)
+                                       .background(Color.black)
+                                       .cornerRadius(1)
                 }
                 else {
                     // Display all groups
@@ -143,7 +141,6 @@ struct HomeView: View {
     }
 }
 
-<<<<<<< HEAD
     struct BottomToolbar: View {
         var body: some View {
             NavigationStack{
@@ -160,42 +157,7 @@ struct HomeView: View {
             }
         }
     }
-    
-    struct ToolbarItem: View {
-        let iconName: String
-        let text: String
-        let destination: AnyView
-        
-        var body: some View {
-            NavigationLink(destination: destination) {
-                VStack {
-                    Image(systemName: iconName)
-                        .font(.system(size: 24))
-                    Text(text)
-                        .font(.caption)
-                }
-                .padding(.horizontal, 20)
-            }
-        }
-    }
 
-=======
-struct BottomToolbar: View {
-    var body: some View {
-        NavigationStack{
-            HStack(spacing: 0.2) {
-                ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
-                ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
-                ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-                ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
-            }
-            .frame(height: 50)
-            .background(Color(UIColor.systemBackground))
-            .cornerRadius(10)
-            .shadow(radius: 3)
-        }
-    }
-}
 
 struct ToolbarItem: View {
     let iconName: String
@@ -214,4 +176,3 @@ struct ToolbarItem: View {
         }
     }
 }
->>>>>>> 4939b85a990bb6c02a41f4f47f4d5c1e3893b625

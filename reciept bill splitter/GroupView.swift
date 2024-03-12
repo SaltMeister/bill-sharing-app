@@ -61,8 +61,13 @@ struct GroupView: View {
     
     
     private func loadTransactions() async {
+        print("Loading transactions for group ID: \(selectedGroup?.groupID ?? "Unknown")")
         
-        
+        if let transactions = try await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
+            existingTransactions = transactions.first // Store the first transaction in the array
+        } else {
+            print("No transactions found for group \(selectedGroup?.groupID ?? "")")
+        }
     }
 }
 
