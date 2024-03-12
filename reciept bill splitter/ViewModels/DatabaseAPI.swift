@@ -271,7 +271,7 @@ class DatabaseAPI {
             
             return transactionList
         } catch {
-            print("Error finding User: \(error)")
+            print("Error finding transactions: \(error)")
         }
         
         return nil
