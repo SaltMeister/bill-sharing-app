@@ -79,7 +79,12 @@ struct GroupView: View {
                 snapshots.documentChanges.forEach { diff in
                     if diff.type == .modified {
                         // Check if the proper field is adjusted
+                        print("GROUP TRANSACTION HAS BEEN MODIFIED")
                     }
+                    else if diff.type == .added {
+                        print("NEW TRANSACTION CREATED FOR GROUP")
+                    }
+                
                 }
             }
     }
