@@ -122,12 +122,6 @@ struct GroupView: View {
                         if isTransactionCompleted {
                             isAlert = true
                         }
-                        
-//                        if diff.document.documentID == user.selectedTransaction?.transaction_id {
-//                            
-//                        } else {
-//                            print("SELECTED DOCUMENT NOT MATCH DIF")
-//                        }
                     }
                     else if diff.type == .added {
                         print("NEW TRANSACTION CREATED FOR GROUP")
@@ -153,7 +147,7 @@ struct GroupView: View {
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
-        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: "New Transaction from Receipt")
+        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction")
         await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup?.groupID)
     }
     

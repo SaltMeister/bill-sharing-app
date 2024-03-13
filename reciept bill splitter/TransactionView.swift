@@ -45,20 +45,22 @@ struct TransactionView: View {
             } else {
                 Text("ViewModel Did not Update Transactions")
             }
+            
+            // ONLY group owner can lock in assigned prices
+            if selectedGroup?.groupID == user.user_id {
+                Button("Complete Transaction") {
+                    Task {
+                        await DatabaseAPI.toggleGroupTransactionsCompletion(groupID: user.groups_id?[user.selectedGroupIndex] ?? "", completion: true)
+                    }
+                }
+            }
         }
         .onAppear {
             selectedGroup = user.groups[user.selectedGroupIndex]
             
         }
         .navigationTitle("Transaction Details")
+        
 
-        // ONLY group owner can lock in assigned prices
-        if selectedGroup?.groupID == user.user_id {
-            Button("Complete Transaction") {
-                Task {
-                    await DatabaseAPI.toggleGroupTransactionsCompletion(groupID: user.groups_id?[user.selectedGroupIndex] ?? "", completion: true)
-                }
-            }
-        }
     }
 }
