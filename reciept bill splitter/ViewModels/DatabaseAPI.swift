@@ -265,8 +265,9 @@ class DatabaseAPI {
                 let transaction_id = document.documentID
                 
                 let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
+                let isCompleted = data["isCompleted"] as? Bool ?? false
                 
-                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name)
+                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted)
                 
                 transactionList.append(newTransaction)
             }
@@ -278,20 +279,18 @@ class DatabaseAPI {
         
         return nil
     }
-    static func toggleGroupTransactionsCompletion(groupID: String, completion: Bool) async {
-        let transactionsQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
+    
+    static func toggleGroupTransactionsCompletion(transactionId: String, completion: Bool) async {
+        let documentRef = db.collection("transactions").document(transactionId)
         
         do {
-            let documents = try await transactionsQuery.getDocuments()
+            let document = try await documentRef.getDocument()
             
-            for document in documents.documents {
-                let transactionRef = db.collection("transactions").document(document.documentID)
-                
-                try await transactionRef.updateData([
-                    "completed": completion
+            if document.exists {
+                try await documentRef.updateData([
+                    "isCompleted": completion
                 ])
-            }
-            print("All transactions for group \(groupID) updated to completion status \(completion).")
+            }	
         } catch let error {
             print("Error updating transactions for group: \(error)")
         }

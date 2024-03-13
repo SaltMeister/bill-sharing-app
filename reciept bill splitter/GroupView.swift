@@ -35,15 +35,23 @@ struct GroupView: View {
                 if !user.currentSelectedGroupTransactions.isEmpty {
                     List {
                         ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
-                            HStack {
-                                Text(user.currentSelectedGroupTransactions[index].name)
-                                //Text("Total Spent: $\(String(format: "%.2f", totalSpent[index]))")
-
-                            }
-                            .onTapGesture {
-                                print(user.currentSelectedGroupTransactions, index)
-                                user.selectedTransaction = user.currentSelectedGroupTransactions[index]
-                                isViewingTransaction = true
+                            if user.currentSelectedGroupTransactions[index].isCompleted {
+                                HStack {
+                                    Text(user.currentSelectedGroupTransactions[index].name)
+                                }
+                                .onTapGesture {
+                                    user.selectedTransaction = user.currentSelectedGroupTransactions[index]
+                                    isViewingTransaction = true
+                                }
+                                .opacity(0.5)
+                            } else {
+                                HStack {
+                                    Text(user.currentSelectedGroupTransactions[index].name)
+                                }
+                                .onTapGesture {
+                                    user.selectedTransaction = user.currentSelectedGroupTransactions[index]
+                                    isViewingTransaction = true
+                                }
                             }
                         }
                     }
@@ -67,7 +75,7 @@ struct GroupView: View {
                             isTaken = false // Reset the flag
                         }
                 }
-                
+
                 Spacer()
             }
             .alert(isPresented: $isAlert) {
@@ -114,7 +122,6 @@ struct GroupView: View {
                         // Check if the proper field is adjusted
                         print("GROUP TRANSACTION HAS BEEN MODIFIED")
                         let data = diff.document.data()
-                        
                         let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
                         print(isTransactionCompleted)
                         
@@ -147,7 +154,7 @@ struct GroupView: View {
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
-        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction")
+        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false)
         await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup?.groupID)
     }
     

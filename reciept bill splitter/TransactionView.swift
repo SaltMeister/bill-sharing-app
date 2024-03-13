@@ -7,7 +7,6 @@ struct TransactionView: View {
     @State var selectedGroup: Group?
     
     var totalSpent: Double {
-        print(user.selectedTransaction)
         
         if let transaction = user.selectedTransaction {
             return transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
@@ -47,17 +46,16 @@ struct TransactionView: View {
             }
             
             // ONLY group owner can lock in assigned prices
-            if selectedGroup?.groupID == user.user_id {
+            if selectedGroup?.owner_id == user.user_id {
                 Button("Complete Transaction") {
                     Task {
-                        await DatabaseAPI.toggleGroupTransactionsCompletion(groupID: user.groups_id?[user.selectedGroupIndex] ?? "", completion: true)
+                        await DatabaseAPI.toggleGroupTransactionsCompletion(transactionId: user.selectedTransaction?.transaction_id ?? "", completion: true)
                     }
                 }
             }
         }
         .onAppear {
             selectedGroup = user.groups[user.selectedGroupIndex]
-            
         }
         .navigationTitle("Transaction Details")
         

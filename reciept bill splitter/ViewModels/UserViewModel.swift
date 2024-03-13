@@ -33,6 +33,7 @@ struct Transaction : Codable {
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
     var itemBidders: [String:[String]]
     var name: String
+    var isCompleted: Bool
     
 }
 
@@ -97,8 +98,6 @@ class UserViewModel : ObservableObject {
                 "userName": "UnNamed",
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
-                "completedTransactions": [], // History of completed user transactions
-//                "activeRequests": []
           ])
           print("Document created")
             
