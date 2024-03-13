@@ -262,10 +262,11 @@ class DatabaseAPI {
                     let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
                     newItemList.append(newItem)
                 }
+                let transaction_id = document.documentID
                 
                 let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
                 
-                let newTransaction = Transaction(itemList: newItemList, itemBidders: itemBidders, name: name)
+                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name)
                 
                 transactionList.append(newTransaction)
             }

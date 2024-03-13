@@ -29,6 +29,7 @@ struct Group : Codable {
 }
 
 struct Transaction : Codable {
+    var transaction_id: String
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
     var itemBidders: [String:[String]]
     var name: String
