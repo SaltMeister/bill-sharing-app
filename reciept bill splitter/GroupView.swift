@@ -24,11 +24,11 @@ struct GroupView: View {
             VStack {
                 Text(selectedGroup?.group_name ?? "None")
                 
-                if !existingTransactions.isEmpty {
+                if !user.currentSelectedGroupTransactions.isEmpty {
                     List {
-                        ForEach(existingTransactions.indices, id: \.self) { index in
-                            NavigationLink(destination: TransactionView(transaction: existingTransactions[index])) {
-                                Text(existingTransactions[index].name)
+                        ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
+                            NavigationLink(destination: TransactionView(transaction: $user.currentSelectedGroupTransactions[index])) {
+                                Text(user.currentSelectedGroupTransactions[index].name)
                                 Text("Total Spent: $\(String(format: "%.2f", totalSpent[index]))")
                             }
                         }
@@ -63,6 +63,9 @@ struct GroupView: View {
                 }
             }
             .onAppear {
+                // Empty group transaction array
+                user.currentSelectedGroupTransactions = []
+                
                 print("DISPLAYING GROUP \(user.groups[user.selectedGroupIndex])")
                 selectedGroup = user.groups[user.selectedGroupIndex]
                 Task {
@@ -87,8 +90,6 @@ struct GroupView: View {
                 }
                 
                 
-                print("Changes Made to a transaction !!!!!!")
-                
                 // Find Changes where document is a diff
                 snapshots.documentChanges.forEach { diff in
                     if diff.type == .modified {
@@ -97,11 +98,25 @@ struct GroupView: View {
                     }
                     else if diff.type == .added {
                         print("NEW TRANSACTION CREATED FOR GROUP")
+                        // Update Transaction List append
+                        Task {
+                            if let transactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
+                                DispatchQueue.main.async {
+                                    user.currentSelectedGroupTransactions = transactions // Store all transactions
+                                    totalSpent = transactions.map { transaction in
+                                        transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
+                                    }
+                                }
+                            } else {
+                                print("No transactions found for group \(selectedGroup?.groupID ?? "")")
+                            }
+                        }
                     }
                     
                 }
             }
     }
+
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
@@ -113,9 +128,12 @@ struct GroupView: View {
         print("Loading transactions for group ID: \(selectedGroup?.groupID ?? "Unknown")")
         
         if let transactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
-            existingTransactions = transactions // Store all transactions
-            totalSpent = transactions.map { transaction in
-                transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
+            DispatchQueue.main.async {
+                user.currentSelectedGroupTransactions = transactions // Store all transactions
+                totalSpent = transactions.map { transaction in
+                    transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
+                }
+
             }
         } else {
             print("No transactions found for group \(selectedGroup?.groupID ?? "")")

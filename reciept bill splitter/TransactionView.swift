@@ -3,11 +3,12 @@ import SwiftUI
 struct TransactionView: View {
 
     @EnvironmentObject var user: UserViewModel
+    
     @State var selectedGroup: Group?
     
     @Binding var transaction: Transaction
     
-    let totalSpent: Double {
+    var totalSpent: Double {
            return transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
        }
     
@@ -40,8 +41,9 @@ struct TransactionView: View {
     }
 }
 
-struct TransactionView_Previews: PreviewProvider {
-    static var previews: some View {
-        TransactionView(transaction: Transaction(itemList: [Item(priceInCents: 500, name: "Item 1"), Item(priceInCents: 750, name: "Item 2")], itemBidders: [:], name: "Test Transaction"))
-    }
-}
+//struct TransactionView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        var transaction = Transaction(itemList: [Item(priceInCents: 500, name: "Item 1"), Item(priceInCents: 750, name: "Item 2")], itemBidders: [:], name: "Test Transaction")
+//        TransactionView(transaction: )
+//    }
+//}

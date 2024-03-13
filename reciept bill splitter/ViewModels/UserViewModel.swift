@@ -62,6 +62,7 @@ class UserViewModel : ObservableObject {
     
     @Published var selectedGroupIndex = 0
     
+    @Published var currentSelectedGroupTransactions: [Transaction] = []
     
     
     // Initialize Env Variable Data
