@@ -12,12 +12,24 @@ struct TransactionView: View {
         VStack {
             Text(transaction.name)
                 .font(.title)
-            
+           // index of the bidding members and get the dictiionary count inside
             List {
-                ForEach(transaction.itemList.indices, id: \.self) { index in
-                    Text("\(transaction.itemList[index].name): $\(String(format: "%.2f", Double(transaction.itemList[index].priceInCents) / 100))")
-                }
-            }
+                     ForEach(transaction.itemList.indices, id: \.self) { index in
+                         let bidders = transaction.itemBidders[String(index)] ?? []
+                         let biddersCount = bidders.count
+                         let isCurrentUserBidding = bidders.contains(user.user_id)
+
+                         HStack {
+                             Text("\(transaction.itemList[index].name): $\(String(format: "%.2f", Double(transaction.itemList[index].priceInCents) / 100))")
+                                 .foregroundColor(isCurrentUserBidding ? .blue : .primary) // Change color if the current user is bidding
+                             Spacer()
+                             // Display the number of bidders for each item
+                             Text("Bidders: \(biddersCount)")
+                                 .foregroundColor(.gray)
+                                 .font(.subheadline)
+                         }
+                     }
+                 }
             Text("Total Spent: $\(String(format: "%.2f", totalSpent))")
                                 .fontWeight(.bold)
         }
