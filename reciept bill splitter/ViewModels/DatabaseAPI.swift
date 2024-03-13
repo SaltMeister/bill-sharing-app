@@ -278,22 +278,16 @@ class DatabaseAPI {
         
         return nil
     }
-    static func toggleGroupTransactionsCompletion(groupID: String, completion: Bool) async {
-        let transactionsQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
+    static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
+        let transactionRef = db.collection("transactions").document(transactionID)
         
         do {
-            let documents = try await transactionsQuery.getDocuments()
-            
-            for document in documents.documents {
-                let transactionRef = db.collection("transactions").document(document.documentID)
-                
-                try await transactionRef.updateData([
-                    "completed": completion
-                ])
-            }
-            print("All transactions for group \(groupID) updated to completion status \(completion).")
+            try await transactionRef.updateData([
+                "isCompleted": completion
+            ])
+            print("Transaction \(transactionID) updated to completion status \(completion).")
         } catch let error {
-            print("Error updating transactions for group: \(error)")
+            print("Error updating transaction: \(error)")
         }
     }
 
