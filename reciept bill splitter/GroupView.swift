@@ -159,7 +159,7 @@ struct GroupView: View {
     private func loadTransactions() async {
         print("Loading transactions for group ID: \(selectedGroup?.groupID ?? "Unknown")")
         
-        if let transactions = try await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
+        if let transactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
             existingTransactions = transactions // Store all transactions
             totalSpent = transactions.map { transaction in
                 transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
