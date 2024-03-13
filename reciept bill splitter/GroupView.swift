@@ -21,12 +21,14 @@ struct GroupView: View {
     @State private var totalSpent: [Double] = []
     
     @State var isViewingTransaction = false
+    @State var isAlert = false
     
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
     
     var body: some View {
         NavigationStack{
+            
             VStack {
                 Text(selectedGroup?.group_name ?? "None")
                 
@@ -68,6 +70,9 @@ struct GroupView: View {
                 
                 Spacer()
             }
+            .alert(isPresented: $isAlert) {
+                Alert(title: Text("ALERT"), message: Text("You have been assigned a transaction"), dismissButton: .cancel())
+            }
             .navigationDestination(isPresented: $isViewingTransaction) {
                 TransactionView()
             }
@@ -108,6 +113,21 @@ struct GroupView: View {
                     if diff.type == .modified {
                         // Check if the proper field is adjusted
                         print("GROUP TRANSACTION HAS BEEN MODIFIED")
+                        let data = diff.document.data()
+                        
+                        let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
+                        print(isTransactionCompleted)
+                        
+                        // Alert if modified document is true
+                        if isTransactionCompleted {
+                            isAlert = true
+                        }
+                        
+//                        if diff.document.documentID == user.selectedTransaction?.transaction_id {
+//                            
+//                        } else {
+//                            print("SELECTED DOCUMENT NOT MATCH DIF")
+//                        }
                     }
                     else if diff.type == .added {
                         print("NEW TRANSACTION CREATED FOR GROUP")

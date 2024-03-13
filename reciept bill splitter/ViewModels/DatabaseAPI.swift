@@ -224,7 +224,7 @@ class DatabaseAPI {
                     "items": itemList,
                     "itemBidders": itemBidderDict,
                     "group_id": groupID,
-                    "completed": false  // New boolean field with default value
+                    "isCompleted": false  // New boolean field with default value
                 ])
             }
             
