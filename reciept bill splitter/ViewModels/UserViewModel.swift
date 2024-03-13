@@ -55,14 +55,14 @@ class UserViewModel : ObservableObject {
     @Published var user_id = ""
     
     @Published var groups: [Group] = []
-    
+
     @Published var groups_id: [String]?
     @Published var friends: [String]?
     @Published var completedTransactions: [String]?
     
     @Published var selectedGroupIndex = 0
     
-    //@Published var transactionList: [Trans]
+    
     
     // Initialize Env Variable Data
     func getUserData() async -> Void {

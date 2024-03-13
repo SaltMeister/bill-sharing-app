@@ -248,6 +248,7 @@ class DatabaseAPI {
         do {
             let transactionQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
             
+            
             let documents = try await transactionQuery.getDocuments()
             
             for document in documents.documents {

@@ -1,6 +1,17 @@
-/*import SwiftUI
+//
+//  GroupView.swift
+//  reciept bill splitter
+//
+//  Created by Josh Vu on 2/21/24.
+//
+
+import SwiftUI
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct GroupView: View {
+    let db = Firestore.firestore()
+    
     @State var selectedGroup: Group?
     @State var existingTransactions: Transaction?
     @State private var totalSpent: Double = 0.0
@@ -54,12 +65,43 @@ struct GroupView: View {
             }
         }
         .onAppear {
+
             print("DISPLAYING GROUP \(user.groups[user.selectedGroupIndex])")
             selectedGroup = user.groups[user.selectedGroupIndex]
             Task {
                 await loadTransactions()
+                listenToDocuments()
             }
         }
+    }
+    private func listenToDocuments() {
+        print("LISTENING TO DOCUMENTS")
+        db.collection("transactions").whereField("group_id", isEqualTo: selectedGroup?.groupID ?? "")
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshots = querySnapshot else {
+                      print("Error fetching documents: \(error!)")
+                      return
+                }
+                
+                if let error = error {
+                  print("Error retreiving collection: \(error)")
+                }
+                
+                
+                print("Changes Made to a transaction !!!!!!")
+                
+                // Find Changes where document is a diff
+                snapshots.documentChanges.forEach { diff in
+                    if diff.type == .modified {
+                        // Check if the proper field is adjusted
+                        print("GROUP TRANSACTION HAS BEEN MODIFIED")
+                    }
+                    else if diff.type == .added {
+                        print("NEW TRANSACTION CREATED FOR GROUP")
+                    }
+                
+                }
+            }
     }
     
     private func createTransaction() async {

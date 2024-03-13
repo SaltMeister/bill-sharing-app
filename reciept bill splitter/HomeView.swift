@@ -10,7 +10,9 @@ import SwiftUI
 struct HomeView: View {
     @State private var isSplitViewActive : Bool = false
     @State private var isViewingGroup = false
-    @State private var inviteCode = ""
+    
+    @State private var isJoiningGroup = false
+    
     @State private var isEmptyDisplayFormat = true
     
     @EnvironmentObject var user: UserViewModel
@@ -68,6 +70,8 @@ struct HomeView: View {
                             Text(element.group_name)
                             Text("Invite Code \(element.invite_code)")
                         }
+                        .padding(.vertical)
+                        .shadow(color: .gray, radius: 0.5)
                         .onTapGesture {
                             user.selectedGroupIndex = index
                             isViewingGroup = true
@@ -87,36 +91,23 @@ struct HomeView: View {
                         .background(Color.black)
                         .cornerRadius(15)
                     
-                    TextField("Enter Invite Code", text: $inviteCode)
-                                       .padding()
-                                       .background(Color(UIColor.systemBackground))
-                                       .cornerRadius(10)
-                                       .padding(.horizontal)
-                                   
-                                   Button {
-                                       Task {
-                                           if !inviteCode.isEmpty {
-                                               // Call the joinGroup method with the invite code
-                                               await DatabaseAPI.joinGroup(groupJoinId: inviteCode)
-                                               
-                                               // Refresh user data after joining the group
-                                               await user.getUserData()
-                                           } else {
-                                               // Handle case where invite code is empty
-                                               print("Invite code is empty")
-                                           }
-                                       }
-                                   } label: { Text("Join Group") }
-                                       .font(.custom("Avenir", size: 30))
-                                       .foregroundColor(.white)
-                                       .padding(.horizontal, 40)
-                                       .padding(.vertical, 20)
-                                       .background(Color.black)
-                                       .cornerRadius(1)
-                    
                     
                 }
                 Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        isJoiningGroup = true
+                    } label: {
+                        Text("+")
+                            .frame(width: 60, height: 60)
+                            .font(.title2)
+                            .foregroundColor(Color.white)
+                            .background(Color.black)
+                            .clipShape(Circle())
+                            .padding()
+                    }
+                }
                 BottomToolbar()
             }
         }
@@ -133,7 +124,9 @@ struct HomeView: View {
         }
         .navigationDestination(isPresented: $isSplitViewActive){
             SplitView()
-            
+        }
+        .navigationDestination(isPresented: $isJoiningGroup) {
+            JoinGroupView()
         }
         .navigationDestination(isPresented: $isViewingGroup) {
             GroupView()
@@ -174,4 +167,9 @@ struct ToolbarItem: View {
             .padding(.horizontal, 20)
         }
     }
+}
+
+#Preview {
+    HomeView()
+        .environmentObject(UserViewModel())
 }
