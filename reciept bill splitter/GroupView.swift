@@ -12,6 +12,10 @@ import FirebaseFirestoreSwift
 struct GroupView: View {
     let db = Firestore.firestore()
     
+    @State private var isCameraPresented = false
+    @State private var selectedImage: UIImage?
+    @State private var isTaken = false
+    
     @State var selectedGroup: Group?
     @State var existingTransactions: [Transaction] = []
     @State private var totalSpent: [Double] = []
@@ -46,19 +50,20 @@ struct GroupView: View {
                 }
                 
                 if selectedGroup?.owner_id == user.user_id {
-                    Button {
-                        // Create Transaction Flow / Camera => Picture
-                        // => Upload Data to DB => Display'
-                        Task {
-                            guard let image = UIImage(named: "Test6") else {
-                                print("Error loading Image")
-                                return
-                            }
-                            await scanReceipt.scanReceipt(image: image)
-                        }
-                    } label: {
-                        Text("Create")
+                    Button("Open Camera") {
+                        isCameraPresented = true
                     }
+                    .sheet(isPresented: $isCameraPresented) {
+                        CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
+                    }
+                    .onChange(of: isTaken) {
+                            if let imageToScan = selectedImage {
+                                Task {
+                                    await scanReceipt.scanReceipt(image: imageToScan)
+                                }
+                            }
+                            isTaken = false // Reset the flag
+                        }
                 }
                 
                 Spacer()
