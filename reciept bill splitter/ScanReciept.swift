@@ -61,6 +61,9 @@ class ScanReceipt: ObservableObject {
         Task { @MainActor in
             self.discount = finalDiscount
             self.tax = finalTax
+            if let tax = finalTax {
+                finalItems.append(tax)
+            }
             self.receiptItems = finalItems
             self.total = finalTotal
             self.isScanning = false
@@ -71,17 +74,21 @@ class ScanReceipt: ObservableObject {
     }
     
     private func runModel(image: UIImage) async {
-        // Step 1: Detect receipt corners and correct perspective
+        // Step 1: Detect receipt corners and correct perspective (skipping in this version)
         print("run")
+
         // Step 2: Apply additional preprocessing like scaling and binarization if needed
         guard let preprocessedImage = preprocessImage(image) else { return }
         print("processed image")
-        guard let correctedImage = preprocessedImage.preprocessForPerspectiveCorrection() else { return }
-        print("corrected image")
-        tempimage = correctedImage
-        guard let cgImage = correctedImage.cgImage else { return }
-        // Step 3: Prepare and perform the text recognition request
-        let request = createTextRecognitionRequest(with: correctedImage.size)
+
+        // Skipping the perspective correction step
+        // Using 'preprocessedImage' directly for text recognition
+        tempimage = preprocessedImage
+
+        guard let cgImage = preprocessedImage.cgImage else { return }
+
+        // Step 3: Prepare and perform the text recognition request using the preprocessed image
+        let request = createTextRecognitionRequest(with: preprocessedImage.size)
         let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         do {
             try requestHandler.perform([request])
@@ -89,6 +96,7 @@ class ScanReceipt: ObservableObject {
             print("Failed to perform text recognition request: \(error)")
         }
     }
+
     private func createTextRecognitionRequest(with originalImageSize: CGSize) -> VNRecognizeTextRequest {
         let textRequest = VNRecognizeTextRequest { (request, error) in
             if let results = request.results as? [VNRecognizedTextObservation] {
