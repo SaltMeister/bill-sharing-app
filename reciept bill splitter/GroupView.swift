@@ -16,6 +16,8 @@ struct GroupView: View {
     @State var existingTransactions: [Transaction] = []
     @State private var totalSpent: [Double] = []
     
+    @State var isViewingTransaction = false
+    
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
     
@@ -27,9 +29,15 @@ struct GroupView: View {
                 if !user.currentSelectedGroupTransactions.isEmpty {
                     List {
                         ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
-                            NavigationLink(destination: TransactionView(transaction: $user.currentSelectedGroupTransactions[index])) {
+                            HStack {
                                 Text(user.currentSelectedGroupTransactions[index].name)
-                                Text("Total Spent: $\(String(format: "%.2f", totalSpent[index]))")
+                                //Text("Total Spent: $\(String(format: "%.2f", totalSpent[index]))")
+
+                            }
+                            .onTapGesture {
+                                print(user.currentSelectedGroupTransactions, index)
+                                user.selectedTransaction = user.currentSelectedGroupTransactions[index]
+                                isViewingTransaction = true
                             }
                         }
                     }
@@ -55,6 +63,9 @@ struct GroupView: View {
                 
                 Spacer()
             }
+            .navigationDestination(isPresented: $isViewingTransaction) {
+                TransactionView()
+            }
             .onChange(of: scanReceipt.isScanning) {
                 if !scanReceipt.isScanning {
                     Task {
@@ -63,9 +74,6 @@ struct GroupView: View {
                 }
             }
             .onAppear {
-                // Empty group transaction array
-                user.currentSelectedGroupTransactions = []
-                
                 print("DISPLAYING GROUP \(user.groups[user.selectedGroupIndex])")
                 selectedGroup = user.groups[user.selectedGroupIndex]
                 Task {
