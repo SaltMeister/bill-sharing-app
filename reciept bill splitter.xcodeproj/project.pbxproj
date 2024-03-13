@@ -11,6 +11,7 @@
 		32847F2A2B8D96C60061449F /* ScanReciept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32847F292B8D96C60061449F /* ScanReciept.swift */; };
 		32847F2C2B8D96D50061449F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32847F2B2B8D96D50061449F /* ContentView.swift */; };
 		328EEB5C2B9199530021F461 /* DatabaseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EEB5B2B9199520021F461 /* DatabaseAPI.swift */; };
+		32A6DA972BA13C81005FAA2C /* JoinGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */; };
 		32B1A4BF2B828F9400A20FDD /* reciept_bill_splitterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */; };
 		32B1A4C32B828F9D00A20FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B1A4C22B828F9D00A20FDD /* Assets.xcassets */; };
 		32B1A4C62B828F9D00A20FDD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */; };
@@ -40,6 +41,7 @@
 		32847F292B8D96C60061449F /* ScanReciept.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanReciept.swift; sourceTree = "<group>"; };
 		32847F2B2B8D96D50061449F /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		328EEB5B2B9199520021F461 /* DatabaseAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseAPI.swift; sourceTree = "<group>"; };
+		32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupView.swift; sourceTree = "<group>"; };
 		32B1A4BB2B828F9400A20FDD /* reciept bill splitter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "reciept bill splitter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reciept_bill_splitterApp.swift; sourceTree = "<group>"; };
 		32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 				36E9BE852BA007F10020BE12 /* TransactionView.swift */,
 				32B1A4C22B828F9D00A20FDD /* Assets.xcassets */,
 				32B1A4C42B828F9D00A20FDD /* Preview Content */,
+				32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */,
 			);
 			path = "reciept bill splitter";
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32A6DA972BA13C81005FAA2C /* JoinGroupView.swift in Sources */,
 				32E5E18A2B8DA881005BF4F4 /* LaunchScreenView.swift in Sources */,
 				328EEB5C2B9199530021F461 /* DatabaseAPI.swift in Sources */,
 				32847F282B8D96B70061449F /* UIImageExtension.swift in Sources */,
