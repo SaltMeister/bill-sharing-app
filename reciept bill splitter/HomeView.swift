@@ -72,6 +72,8 @@ struct HomeView: View {
                             Text(element.group_name)
                             Text("Invite Code \(element.invite_code)")
                         }
+                        .padding(.vertical)
+                        .shadow(color: .gray, radius: 0.5)
                         .onTapGesture {
                             user.selectedGroupIndex = index
                             isViewingGroup = true
@@ -94,6 +96,20 @@ struct HomeView: View {
                     
                 }
                 Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        isJoiningGroup = true
+                    } label: {
+                        Text("+")
+                            .frame(width: 60, height: 60)
+                            .font(.title2)
+                            .foregroundColor(Color.white)
+                            .background(Color.black)
+                            .clipShape(Circle())
+                            .padding()
+                    }
+                }
                 BottomToolbar()
             }
         }
@@ -153,4 +169,9 @@ struct ToolbarItem: View {
             .padding(.horizontal, 20)
         }
     }
+}
+
+#Preview {
+    HomeView()
+        .environmentObject(UserViewModel())
 }
