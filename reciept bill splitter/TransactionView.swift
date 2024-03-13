@@ -3,11 +3,14 @@ import SwiftUI
 struct TransactionView: View {
 
     @EnvironmentObject var user: UserViewModel
+    @State var selectedGroup: Group?
     
-    let transaction: Transaction
-    var totalSpent: Double {
+    @Binding var transaction: Transaction
+    
+    let totalSpent: Double {
            return transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
        }
+    
     var body: some View {
         VStack {
             Text(transaction.name)
@@ -21,12 +24,17 @@ struct TransactionView: View {
             Text("Total Spent: $\(String(format: "%.2f", totalSpent))")
                                 .fontWeight(.bold)
         }
+        .onAppear {
+            selectedGroup = user.groups[user.selectedGroupIndex]
+        }
         .navigationTitle("Transaction Details")
 
-
-        Button("Complete Transaction") {
-            Task {
-                await DatabaseAPI.toggleGroupTransactionsCompletion(groupID: user.groups_id?[user.selectedGroupIndex] ?? "", completion: true)
+        // ONLY group owner can lock in assigned prices
+        if selectedGroup?.groupID == user.user_id {
+            Button("Complete Transaction") {
+                Task {
+                    await DatabaseAPI.toggleGroupTransactionsCompletion(groupID: user.groups_id?[user.selectedGroupIndex] ?? "", completion: true)
+                }
             }
         }
     }
