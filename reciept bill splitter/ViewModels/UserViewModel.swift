@@ -63,7 +63,7 @@ class UserViewModel : ObservableObject {
     @Published var selectedGroupIndex = 0
     
     @Published var currentSelectedGroupTransactions: [Transaction] = []
-    
+    @Published var selectedTransaction: Transaction?
     
     // Initialize Env Variable Data
     func getUserData() async -> Void {
