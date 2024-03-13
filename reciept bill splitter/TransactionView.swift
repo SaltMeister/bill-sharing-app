@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct TransactionView: View {
+
+    @EnvironmentObject var user: UserViewModel
+    
     let transaction: Transaction
     var totalSpent: Double {
            return transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
@@ -19,6 +22,13 @@ struct TransactionView: View {
                                 .fontWeight(.bold)
         }
         .navigationTitle("Transaction Details")
+
+
+        Button("Complete Transaction") {
+            Task {
+                await DatabaseAPI.toggleGroupTransactionsCompletion(groupID: user.groups_id?[user.selectedGroupIndex] ?? "", completion: true)
+            }
+        }
     }
 }
 
