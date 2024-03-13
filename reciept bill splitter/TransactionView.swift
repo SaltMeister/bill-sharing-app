@@ -39,8 +39,12 @@ struct TransactionView: View {
                         }
                     }
                 }
-                Text("Total Spent: $\(String(format: "%.2f", totalSpent))")
+                Text("Your Total Contribution: $\(String(format: "%.2f", calculateUserTotalContribution(transaction: user.selectedTransaction!, userID: user.user_id)))")
                     .fontWeight(.bold)
+
+                Text("Total: $\(String(format: "%.2f", totalSpent))")
+                    .fontWeight(.bold)
+                
             } else {
                 Text("ViewModel Did not Update Transactions")
             }
@@ -49,7 +53,7 @@ struct TransactionView: View {
             if selectedGroup?.owner_id == user.user_id {
                 Button("Complete Transaction") {
                     Task {
-                        await DatabaseAPI.toggleGroupTransactionsCompletion(transactionId: user.selectedTransaction?.transaction_id ?? "", completion: true)
+                        await DatabaseAPI.toggleGroupTransactionsCompletion(transactionID: user.selectedTransaction?.transaction_id ?? "", completion: true)
                     }
                 }
             }
@@ -61,4 +65,18 @@ struct TransactionView: View {
         
 
     }
+    func calculateUserTotalContribution(transaction: Transaction, userID: String) -> Double {
+        var totalContribution: Double = 0.0
+
+        for (index, item) in transaction.itemList.enumerated() {
+            if let bidders = transaction.itemBidders[String(index)], bidders.contains(userID) {
+                // If the user is bidding on the item, split the cost among all bidders
+                let pricePerBidder = Double(item.priceInCents) / 100.0 / Double(bidders.count)
+                totalContribution += pricePerBidder
+            }
+        }
+
+        return totalContribution
+    }
+
 }

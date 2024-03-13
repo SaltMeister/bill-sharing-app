@@ -279,20 +279,19 @@ class DatabaseAPI {
         
         return nil
     }
-    
-    static func toggleGroupTransactionsCompletion(transactionId: String, completion: Bool) async {
-        let documentRef = db.collection("transactions").document(transactionId)
+    static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
+        let transactionRef = db.collection("transactions").document(transactionID)
         
         do {
             let document = try await documentRef.getDocument()
-            
             if document.exists {
-                try await documentRef.updateData([
+                try await transactionRef.updateData([
                     "isCompleted": completion
                 ])
-            }	
+            }
+            print("Transaction \(transactionID) updated to completion status \(completion).")
         } catch let error {
-            print("Error updating transactions for group: \(error)")
+            print("Error updating transaction: \(error)")
         }
     }
 
