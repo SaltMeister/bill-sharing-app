@@ -283,7 +283,7 @@ class DatabaseAPI {
         let transactionRef = db.collection("transactions").document(transactionID)
         
         do {
-            let document = try await documentRef.getDocument()
+            let document = try await transactionRef.getDocument()
             if document.exists {
                 try await transactionRef.updateData([
                     "isCompleted": completion
