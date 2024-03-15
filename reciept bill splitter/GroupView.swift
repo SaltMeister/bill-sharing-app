@@ -182,15 +182,21 @@ struct GroupView_Previews: PreviewProvider {
 }*/
 struct GroupView: View {
     @EnvironmentObject var user: UserViewModel
+    @State private var isCameraPresented = false
+    @State private var selectedGroup: Group?
     
     var body: some View {
         NavigationView {
             VStack {
+                Text("Your Groups")
+                    .font(.title)
+                    .padding()
+                
                 if user.groups.isEmpty {
                     Text("No groups found")
                 } else {
                     List(user.groups, id: \.groupID) { group in
-                        NavigationLink(destination: Text("Details of \(group.group_name)")) {
+                        NavigationLink(destination: GroupDetailView(group: group)) {
                             Text(group.group_name)
                         }
                     }
@@ -205,5 +211,4 @@ struct GroupView: View {
         }
     }
 }
-
 

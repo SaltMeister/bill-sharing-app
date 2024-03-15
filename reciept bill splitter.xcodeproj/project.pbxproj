@@ -23,6 +23,7 @@
 		32E58BD82B8A9B1300F9B44E /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */; };
 		32E5E1892B8DA66C005BF4F4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */; };
 		32E5E18A2B8DA881005BF4F4 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */; };
+		36788E3F2BA50F22006925A6 /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36788E3E2BA50F22006925A6 /* GroupDetailView.swift */; };
 		36E9BE642B86ACE00020BE12 /* SignUpLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */; };
 		36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE652B86AD1C0020BE12 /* HomeView.swift */; };
 		36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE672B86AD3F0020BE12 /* FriendsView.swift */; };
@@ -49,6 +50,7 @@
 		32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 		32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		36788E3E2BA50F22006925A6 /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
 		36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLogInView.swift; sourceTree = "<group>"; };
 		36E9BE652B86AD1C0020BE12 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		36E9BE672B86AD3F0020BE12 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				36E9BE652B86AD1C0020BE12 /* HomeView.swift */,
 				36E9BE672B86AD3F0020BE12 /* FriendsView.swift */,
 				36E9BE692B86AD4C0020BE12 /* GroupView.swift */,
+				36788E3E2BA50F22006925A6 /* GroupDetailView.swift */,
 				36E9BE6B2B86AD5D0020BE12 /* HistoryView.swift */,
 				36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */,
 				36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */,
@@ -235,6 +238,7 @@
 				36E9BE6C2B86AD5D0020BE12 /* HistoryView.swift in Sources */,
 				36E9BE6E2B86AD6E0020BE12 /* SettingsView.swift in Sources */,
 				36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */,
+				36788E3F2BA50F22006925A6 /* GroupDetailView.swift in Sources */,
 				32847F2A2B8D96C60061449F /* ScanReciept.swift in Sources */,
 				32847F2C2B8D96D50061449F /* ContentView.swift in Sources */,
 				36E9BE742B86C18D0020BE12 /* AccountView.swift in Sources */,
