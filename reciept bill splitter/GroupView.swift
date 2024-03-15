@@ -188,10 +188,6 @@ struct GroupView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Text("Your Groups")
-                    .font(.title)
-                    .padding()
-                
                 if user.groups.isEmpty {
                     Text("No groups found")
                 } else {
@@ -202,7 +198,7 @@ struct GroupView: View {
                     }
                 }
             }
-            .navigationTitle("Groups")
+            .navigationTitle("Your Groups")
             .onAppear {
                 Task {
                     await user.getUserData()

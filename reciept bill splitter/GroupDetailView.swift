@@ -28,7 +28,12 @@ struct GroupDetailView: View {
             // Display list of transactions for the group
             if !existingTransactions.isEmpty {
                 List(existingTransactions, id: \.transaction_id) { transaction in
-                    Text(transaction.name) // Display transaction name
+                    NavigationLink(destination: TransactionView()) {
+                                        Text(transaction.name)
+                                            .onTapGesture {
+                                                user.selectedTransaction = transaction
+                                            }
+                                    }
                 }
             } else {
                 Text("No transactions found")
