@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-struct GroupView: View {
+/*struct GroupView: View {
     let db = Firestore.firestore()
     
     @State private var isCameraPresented = false
@@ -179,5 +179,31 @@ struct GroupView_Previews: PreviewProvider {
     static var previews: some View {
         GroupView().environmentObject(UserViewModel())
     }
+}*/
+struct GroupView: View {
+    @EnvironmentObject var user: UserViewModel
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                if user.groups.isEmpty {
+                    Text("No groups found")
+                } else {
+                    List(user.groups, id: \.groupID) { group in
+                        NavigationLink(destination: Text("Details of \(group.group_name)")) {
+                            Text(group.group_name)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Groups")
+            .onAppear {
+                Task {
+                    await user.getUserData()
+                }
+            }
+        }
+    }
 }
+
 
