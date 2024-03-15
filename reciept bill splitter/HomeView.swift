@@ -8,65 +8,15 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var isSplitViewActive : Bool = false
+    @State private var isSplitViewActive: Bool = false
     @State private var isViewingGroup = false
-    
     @State private var isJoiningGroup = false
-    
     @State private var isEmptyDisplayFormat = true
-    
     @EnvironmentObject var user: UserViewModel
     
     var body: some View {
-        NavigationStack{
+        NavigationStack {
             VStack {
-                Spacer()
-                if isEmptyDisplayFormat {
-                    Button {
-                        Task {
-                            await DatabaseAPI.createGroup()
-                            await user.getUserData()
-                            isEmptyDisplayFormat = false
-                        }
-                        
-                    } label: { Text("Create Group") }
-                        .font(.custom("Avenir", size: 30))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 20)
-                        .background(Color.black)
-                        .cornerRadius(1)
-                }
-                else {
-                    // Display all groups
-                    ForEach(Array(user.groups.enumerated()), id: \.offset) { index, element in
-                        HStack {
-                            Text(element.group_name)
-                            Text("Invite Code \(element.invite_code)")
-                        }
-                        .padding(.vertical)
-                        .shadow(color: .gray, radius: 0.5)
-                        .onTapGesture {
-                            user.selectedGroupIndex = index
-                            isViewingGroup = true
-                            // Open Group View and display group data
-                        }
-                    }
-                    Button {
-                        Task {
-                            await DatabaseAPI.createGroup()
-                            await user.getUserData()
-                        }
-                    } label: {Text("Create Group") }
-                        .font(.custom("Avenir", size: 15))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 10)
-                        .background(Color.black)
-                        .cornerRadius(15)
-                    
-                    
-                }
                 Spacer()
                 HStack {
                     Spacer()
@@ -85,19 +35,13 @@ struct HomeView: View {
                 BottomToolbar()
             }
         }
-        // Load Groups or create one
         .onAppear {
             Task {
                 await user.getUserData()
-                
-                // Check if user groups is empty
                 if user.groups.count > 0 {
                     isEmptyDisplayFormat = false
                 }
             }
-        }
-        .navigationDestination(isPresented: $isSplitViewActive){
-            SplitView()
         }
         .navigationDestination(isPresented: $isJoiningGroup) {
             JoinGroupView()
