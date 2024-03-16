@@ -34,6 +34,7 @@ struct Transaction : Codable {
     var itemBidders: [String:[String]]
     var name: String
     var isCompleted: Bool
+    var timeCreated: Date // Adding timeCreated attribute
     
 }
 
