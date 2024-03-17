@@ -9,68 +9,6 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-/*struct GroupDetailView: View {
-    @State private var isCameraPresented = false
-    @State private var isTransactionSelected = false
-    @State private var selectedImage: UIImage?
-    @State private var isTaken = false
-    @State private var existingTransactions: [Transaction] = []
-    @State private var totalSpent: Double = 0
-
-    
-    let group: Group
-    @EnvironmentObject var user: UserViewModel
-    
-    var body: some View {
-        NavigationStack{
-            VStack {
-                Text("Group: \(group.group_name)")
-                    .font(.title)
-                    .padding()
-                
-                // Display list of transactions for the group
-                if !existingTransactions.isEmpty {
-                    List(existingTransactions, id: \.transaction_id) { transaction in
-                        Button(action: {
-                                   user.selectedTransaction = transaction
-                                   isTransactionSelected = true
-                               }) {
-                                   Text(transaction.name)
-                               }
-                    }
-                    .navigationDestination(isPresented: $isTransactionSelected){
-                        TransactionView()
-                    }
-                } else {
-                    Text("No transactions found")
-                }
-                
-                // Button to take a picture of a receipt
-                Button(action: {
-                    isCameraPresented = true
-                }) {
-                    Text("Take Picture of Receipt")
-                }
-                .sheet(isPresented: $isCameraPresented) {
-                    // Present CameraView when the button is tapped
-                    CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
-                }
-            }
-            .navigationTitle("Group Details")
-            .onAppear {
-                // Load transactions for the group
-                Task {
-                    existingTransactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: group.groupID) ?? []
-                    totalSpent = existingTransactions.reduce(0) { $0 + Double($1.itemList.reduce(0) { $0 + $1.priceInCents }) / 100 }
-                }
-            }
-        }
-    }
-}*/
-import SwiftUI
-import FirebaseFirestore
-import FirebaseFirestoreSwift
-
 struct GroupDetailView: View {
     let db = Firestore.firestore()
     @State private var isCameraPresented = false
@@ -79,6 +17,10 @@ struct GroupDetailView: View {
     @State private var isTaken = false
     @State private var existingTransactions: [Transaction] = []
     @State private var totalSpent: Double = 0
+    
+    @State private var isManualInputPresented = false
+    @State private var transactionName = ""
+    @State private var transactionPrice = ""
     
     @State var selectedGroup: Group?
     @State var isAlert = false
@@ -112,6 +54,9 @@ struct GroupDetailView: View {
                             }
                         }
                     }
+                    Button("Add Transaction") {
+                        isManualInputPresented.toggle()
+                    }
                 } else {
                     Text("No transactions found")
                 }
@@ -141,6 +86,11 @@ struct GroupDetailView: View {
             .navigationDestination(isPresented: $isTransactionSelected) {
                 TransactionView()
             }
+            .navigationDestination(isPresented: $isManualInputPresented) {
+                //ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, addTransaction: addTransaction)
+                ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup?.groupID ?? "")
+                
+            }
             .onChange(of: scanReceipt.isScanning) {
                 if !scanReceipt.isScanning {
                     Task {
@@ -160,6 +110,15 @@ struct GroupDetailView: View {
             }
         }
     }
+    
+    /*private func addTransaction() {
+            // Add the transaction to the database or perform any other necessary actions
+            // You can access the entered transaction details from transactionName, transactionPrice, etc.
+            let newItem = Item(priceInCents: Int(transactionPrice) ?? 0, name: transactionName)
+            let newTransaction = Transaction(transaction_id: UUID().uuidString, itemList: [newItem], itemBidders: [:], name: transactionName, isCompleted: false)
+            user.currentSelectedGroupTransactions.append(newTransaction)
+            isManualInputPresented = false
+    }*/
     
     private func listenToDocuments() {
         print("LISTENING TO DOCUMENTS")
