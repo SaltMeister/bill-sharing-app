@@ -192,7 +192,7 @@ struct GroupView: View {
                     Text("No groups found")
                 } else {
                     List(user.groups, id: \.groupID) { group in
-                        NavigationLink(destination: GroupDetailView(group: group)) {
+                        NavigationLink(destination: GroupDetailView(selectedGroup: group)) {
                             Text(group.group_name)
                         }
                     }
