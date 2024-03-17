@@ -160,14 +160,15 @@ class DatabaseAPI {
                 
                 let groupID = document.documentID
                 let group_name = data["group_name"] as? String ?? ""
-                let members = data["members"] as? [Int:String] ?? [:]
-                
+                let members = data["members"] as? [String] ?? []
+                print("Member Database API: \(members)")
+
                 let invite_code = data["invite_code"] as? String ?? ""
                 let owner_id = data["owner_id"] as? String ?? ""
                 // Add Transaction Data in future
                 
                 var groupMemberList: [GroupMember] = []
-                for (index, member) in members {
+                for member in members {
                     groupMemberList.append(GroupMember(id: member))
                 }
                 

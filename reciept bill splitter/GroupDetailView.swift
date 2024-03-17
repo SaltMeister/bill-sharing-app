@@ -18,6 +18,8 @@ struct GroupDetailView: View {
     @State private var existingTransactions: [Transaction] = []
     @State private var totalSpent: Double = 0
     
+    @State private var isViewMembersPopoverPresented = false
+    
     @State private var isManualInputPresented = false
     @State private var transactionName = ""
     @State private var transactionPrice = ""
@@ -77,8 +79,23 @@ struct GroupDetailView: View {
                         isTaken = false // Reset the flag
                     }
                 }
+                
+                
 
                 Spacer()
+                
+                Button(action: {
+                    isViewMembersPopoverPresented.toggle()
+                }) {
+                    Label("View Members", systemImage: "person.2.fill")
+                }
+                .popover(isPresented: $isViewMembersPopoverPresented, arrowEdge: .bottom) {
+                    if let members = selectedGroup?.members {
+                        MembersListView(members: members)
+                    }
+                }
+
+
             }
             .alert(isPresented: $isAlert) {
                 Alert(title: Text("ALERT"), message: Text("You have been assigned a transaction"), dismissButton: .cancel())
@@ -87,7 +104,6 @@ struct GroupDetailView: View {
                 TransactionView()
             }
             .navigationDestination(isPresented: $isManualInputPresented) {
-                //ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, addTransaction: addTransaction)
                 ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup?.groupID ?? "")
                 
             }
@@ -101,6 +117,7 @@ struct GroupDetailView: View {
             .onAppear {
                 if let selectedGroup = selectedGroup {
                     print("DISPLAYING GROUP \(selectedGroup.group_name)")
+                    print("Member IDs: \(selectedGroup.members.map { $0.id })") // Print member IDs
                     self.selectedGroup = selectedGroup
                     Task {
                         await loadTransactions()
@@ -110,15 +127,6 @@ struct GroupDetailView: View {
             }
         }
     }
-    
-    /*private func addTransaction() {
-            // Add the transaction to the database or perform any other necessary actions
-            // You can access the entered transaction details from transactionName, transactionPrice, etc.
-            let newItem = Item(priceInCents: Int(transactionPrice) ?? 0, name: transactionName)
-            let newTransaction = Transaction(transaction_id: UUID().uuidString, itemList: [newItem], itemBidders: [:], name: transactionName, isCompleted: false)
-            user.currentSelectedGroupTransactions.append(newTransaction)
-            isManualInputPresented = false
-    }*/
     
     private func listenToDocuments() {
         print("LISTENING TO DOCUMENTS")
@@ -189,3 +197,20 @@ struct GroupDetailView: View {
         }
     }
 }
+
+struct MembersListView: View {
+    let members: [GroupMember]
+    
+    var body: some View {
+        List {
+            ForEach(members, id: \.id) { member in
+                Text(member.id)
+            }
+        }
+        .onAppear {
+                    print("Members: \(members)")
+                }
+    }
+}
+
+
