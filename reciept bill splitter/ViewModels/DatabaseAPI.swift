@@ -224,7 +224,7 @@ class DatabaseAPI {
                     "items": itemList,
                     "itemBidders": itemBidderDict,
                     "group_id": groupID,
-                    "isCompleted": false  // New boolean field with default value
+                    "isCompleted": false // New boolean field with default value
                 ])
             }
             
@@ -266,10 +266,7 @@ class DatabaseAPI {
                 
                 let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
                 let isCompleted = data["isCompleted"] as? Bool ?? false
-                let timeCreatedTimestamp = (document["timeCreated"] as? Timestamp)?.dateValue() ?? Date() // Fetch timeCreated attribute
-
-                
-                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted,  timeCreated: timeCreatedTimestamp)
+                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted)
                 
                 transactionList.append(newTransaction)
             }

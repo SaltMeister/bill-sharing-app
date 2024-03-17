@@ -9,8 +9,9 @@ struct HistoryView: View {
     var body: some View {
         List {
             ForEach(allTransactions.indices, id: \.self) { index in
-                Text(allTransactions[index].name)
-                // Display other transaction details as needed
+                VStack(alignment: .leading) {
+                    Text(allTransactions[index].name)
+                }
             }
         }
         .onAppear {
@@ -28,8 +29,6 @@ struct HistoryView: View {
                 }
             }
             // Sort transactions by time created
-            transactions.sort { $0.timeCreated > $1.timeCreated }
-            
             DispatchQueue.main.async {
                 allTransactions = transactions
             }
