@@ -51,7 +51,7 @@ struct JoinGroupView: View {
                                .background(Color.black)
                                .cornerRadius(15)
             
-                        Button {
+                        /*Button {
                             Task {
                                 await DatabaseAPI.createGroup()
                                 await user.getUserData()
@@ -62,7 +62,7 @@ struct JoinGroupView: View {
                             .padding(.horizontal, 40)
                             .padding(.vertical, 10)
                             .background(Color.black)
-                            .cornerRadius(15)
+                            .cornerRadius(15)*/
 
             
             
