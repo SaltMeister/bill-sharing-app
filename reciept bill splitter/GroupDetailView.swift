@@ -65,7 +65,10 @@ struct GroupDetailView: View {
                 
                 if selectedGroup?.owner_id == user.user_id {
                     Button("Open Camera") {
-                        isCameraPresented = true
+                        Task {
+                            await createTransaction()
+                        }
+                        //isCameraPresented = true
                     }
                     .sheet(isPresented: $isCameraPresented) {
                         CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
@@ -178,9 +181,9 @@ struct GroupDetailView: View {
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
-        let tempTransaction = Transaction(transaction_id: "", itemList: [], itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: "")
+        let tempTransaction = Transaction(transaction_id: "", itemList: [], itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: nil)
         
-        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: "")
+        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: nil)
        
         await DatabaseAPI.createTransaction(transactionData: tempTransaction, groupID: selectedGroup?.groupID)
     }

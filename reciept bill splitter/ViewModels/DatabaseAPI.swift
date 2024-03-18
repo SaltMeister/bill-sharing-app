@@ -266,7 +266,7 @@ class DatabaseAPI {
                     newItemList.append(newItem)
                 }
                 let transaction_id = document.documentID
-                let date = data["dateCreated"] as? String ?? "Unknown"
+                let date = data["dateCreated"] as? Timestamp
                 let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
                 let isCompleted = data["isCompleted"] as? Bool ?? false
                 let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted, dateCreated: date)
