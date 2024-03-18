@@ -37,6 +37,15 @@ struct Transaction : Codable {
     var dateCreated: Timestamp?
 }
 
+struct AssignedTransaction : Codable {
+    var transactionName: String
+    var associatedTransaction_id: String
+    var user_idToPay: String
+    var isPaid: Bool
+    var amountToPay: Int
+    
+}
+
 struct User : Codable {
     var email: String
     var userName: String
@@ -98,6 +107,7 @@ class UserViewModel : ObservableObject {
                 "userName": "UnNamed",
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
+                "assignedTransaction": []
           ])
           print("Document created")
             
