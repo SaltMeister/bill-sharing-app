@@ -85,7 +85,7 @@ class UserViewModel : ObservableObject {
     }
     
     // Creates user in database
-    func createUserInDB() async -> Void {
+    func createUserInDB(username: String) async -> Void {
         // Check if User exists
         guard let user = Auth.auth().currentUser else { 
             print("User Does not exist")
@@ -95,7 +95,7 @@ class UserViewModel : ObservableObject {
         do {
             try await Firestore.firestore().collection("users").document(user.uid).setData([
                 "email": user.email ?? "",
-                "userName": "UnNamed",
+                "userName": username,
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
           ])
