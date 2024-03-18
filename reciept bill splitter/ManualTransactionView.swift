@@ -141,7 +141,7 @@ struct ManualTransactionInputView: View {
         let transactionItems = items.map { Item(priceInCents: Int(($0.price as NSString).doubleValue * 100), name: $0.name) }
         
         // Create a transaction object
-        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: transactionName, isCompleted: false)
+        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: transactionName, isCompleted: false, dateCreated: nil)
         
         // Call the DatabaseAPI to store the transaction
         Task {

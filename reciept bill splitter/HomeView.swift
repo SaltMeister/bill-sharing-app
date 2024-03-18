@@ -18,6 +18,12 @@ struct HomeView: View {
         NavigationStack {
             VStack {
                 Spacer()
+                if isEmptyDisplayFormat {
+                    Text("Looks like you aren't in any groups.")
+                    Text("Create or Join one.")
+                } else {
+                    Text("USER IS IN GROUPS PLEASE DISPLAY THEM CODERS.")
+                }
                 HStack {
                     Spacer()
                     Button {
