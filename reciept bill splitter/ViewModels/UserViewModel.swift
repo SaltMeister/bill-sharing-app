@@ -33,8 +33,7 @@ struct Transaction : Codable {
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
     var itemBidders: [String:[String]]
     var name: String
-    var isCompleted: Bool
-    
+    var isCompleted: Bool    
 }
 
 struct User : Codable {

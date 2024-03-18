@@ -1,37 +1,38 @@
 //
-//  GroupView.swift
+//  GroupDetailView.swift
 //  reciept bill splitter
 //
-//  Created by Josh Vu on 2/21/24.
+//  Created by Josh Vu on 3/15/24.
 //
 
 import SwiftUI
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-/*struct GroupView: View {
+struct GroupDetailView: View {
     let db = Firestore.firestore()
-    
     @State private var isCameraPresented = false
+    @State private var isTransactionSelected = false
     @State private var selectedImage: UIImage?
     @State private var isTaken = false
+    @State private var existingTransactions: [Transaction] = []
+    @State private var totalSpent: Double = 0
+    
+    @State private var isViewMembersPopoverPresented = false
+    
+    @State private var isManualInputPresented = false
+    @State private var transactionName = ""
+    @State private var transactionPrice = ""
     
     @State var selectedGroup: Group?
-    @State var existingTransactions: [Transaction] = []
-    @State private var totalSpent: [Double] = []
-    
-    @State var isViewingTransaction = false
     @State var isAlert = false
     
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
-    
+
     var body: some View {
-        NavigationStack{
-            
+        NavigationStack {
             VStack {
-                Text(selectedGroup?.group_name ?? "None")
-                
                 if !user.currentSelectedGroupTransactions.isEmpty {
                     List {
                         ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
@@ -41,7 +42,7 @@ import FirebaseFirestoreSwift
                                 }
                                 .onTapGesture {
                                     user.selectedTransaction = user.currentSelectedGroupTransactions[index]
-                                    isViewingTransaction = true
+                                    isTransactionSelected = true
                                 }
                                 .opacity(0.5)
                             } else {
@@ -50,10 +51,13 @@ import FirebaseFirestoreSwift
                                 }
                                 .onTapGesture {
                                     user.selectedTransaction = user.currentSelectedGroupTransactions[index]
-                                    isViewingTransaction = true
+                                    isTransactionSelected = true
                                 }
                             }
                         }
+                    }
+                    Button("Add Transaction") {
+                        isManualInputPresented.toggle()
                     }
                 } else {
                     Text("No transactions found")
@@ -67,22 +71,41 @@ import FirebaseFirestoreSwift
                         CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
                     }
                     .onChange(of: isTaken) {
-                            if let imageToScan = selectedImage {
-                                Task {
-                                    await scanReceipt.scanReceipt(image: imageToScan)
-                                }
+                        if let imageToScan = selectedImage {
+                            Task {
+                                await scanReceipt.scanReceipt(image: imageToScan)
                             }
-                            isTaken = false // Reset the flag
                         }
+                        isTaken = false // Reset the flag
+                    }
                 }
+                
+                
 
                 Spacer()
+                
+                Button(action: {
+                    isViewMembersPopoverPresented.toggle()
+                }) {
+                    Label("View Members", systemImage: "person.2.fill")
+                }
+                .popover(isPresented: $isViewMembersPopoverPresented, arrowEdge: .bottom) {
+                    if let members = selectedGroup?.members {
+                        MembersListView(members: members)
+                    }
+                }
+
+
             }
             .alert(isPresented: $isAlert) {
                 Alert(title: Text("ALERT"), message: Text("You have been assigned a transaction"), dismissButton: .cancel())
             }
-            .navigationDestination(isPresented: $isViewingTransaction) {
+            .navigationDestination(isPresented: $isTransactionSelected) {
                 TransactionView()
+            }
+            .navigationDestination(isPresented: $isManualInputPresented) {
+                ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup?.groupID ?? "")
+                
             }
             .onChange(of: scanReceipt.isScanning) {
                 if !scanReceipt.isScanning {
@@ -92,11 +115,14 @@ import FirebaseFirestoreSwift
                 }
             }
             .onAppear {
-                print("DISPLAYING GROUP \(user.groups[user.selectedGroupIndex])")
-                selectedGroup = user.groups[user.selectedGroupIndex]
-                Task {
-                    await loadTransactions()
-                    listenToDocuments()
+                if let selectedGroup = selectedGroup {
+                    print("DISPLAYING GROUP \(selectedGroup.group_name)")
+                    print("Member IDs: \(selectedGroup.members.map { $0.id })") // Print member IDs
+                    self.selectedGroup = selectedGroup
+                    Task {
+                        await loadTransactions()
+                        listenToDocuments()
+                    }
                 }
             }
         }
@@ -114,7 +140,6 @@ import FirebaseFirestoreSwift
                 if let error = error {
                     print("Error retreiving collection: \(error)")
                 }
-                
                 
                 // Find Changes where document is a diff
                 snapshots.documentChanges.forEach { diff in
@@ -139,14 +164,13 @@ import FirebaseFirestoreSwift
                                     user.currentSelectedGroupTransactions = transactions // Store all transactions
                                     totalSpent = transactions.map { transaction in
                                         transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
-                                    }
+                                    }.reduce(0, +)
                                 }
                             } else {
                                 print("No transactions found for group \(selectedGroup?.groupID ?? "")")
                             }
                         }
                     }
-                    
                 }
             }
     }
@@ -166,8 +190,7 @@ import FirebaseFirestoreSwift
                 user.currentSelectedGroupTransactions = transactions // Store all transactions
                 totalSpent = transactions.map { transaction in
                     transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
-                }
-
+                }.reduce(0, +)
             }
         } else {
             print("No transactions found for group \(selectedGroup?.groupID ?? "")")
@@ -175,36 +198,19 @@ import FirebaseFirestoreSwift
     }
 }
 
-struct GroupView_Previews: PreviewProvider {
-    static var previews: some View {
-        GroupView().environmentObject(UserViewModel())
-    }
-}*/
-struct GroupView: View {
-    @EnvironmentObject var user: UserViewModel
-    @State private var isCameraPresented = false
-    @State private var selectedGroup: Group?
+struct MembersListView: View {
+    let members: [GroupMember]
     
     var body: some View {
-        NavigationView {
-            VStack {
-                if user.groups.isEmpty {
-                    Text("No groups found")
-                } else {
-                    List(user.groups, id: \.groupID) { group in
-                        NavigationLink(destination: GroupDetailView(selectedGroup: group)) {
-                            Text(group.group_name)
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Your Groups")
-            .onAppear {
-                Task {
-                    await user.getUserData()
-                }
+        List {
+            ForEach(members, id: \.id) { member in
+                Text(member.id)
             }
         }
+        .onAppear {
+                    print("Members: \(members)")
+                }
     }
 }
+
 
