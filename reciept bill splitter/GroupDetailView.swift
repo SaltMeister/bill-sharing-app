@@ -178,8 +178,11 @@ struct GroupDetailView: View {
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
-        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false)
-        await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup?.groupID)
+        let tempTransaction = Transaction(transaction_id: "", itemList: [], itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: "")
+        
+        let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: "")
+       
+        await DatabaseAPI.createTransaction(transactionData: tempTransaction, groupID: selectedGroup?.groupID)
     }
     
     private func loadTransactions() async {

@@ -219,13 +219,15 @@ class DatabaseAPI {
                         "name": transactionData.itemList[i].name
                     ])
                 }
-            
+                print(Firebase.FieldValue.serverTimestamp())
+                
                 try await db.collection("transactions").addDocument(data: [
                     "name": transactionData.name,
                     "items": itemList,
                     "itemBidders": itemBidderDict,
                     "group_id": groupID,
-                    "isCompleted": false // New boolean field with default value
+                    "isCompleted": false,
+                    "dateCreated": Firebase.FieldValue.serverTimestamp()
                 ])
             }
             
@@ -264,10 +266,10 @@ class DatabaseAPI {
                     newItemList.append(newItem)
                 }
                 let transaction_id = document.documentID
-                
+                let date = data["dateCreated"] as? String ?? "Unknown"
                 let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
                 let isCompleted = data["isCompleted"] as? Bool ?? false
-                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted)
+                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted, dateCreated: date)
                 
                 transactionList.append(newTransaction)
             }
