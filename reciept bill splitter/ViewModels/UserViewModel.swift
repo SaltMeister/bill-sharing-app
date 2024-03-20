@@ -55,7 +55,6 @@ class UserViewModel : ObservableObject {
     @Published var user_id = ""
     
     @Published var groups: [Group] = []
-    @Published var stripeAccountID: String = ""
     @Published var groups_id: [String]?
     @Published var friends: [String]?
     @Published var completedTransactions: [String]?
@@ -117,7 +116,5 @@ class UserViewModel : ObservableObject {
         }
          
     }
-    func setStripeId(accountID: String){
-        stripeAccountID = accountID
-    }
+
 }

@@ -39,7 +39,6 @@
 	<string>receipt-bill-share-app</string>
 	<key>STORAGE_BUCKET</key>
 	<string>receipt-bill-share-app.appspot.com</string>
-  <key>NSAllowsArbitraryLoads</key>
-    <true/>
+
 </dict>
 </plist>

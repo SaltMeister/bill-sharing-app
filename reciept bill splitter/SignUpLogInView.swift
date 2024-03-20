@@ -72,32 +72,7 @@ struct SignUpLogInView: View {
                                 print(uid)
                                 print(email)
                             }
-                            let data: [String: Any] = [
-                                    "email": result.user.email ?? ""
-                                ]
-
-                                // Call the Cloud Function
-//                                Functions.functions().httpsCallable("createExpressAccount").call(data) { (result, error) in
-//                                    if let error = error as NSError? {
-//                                        print("Error calling createExpressAccount:", error.localizedDescription)
-//                                        return
-//                                    }
-//
-//                                    guard let accountID = (result?.data as? [String: Any])?["accountId"] as? String else {
-//                                        print("Error parsing account ID from createExpressAccount function result")
-//                                        return
-//                                    }
-//                                    self.user.setStripeId(accountID: accountID)
-//                                    print("Created Express Account with ID:", accountID)
-//                                    DatabaseAPI.setStripeConnectAccountId(uid: self.user.uid, accountId: accountID) { error in
-//                            if let error = error {
-//                                print("Error setting Stripe Connect Account ID in Firestore: \(error.localizedDescription)")
-//                            } else {
-//                                print("Stripe Connect Account ID set successfully in Firestore.")
-//                            }
-//                        }
-//                                    // Proceed with your app flow, now that the account is created
-//                                }
+                           
 
 
                             print("Successful login")

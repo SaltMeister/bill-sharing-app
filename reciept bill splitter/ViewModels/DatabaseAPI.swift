@@ -282,9 +282,12 @@ class DatabaseAPI {
             }
         }
     }
-    static func setStripeConnectAccountId(uid: String, accountId: String, completion: @escaping (Error?) -> Void) {
-        let db = Firestore.firestore()
-        let userRef = db.collection("users").document(uid)
+    static func setStripeConnectAccountId(accountId: String, completion: @escaping (Error?) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return
+        }
+        let userRef = db.collection("users").document(user.uid)
 
         // Update the user document with the Stripe Connect Account ID
         userRef.updateData(["stripeConnectAccountId": accountId]) { error in
