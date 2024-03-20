@@ -5,6 +5,7 @@ import SwiftUI
 class PaymentManager: ObservableObject {
     @Published var paymentResult: PaymentSheetResult?
     @Published var  paymentSheet: PaymentSheet?
+    
     var clientSecret: String?
     
     func preparePaymentSheet(customerId: String, ephemeralKey: String) {

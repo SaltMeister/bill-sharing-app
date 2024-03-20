@@ -1,7 +1,7 @@
 
 
 import SwiftUI
-
+import StripePaymentSheet
 /*struct HomeView: View {
     @State private var isSplitViewActive: Bool = false
     @State private var isViewingGroup = false
@@ -103,6 +103,8 @@ struct HomeView: View {
     @State private var isViewingTransaction = false
     @State private var isAlert = false
     
+    @StateObject private var paymentManager = PaymentManager()
+      @State private var showPaymentSheet = false
     var body: some View {
         NavigationStack {
             VStack {
@@ -115,7 +117,40 @@ struct HomeView: View {
                         }
                     }
                 }
-                
+                Button("Transfer Money") {
+                        paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn") // this is the stripeconnectedID destinatin
+                                    }
+                Button("Collect Payment") {
+                        paymentManager.fetchPaymentDataAndPrepareSheet(uid: userViewModel.user_id, amount: 1000)
+                                   
+                }
+                 VStack{
+                 if let paymentSheet = paymentManager.paymentSheet {
+                     PaymentSheet.PaymentButton(
+                         paymentSheet: paymentSheet,
+                         onCompletion: paymentManager.onPaymentCompletion
+                     ) {
+                         Text("Buy")
+                     }
+                 } else {
+                     Text("Loading…")
+                 }
+                 if let result = paymentManager.paymentResult {
+                     switch result {
+                     case .completed:
+                         Text("Payment complete")
+                     case .failed(let error):
+                         Text("Payment failed: \(error.localizedDescription)")
+                     case .canceled:
+                         Text("Payment canceled.")
+                     }
+                 }
+             }
+                 Button("Connect with Stripe") {
+                         print("creating account")
+
+                     paymentManager.createStripeAccountLink(stripeAccountID: "acct_1Ovoc6QQyo8likZn")
+                 }
                 Spacer()
                 
                 if let selectedGroup = selectedGroup {
