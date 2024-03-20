@@ -21,7 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Your existing setup code
         FirebaseApp.configure()
         AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
-        StripeAPI.defaultPublishableKey = "pk_live_51Ok9axKKu7GjlI2Q8HMX8MjRDAMl6j5QcQ6VKHmApeCf0Xul8A9gcH1Ih9RBBgIYX5iUXWplZSiTT5tmelbaC3Ky007As5L027"
+        StripeAPI.defaultPublishableKey = "pk_test_51Ok9axKKu7GjlI2QUFnpxXO1l3w7udwBAThjlXxvJ5wn7JJLw3H1kWAYq73mJgz0NaFdk5qBLvqYDv0JFoRPNkXy00DKklUgdW"
 
         // More setup code as needed
         return true

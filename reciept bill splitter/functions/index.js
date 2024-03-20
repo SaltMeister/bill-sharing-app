@@ -52,8 +52,8 @@ exports.createAccountLink = functions.https.onCall(async (data, context) => {
     try {
         const accountLink = await stripe.accountLinks.create({
             account: data.accountId,
-            refresh_url: 'yourapp://reauth', // Deep link to handle re-authentication
-            return_url: 'yourapp://onboarding', // Replace with your actual return URL
+            refresh_url: 'https://diegomtz5.github.io/splitAppWebPage/reauth', // Deep link to handle re-authentication
+            return_url: 'https://diegomtz5.github.io/splitAppWebPage/redirect', // Replace with your actual return URL
             type: 'account_onboarding',
         });
 
@@ -63,3 +63,70 @@ exports.createAccountLink = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('internal', 'Unable to create account link');
     }
 });
+
+exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const amount = data.amount; // The amount you want to charge, in cents
+    const currency = 'usd'; // or any other currency
+    const customerId = data.stripeCustomerId; // The Stripe Customer ID you retrieved earlier
+
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: currency,
+            customer: customerId,
+            // Add other parameters as needed
+        });
+
+        return { clientSecret: paymentIntent.client_secret };
+    } catch (error) {
+        console.error('Error creating PaymentIntent:', error);
+        throw new functions.https.HttpsError('internal', 'Unable to create PaymentIntent');
+    }
+});
+exports.createEphemeralKey = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const customerId = data.customerId;
+    const apiVersion = data.apiVersion; // The API version to use for the key
+
+    try {
+        const ephemeralKey = await stripe.ephemeralKeys.create(
+            { customer: customerId },
+            { apiVersion: apiVersion }
+        );
+        return { key: ephemeralKey.secret };
+    } catch (error) {
+        console.error('Error creating ephemeral key:', error);
+        throw new functions.https.HttpsError('internal', 'Unable to create ephemeral key');
+    }
+});
+// Function to create a transfer to a connected account
+exports.createTransfer = functions.https.onCall(async (data, context) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
+
+    const amount = data.amount; // Amount to be transferred
+    const destinationAccountId = data.destinationAccountId; // The connected account ID to transfer funds to
+
+    try {
+        const transfer = await stripe.transfers.create({
+            amount: amount,
+            currency: 'usd',
+            destination: destinationAccountId,
+            // You can add a description or metadata if needed
+        });
+
+        return { transferId: transfer.id };
+    } catch (error) {
+        console.error('Error creating transfer:', error);
+        throw new functions.https.HttpsError('internal', 'Unable to create transfer');
+    }
+});
+

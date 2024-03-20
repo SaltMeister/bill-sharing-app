@@ -32,6 +32,7 @@
 		36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE712B86B6240020BE12 /* SignUpView.swift */; };
 		36E9BE742B86C18D0020BE12 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE732B86C18D0020BE12 /* AccountView.swift */; };
 		36E9BE762B86CAEA0020BE12 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */; };
+		E50B498F2BAA0A640080CEAB /* MyBackendModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50B498E2BAA0A640080CEAB /* MyBackendModel.swift */; };
 		E52146CA2B9FE12C007571A2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52146C92B9FE12C007571A2 /* SceneDelegate.swift */; };
 		E554E9BB2B9F9A7700734554 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = E554E9BA2B9F9A7700734554 /* FirebaseMessaging */; };
 		E554E9BF2B9F9E8F00734554 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = E554E9BE2B9F9E8F00734554 /* FirebaseFunctions */; };
@@ -67,6 +68,7 @@
 		36E9BE712B86B6240020BE12 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		36E9BE732B86C18D0020BE12 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
+		E50B498E2BAA0A640080CEAB /* MyBackendModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyBackendModel.swift; sourceTree = "<group>"; };
 		E52146C82B9FE060007571A2 /* reciept-bill-splitter-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "reciept-bill-splitter-Info.plist"; sourceTree = SOURCE_ROOT; };
 		E52146C92B9FE12C007571A2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -146,6 +148,7 @@
 				32B1A4C22B828F9D00A20FDD /* Assets.xcassets */,
 				32B1A4C42B828F9D00A20FDD /* Preview Content */,
 				E52146C92B9FE12C007571A2 /* SceneDelegate.swift */,
+				E50B498E2BAA0A640080CEAB /* MyBackendModel.swift */,
 			);
 			path = "reciept bill splitter";
 			sourceTree = "<group>";
@@ -279,6 +282,7 @@
 				36E9BE762B86CAEA0020BE12 /* AddFriendView.swift in Sources */,
 				E52146CA2B9FE12C007571A2 /* SceneDelegate.swift in Sources */,
 				36E9BE702B86AD8D0020BE12 /* SplitView.swift in Sources */,
+				E50B498F2BAA0A640080CEAB /* MyBackendModel.swift in Sources */,
 				36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */,
 				32E58BD82B8A9B1300F9B44E /* UserViewModel.swift in Sources */,
 				36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */,
@@ -424,7 +428,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "reciept-bill-splitter-Info.plist";
+				INFOPLIST_FILE = "reciept bill splitter/GoogleService-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -437,7 +441,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				NEW_SETTING = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.diegomartinez;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.simon647.reciept-bill-splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -459,7 +463,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "reciept-bill-splitter-Info.plist";
+				INFOPLIST_FILE = "reciept bill splitter/GoogleService-Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -472,7 +476,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				NEW_SETTING = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.diegomartinez;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.simon647.reciept-bill-splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

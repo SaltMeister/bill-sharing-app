@@ -267,4 +267,35 @@ class DatabaseAPI {
         
         return nil
     }
+    static func retrieveStripeCustomerId(uid: String, completion: @escaping (String?) -> Void) {
+        let db = Firestore.firestore()
+        let customerRef = db.collection("customers").document(uid)
+        
+        customerRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                let data = document.data()
+                let stripeCustomerId = data?["stripeId"] as? String
+                completion(stripeCustomerId)
+            } else {
+                print("Document does not exist or error: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
+            }
+        }
+    }
+    static func setStripeConnectAccountId(uid: String, accountId: String, completion: @escaping (Error?) -> Void) {
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(uid)
+
+        // Update the user document with the Stripe Connect Account ID
+        userRef.updateData(["stripeConnectAccountId": accountId]) { error in
+            if let error = error {
+                print("Error setting Stripe Connect Account ID: \(error.localizedDescription)")
+                completion(error)
+            } else {
+                print("Stripe Connect Account ID set successfully.")
+                completion(nil)
+            }
+        }
+    }
+
 }
