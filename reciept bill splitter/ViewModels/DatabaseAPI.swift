@@ -302,7 +302,7 @@ class DatabaseAPI {
             return
         }
         let userRef = db.collection("users").document(user.uid)
-
+        
         // Update the user document with the Stripe Connect Account ID
         userRef.updateData(["stripeConnectAccountId": accountId]) { error in
             if let error = error {
@@ -312,20 +312,23 @@ class DatabaseAPI {
                 print("Stripe Connect Account ID set successfully.")
                 completion(nil)
             }
-    static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
-        let transactionRef = db.collection("transactions").document(transactionID)
-        
-        do {
-            let document = try await transactionRef.getDocument()
-            if document.exists {
-                try await transactionRef.updateData([
-                    "isCompleted": completion
-                ])
-            }
-            print("Transaction \(transactionID) updated to completion status \(completion).")
-        } catch let error {
-            print("Error updating transaction: \(error)")
         }
     }
-
-}
+            static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
+                let transactionRef = db.collection("transactions").document(transactionID)
+                
+                do {
+                    let document = try await transactionRef.getDocument()
+                    if document.exists {
+                        try await transactionRef.updateData([
+                            "isCompleted": completion
+                        ])
+                    }
+                    print("Transaction \(transactionID) updated to completion status \(completion).")
+                } catch let error {
+                    print("Error updating transaction: \(error)")
+                }
+            }
+            
+        }
+    

@@ -16,23 +16,9 @@ class AppRouter: ObservableObject {
     @Published var currentPage: String?
     
 }
-class AppDelegate: NSObject, UIApplicationDelegate {
-    
-  func application(_ application: UIApplication,
-                   didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-      
-      //let providerFactory = AppCheckDebugProviderFactory()
-      //AppCheck.setAppCheckProviderFactory(providerFactory)
 
-      
-      FirebaseApp.configure()
-      
-      let db = Firestore.firestore()
-      
-      return true
-  }
-}
 class AppDelegate: NSObject, UIApplicationDelegate {
+
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         // Your existing setup code

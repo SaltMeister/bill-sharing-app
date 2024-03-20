@@ -141,7 +141,7 @@ struct HomeView: View {
                                            .foregroundColor(.blue)
                                    }
                                    .navigationDestination(isPresented: $isCreatingGroup) {
-                                       //CreateGroupView()
+                                       CreateGroupView()
                                    }
                                    .navigationDestination(isPresented: $isJoiningGroup) {
                                        JoinGroupView()
