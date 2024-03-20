@@ -29,10 +29,12 @@ struct Group : Codable {
 }
 
 struct Transaction : Codable {
+    var transaction_id: String
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
-    var itemBidders: [Int:[String]]
+    var itemBidders: [String:[String]]
     var name: String
-    
+    var isCompleted: Bool   
+    var dateCreated: Timestamp?
 }
 
 struct User : Codable {
@@ -55,15 +57,17 @@ class UserViewModel : ObservableObject {
     @Published var user_id = ""
     
     @Published var groups: [Group] = []
+
     @Published var groups_id: [String]?
     @Published var friends: [String]?
     @Published var completedTransactions: [String]?
     
     @Published var selectedGroupIndex = 0
     
-    //@Published var transactionList: [Trans]
+    @Published var currentSelectedGroupTransactions: [Transaction] = []
+    @Published var selectedTransaction: Transaction?
     
-    
+    // Initialize Env Variable Data
     func getUserData() async -> Void {
         let userData = await DatabaseAPI.grabUserData()
         
@@ -81,7 +85,7 @@ class UserViewModel : ObservableObject {
     }
     
     // Creates user in database
-    func createUserInDB() async -> Void {
+    func createUserInDB(username: String) async -> Void {
         // Check if User exists
         guard let user = Auth.auth().currentUser else { 
             print("User Does not exist")
@@ -91,11 +95,9 @@ class UserViewModel : ObservableObject {
         do {
             try await Firestore.firestore().collection("users").document(user.uid).setData([
                 "email": user.email ?? "",
-                "userName": "UnNamed",
+                "userName": username,
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
-                "completedTransactions": [], // History of completed user transactions
-//                "activeRequests": []
           ])
           print("Document created")
             
@@ -105,6 +107,8 @@ class UserViewModel : ObservableObject {
         }
     }
     
+    
+    // Set Env Variable Group Data for use called in GetUserData()
     private func setUserGroupData() async -> Void {
         let data = await DatabaseAPI.getGroupData()
         

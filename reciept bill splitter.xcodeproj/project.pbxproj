@@ -11,6 +11,7 @@
 		32847F2A2B8D96C60061449F /* ScanReciept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32847F292B8D96C60061449F /* ScanReciept.swift */; };
 		32847F2C2B8D96D50061449F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32847F2B2B8D96D50061449F /* ContentView.swift */; };
 		328EEB5C2B9199530021F461 /* DatabaseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EEB5B2B9199520021F461 /* DatabaseAPI.swift */; };
+		32A6DA972BA13C81005FAA2C /* JoinGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */; };
 		32B1A4BF2B828F9400A20FDD /* reciept_bill_splitterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */; };
 		32B1A4C32B828F9D00A20FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B1A4C22B828F9D00A20FDD /* Assets.xcassets */; };
 		32B1A4C62B828F9D00A20FDD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */; };
@@ -22,6 +23,9 @@
 		32E58BD82B8A9B1300F9B44E /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */; };
 		32E5E1892B8DA66C005BF4F4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */; };
 		32E5E18A2B8DA881005BF4F4 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */; };
+		36788E3F2BA50F22006925A6 /* GroupDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36788E3E2BA50F22006925A6 /* GroupDetailView.swift */; };
+		36788E412BA766C4006925A6 /* ManualTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36788E402BA766C4006925A6 /* ManualTransactionView.swift */; };
+		36788E432BA7EEB3006925A6 /* CreateGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36788E422BA7EEB3006925A6 /* CreateGroupView.swift */; };
 		36E9BE642B86ACE00020BE12 /* SignUpLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */; };
 		36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE652B86AD1C0020BE12 /* HomeView.swift */; };
 		36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE672B86AD3F0020BE12 /* FriendsView.swift */; };
@@ -32,6 +36,7 @@
 		36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE712B86B6240020BE12 /* SignUpView.swift */; };
 		36E9BE742B86C18D0020BE12 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE732B86C18D0020BE12 /* AccountView.swift */; };
 		36E9BE762B86CAEA0020BE12 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */; };
+<<<<<<< HEAD
 		E50B498F2BAA0A640080CEAB /* PaymentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50B498E2BAA0A640080CEAB /* PaymentManager.swift */; };
 		E52146CA2B9FE12C007571A2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52146C92B9FE12C007571A2 /* SceneDelegate.swift */; };
 		E554E9BB2B9F9A7700734554 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = E554E9BA2B9F9A7700734554 /* FirebaseMessaging */; };
@@ -44,6 +49,9 @@
 		E591A68D2B9E8AD600AC1F5F /* StripePaymentSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E591A68C2B9E8AD600AC1F5F /* StripePaymentSheet */; };
 		E591A68F2B9E8AD600AC1F5F /* StripePayments in Frameworks */ = {isa = PBXBuildFile; productRef = E591A68E2B9E8AD600AC1F5F /* StripePayments */; };
 		E591A6912B9E8AD600AC1F5F /* StripePaymentsUI in Frameworks */ = {isa = PBXBuildFile; productRef = E591A6902B9E8AD600AC1F5F /* StripePaymentsUI */; };
+=======
+		36E9BE862BA007F10020BE12 /* TransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE852BA007F10020BE12 /* TransactionView.swift */; };
+>>>>>>> origin/main
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +59,7 @@
 		32847F292B8D96C60061449F /* ScanReciept.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanReciept.swift; sourceTree = "<group>"; };
 		32847F2B2B8D96D50061449F /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		328EEB5B2B9199520021F461 /* DatabaseAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseAPI.swift; sourceTree = "<group>"; };
+		32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupView.swift; sourceTree = "<group>"; };
 		32B1A4BB2B828F9400A20FDD /* reciept bill splitter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "reciept bill splitter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reciept_bill_splitterApp.swift; sourceTree = "<group>"; };
 		32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
@@ -58,6 +67,9 @@
 		32B1A4C52B828F9D00A20FDD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 		32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		36788E3E2BA50F22006925A6 /* GroupDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDetailView.swift; sourceTree = "<group>"; };
+		36788E402BA766C4006925A6 /* ManualTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualTransactionView.swift; sourceTree = "<group>"; };
+		36788E422BA7EEB3006925A6 /* CreateGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupView.swift; sourceTree = "<group>"; };
 		36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLogInView.swift; sourceTree = "<group>"; };
 		36E9BE652B86AD1C0020BE12 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		36E9BE672B86AD3F0020BE12 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
@@ -68,9 +80,13 @@
 		36E9BE712B86B6240020BE12 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		36E9BE732B86C18D0020BE12 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		E50B498E2BAA0A640080CEAB /* PaymentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentManager.swift; sourceTree = "<group>"; };
 		E52146C82B9FE060007571A2 /* reciept-bill-splitter-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "reciept-bill-splitter-Info.plist"; sourceTree = SOURCE_ROOT; };
 		E52146C92B9FE12C007571A2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+=======
+		36E9BE852BA007F10020BE12 /* TransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionView.swift; sourceTree = "<group>"; };
+>>>>>>> origin/main
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,8 +125,8 @@
 		32B1A4B22B828F9400A20FDD = {
 			isa = PBXGroup;
 			children = (
-				32B1A4BD2B828F9400A20FDD /* reciept bill splitter */,
 				32B1A4BC2B828F9400A20FDD /* Products */,
+				32B1A4BD2B828F9400A20FDD /* reciept bill splitter */,
 				32847F262B8D95AF0061449F /* Recovered References */,
 				E554E9B92B9F9A3E00734554 /* Frameworks */,
 			);
@@ -127,6 +143,7 @@
 		32B1A4BD2B828F9400A20FDD /* reciept bill splitter */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
 				E52146C82B9FE060007571A2 /* reciept-bill-splitter-Info.plist */,
 				32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */,
 				36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */,
@@ -140,15 +157,37 @@
 				36E9BE6B2B86AD5D0020BE12 /* HistoryView.swift */,
 				36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */,
 				36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */,
+=======
+>>>>>>> origin/main
 				36E9BE732B86C18D0020BE12 /* AccountView.swift */,
 				36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */,
-				32847F292B8D96C60061449F /* ScanReciept.swift */,
-				32847F272B8D96B70061449F /* UIImageExtension.swift */,
-				32847F2B2B8D96D50061449F /* ContentView.swift */,
 				32B1A4C22B828F9D00A20FDD /* Assets.xcassets */,
+				32847F2B2B8D96D50061449F /* ContentView.swift */,
+				36E9BE672B86AD3F0020BE12 /* FriendsView.swift */,
+				32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */,
+				36788E3E2BA50F22006925A6 /* GroupDetailView.swift */,
+				36E9BE692B86AD4C0020BE12 /* GroupView.swift */,
+				36E9BE6B2B86AD5D0020BE12 /* HistoryView.swift */,
+				36E9BE652B86AD1C0020BE12 /* HomeView.swift */,
+				36788E422BA7EEB3006925A6 /* CreateGroupView.swift */,
+				32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */,
+				32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */,
+				36788E402BA766C4006925A6 /* ManualTransactionView.swift */,
 				32B1A4C42B828F9D00A20FDD /* Preview Content */,
+<<<<<<< HEAD
 				E52146C92B9FE12C007571A2 /* SceneDelegate.swift */,
 				E50B498E2BAA0A640080CEAB /* PaymentManager.swift */,
+=======
+				32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */,
+				32847F292B8D96C60061449F /* ScanReciept.swift */,
+				36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */,
+				36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */,
+				36E9BE712B86B6240020BE12 /* SignUpView.swift */,
+				36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */,
+				36E9BE852BA007F10020BE12 /* TransactionView.swift */,
+				32847F272B8D96B70061449F /* UIImageExtension.swift */,
+				32C3CD472B8711A700FB2BF1 /* ViewModels */,
+>>>>>>> origin/main
 			);
 			path = "reciept bill splitter";
 			sourceTree = "<group>";
@@ -269,12 +308,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32A6DA972BA13C81005FAA2C /* JoinGroupView.swift in Sources */,
 				32E5E18A2B8DA881005BF4F4 /* LaunchScreenView.swift in Sources */,
 				328EEB5C2B9199530021F461 /* DatabaseAPI.swift in Sources */,
 				32847F282B8D96B70061449F /* UIImageExtension.swift in Sources */,
 				36E9BE6C2B86AD5D0020BE12 /* HistoryView.swift in Sources */,
 				36E9BE6E2B86AD6E0020BE12 /* SettingsView.swift in Sources */,
 				36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */,
+				36788E412BA766C4006925A6 /* ManualTransactionView.swift in Sources */,
+				36788E3F2BA50F22006925A6 /* GroupDetailView.swift in Sources */,
 				32847F2A2B8D96C60061449F /* ScanReciept.swift in Sources */,
 				32847F2C2B8D96D50061449F /* ContentView.swift in Sources */,
 				36E9BE742B86C18D0020BE12 /* AccountView.swift in Sources */,
@@ -284,10 +326,12 @@
 				36E9BE702B86AD8D0020BE12 /* SplitView.swift in Sources */,
 				E50B498F2BAA0A640080CEAB /* PaymentManager.swift in Sources */,
 				36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */,
+				36788E432BA7EEB3006925A6 /* CreateGroupView.swift in Sources */,
 				32E58BD82B8A9B1300F9B44E /* UserViewModel.swift in Sources */,
 				36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */,
 				36E9BE642B86ACE00020BE12 /* SignUpLogInView.swift in Sources */,
 				32B1A4BF2B828F9400A20FDD /* reciept_bill_splitterApp.swift in Sources */,
+				36E9BE862BA007F10020BE12 /* TransactionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,7 +468,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"reciept bill splitter/Preview Content\"";
+<<<<<<< HEAD
 				DEVELOPMENT_TEAM = S3PTQ97NTN;
+=======
+				DEVELOPMENT_TEAM = 3Y46278W32;
+>>>>>>> origin/main
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -441,7 +489,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				NEW_SETTING = "";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.simon647.reciept-bill-splitter";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jlvu-ucdavis.edu.reciept-bill-splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -459,7 +507,11 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"reciept bill splitter/Preview Content\"";
+<<<<<<< HEAD
 				DEVELOPMENT_TEAM = S3PTQ97NTN;
+=======
+				DEVELOPMENT_TEAM = 3Y46278W32;
+>>>>>>> origin/main
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -476,7 +528,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				NEW_SETTING = "";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.simon647.reciept-bill-splitter";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jlvu-ucdavis.edu.reciept-bill-splitter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -47,7 +47,7 @@ class DatabaseAPI {
         return nil
     }
     
-    static func createGroup() async -> Void {
+    static func createGroup(groupName: String) async -> Void {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return
@@ -57,7 +57,7 @@ class DatabaseAPI {
             let groupDocument = try await db.collection("groups").addDocument(data: [
                 "invite_code": randomString(length: 6),
                 "owner_id": user.uid,
-                "group_name": "unnamedGroup",
+                "group_name": groupName,
                 "transactions": [],
                 "members": [user.uid]
             ])
@@ -81,11 +81,10 @@ class DatabaseAPI {
             print("Error creating group: \(error)")
         }
     }
-    
-    static func joinGroup(groupJoinId: String) async -> Void {
+    static func joinGroup(groupJoinId: String) async -> Result<Void, Error> {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
-            return
+            return .failure(NSError(domain: "UserDoesNotExist", code: 0, userInfo: nil))
         }
         
         let groupRef = db.collection("groups").whereField("invite_code", isEqualTo: groupJoinId)
@@ -93,15 +92,18 @@ class DatabaseAPI {
         
         var groupDocumentId = ""
         
-        // Find Document ID from invite code and user Document ID to find group
         do {
             let queryResult = try await groupRef.getDocuments()
-            for document in queryResult.documents {
-                groupDocumentId = document.documentID
-                break
+            guard let document = queryResult.documents.first else {
+                // Handle case where no group matches the invite code
+                print("No group found with the provided invite code")
+                return .failure(NSError(domain: "GroupNotFound", code: 0, userInfo: nil))
             }
+            groupDocumentId = document.documentID
         } catch {
-            print("Error creating group: \(error)")
+            // Handle error while querying groups
+            print("Error querying groups: \(error)")
+            return .failure(error)
         }
         
         let docRef = db.collection("groups").document(groupDocumentId)
@@ -113,12 +115,12 @@ class DatabaseAPI {
                 let gDoc: DocumentSnapshot
                 do {
                     try gDoc = transaction.getDocument(docRef)
-                    
                 } catch let fetchError as NSError {
                     errorPointer?.pointee = fetchError
                     return nil
                 }
-                // Add user id to group memebers
+                
+                // Add user id to group members
                 transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
                 // Add group id to user groups
                 transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
@@ -126,10 +128,14 @@ class DatabaseAPI {
                 return nil
             })
             
+            return .success(())
         } catch {
-            print("Error creating group: \(error)")
+            // Handle error during transaction
+            print("Error joining group: \(error)")
+            return .failure(error)
         }
     }
+
     
     
     // Grabs user group data from database
@@ -141,7 +147,7 @@ class DatabaseAPI {
         
         do {
             
-            let querySnapshots = db.collection("groups").whereField("owner_id", isEqualTo: user.uid)
+            let querySnapshots = db.collection("groups").whereField("members", arrayContains: user.uid)
             
             let documents = try await querySnapshots.getDocuments()
             
@@ -154,14 +160,15 @@ class DatabaseAPI {
                 
                 let groupID = document.documentID
                 let group_name = data["group_name"] as? String ?? ""
-                let members = data["members"] as? [Int:String] ?? [:]
-                
+                let members = data["members"] as? [String] ?? []
+                print("Member Database API: \(members)")
+
                 let invite_code = data["invite_code"] as? String ?? ""
                 let owner_id = data["owner_id"] as? String ?? ""
                 // Add Transaction Data in future
                 
                 var groupMemberList: [GroupMember] = []
-                for (index, member) in members {
+                for member in members {
                     groupMemberList.append(GroupMember(id: member))
                 }
                 
@@ -199,22 +206,28 @@ class DatabaseAPI {
             
             if groupDocument.exists {
                 let data = groupDocument.data()
-                
                 let members = data?["members"] as? [String] ?? []
-                print("MEMBER LIST", members)
+                
                 // Create transaction document and add group members to item bidders
-                var itemBidderDict: [Int: [String]] = [:]
+                var itemBidderDict: [String: [String]] = [:]
+                var itemList = [[String : Any]]()
                 
                 for i in 0..<transactionData.itemList.count {
-                    itemBidderDict.updateValue(members, forKey: i)
+                    itemBidderDict.updateValue(members, forKey: String(i))
+                    itemList.append([
+                        "priceInCents" : transactionData.itemList[i].priceInCents,
+                        "name": transactionData.itemList[i].name
+                    ])
                 }
-                print("BIDDER ID FOR ITEMS", itemBidderDict)
+                print(Firebase.FieldValue.serverTimestamp())
                 
                 try await db.collection("transactions").addDocument(data: [
-                    "name": "Unnamed Transaction",
-                    "items": transactionData.itemList,
+                    "name": transactionData.name,
+                    "items": itemList,
                     "itemBidders": itemBidderDict,
-                    "group_id": groupID
+                    "group_id": groupID,
+                    "isCompleted": false,
+                    "dateCreated": Firebase.FieldValue.serverTimestamp()
                 ])
             }
             
@@ -222,7 +235,6 @@ class DatabaseAPI {
             print("Error creating group: \(error)")
         }
     }
-    
     // Create Transaction Struct List and return
     static func grabAllTransactionsForGroup(groupID: String?) async -> [Transaction]? {
         guard let groupID = groupID else {
@@ -239,6 +251,7 @@ class DatabaseAPI {
         do {
             let transactionQuery = db.collection("transactions").whereField("group_id", isEqualTo: groupID)
             
+            
             let documents = try await transactionQuery.getDocuments()
             
             for document in documents.documents {
@@ -252,17 +265,18 @@ class DatabaseAPI {
                     let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
                     newItemList.append(newItem)
                 }
-                
-                let itemBidders = data["itemBidders"] as? [Int:[String]] ?? [:]
-                
-                let newTransaction = Transaction(itemList: newItemList, itemBidders: itemBidders, name: name)
+                let transaction_id = document.documentID
+                let date = data["dateCreated"] as? Timestamp
+                let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
+                let isCompleted = data["isCompleted"] as? Bool ?? false
+                let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted, dateCreated: date)
                 
                 transactionList.append(newTransaction)
             }
             
             return transactionList
         } catch {
-            print("Error finding User: \(error)")
+            print("Error finding transactions: \(error)")
         }
         
         return nil
@@ -298,6 +312,19 @@ class DatabaseAPI {
                 print("Stripe Connect Account ID set successfully.")
                 completion(nil)
             }
+    static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
+        let transactionRef = db.collection("transactions").document(transactionID)
+        
+        do {
+            let document = try await transactionRef.getDocument()
+            if document.exists {
+                try await transactionRef.updateData([
+                    "isCompleted": completion
+                ])
+            }
+            print("Transaction \(transactionID) updated to completion status \(completion).")
+        } catch let error {
+            print("Error updating transaction: \(error)")
         }
     }
 

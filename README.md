@@ -109,19 +109,20 @@ https://trello.com/invite/b/HFxKbyD7/ATTI51e49951081b77e54b79d2e96428c13d7FFEE0E
 3) Create groups of users that want to split a bill
 
 # Tasks Done
-1) Diego: 
+1) Diego: Overlay lines on camera.
 2) Simon: Group Creation / Select Individual Groups that user is in
 3) Vedant: 
-4) Josh: 
+4) Josh: Nothing :(
 
 # Goals by next week
-1) Allow users to invite members into groups
+1) Allow users to invite members into groups 
 2) Allow creating transactions and member selection of bills.
 3) Set up payment transactions
-4)
+4) Let users join group through code (Josh)
 
 # Issues encountered
   1) Handling matching struct data with database query data
+  2) Time :(
   
 # Git Commits
 Simon:
