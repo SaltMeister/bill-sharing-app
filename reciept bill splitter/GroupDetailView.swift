@@ -110,7 +110,7 @@ struct GroupDetailView: View {
                 TransactionView(selectedTransactionId: $selectedTransactionID, groupData: $selectedGroup)
             }
             .navigationDestination(isPresented: $isManualInputPresented) {
-                ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup.groupID ?? "")
+                ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup.groupID)
             }
             .onChange(of: scanReceipt.isScanning) {
                 if !scanReceipt.isScanning {
@@ -132,7 +132,7 @@ struct GroupDetailView: View {
     
     private func listenToDocuments() {
         print("LISTENING TO DOCUMENTS")
-        db.collection("transactions").whereField("group_id", isEqualTo: selectedGroup.groupID ?? "")
+        db.collection("transactions").whereField("group_id", isEqualTo: selectedGroup.groupID)
             .addSnapshotListener { querySnapshot, error in
                 guard let snapshots = querySnapshot else {
                     print("Error fetching documents: \(error!)")
@@ -188,7 +188,7 @@ struct GroupDetailView: View {
     }
     
     private func loadTransactions() async {
-        print("Loading transactions for group ID: \(selectedGroup.groupID ?? "Unknown")")
+        print("Loading transactions for group ID: \(selectedGroup.groupID)")
         
         if let transactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup.groupID) {
             DispatchQueue.main.async {
@@ -198,7 +198,7 @@ struct GroupDetailView: View {
                 }.reduce(0, +)
             }
         } else {
-            print("No transactions found for group \(selectedGroup.groupID ?? "")")
+            print("No transactions found for group \(selectedGroup.groupID)")
         }
     }
 }
