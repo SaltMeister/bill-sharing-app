@@ -34,31 +34,38 @@ struct GroupDetailView: View {
     
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
-
+    
+    @State var formatter = DateFormatter()
+    
     var body: some View {
         NavigationStack {
             VStack {
                 if !user.currentSelectedGroupTransactions.isEmpty {
                     List {
+                        
                         ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
-                            print(user.currentSelectedGroupTransactions[index].dateCreated)
-                            if user.currentSelectedGroupTransactions[index].isCompleted {
+                            let transactionData = user.currentSelectedGroupTransactions[index]
+                            let date = formatter.string(from: transactionData.dateCreated?.dateValue() ?? Date())
+
+                            if transactionData.isCompleted {
                                 HStack {
-                                    Text(user.currentSelectedGroupTransactions[index].name)
+                                    Text(transactionData.name)
+                                    Text(date)
                                 }
                                 .onTapGesture {
-                                    user.selectedTransaction = user.currentSelectedGroupTransactions[index]
-                                    selectedTransactionID = user.currentSelectedGroupTransactions[index].transaction_id
+                                    user.selectedTransaction = transactionData
+                                    selectedTransactionID = transactionData.transaction_id
                                     isTransactionSelected = true
                                 }
                                 .opacity(0.5)
                             } else {
                                 HStack {
-                                    Text(user.currentSelectedGroupTransactions[index].name)
+                                    Text(transactionData.name)
+                                    Text(date)
                                 }
                                 .onTapGesture {
-                                    user.selectedTransaction = user.currentSelectedGroupTransactions[index]
-                                    selectedTransactionID = user.currentSelectedGroupTransactions[index].transaction_id
+                                    user.selectedTransaction = transactionData
+                                    selectedTransactionID = transactionData.transaction_id
                                     isTransactionSelected = true
                                 }
                             }
@@ -116,6 +123,8 @@ struct GroupDetailView: View {
                 }
             }
             .onAppear {
+                formatter.dateStyle = .short
+                
                 print("DISPLAYING GROUP \(selectedGroup.group_name)")
                 print("Member IDs: \(selectedGroup.members.map { $0.id })") // Print member IDs
                 self.selectedGroup = selectedGroup
