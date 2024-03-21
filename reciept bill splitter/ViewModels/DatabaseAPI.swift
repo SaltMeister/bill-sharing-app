@@ -47,7 +47,7 @@ class DatabaseAPI {
         return nil
     }
     
-    static func createGroup() async -> Void {
+    static func createGroup(groupName: String) async -> Void {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return
@@ -57,7 +57,7 @@ class DatabaseAPI {
             let groupDocument = try await db.collection("groups").addDocument(data: [
                 "invite_code": randomString(length: 6),
                 "owner_id": user.uid,
-                "group_name": "unnamedGroup",
+                "group_name": groupName,
                 "transactions": [],
                 "members": [user.uid]
             ])
