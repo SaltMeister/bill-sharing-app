@@ -122,7 +122,6 @@ struct HomeView: View {
                                     }
                 Button("Collect Payment") {
                         paymentManager.fetchPaymentDataAndPrepareSheet(uid: userViewModel.user_id, amount: 1000)
-                                   
                 }
                  VStack{
                  if let paymentSheet = paymentManager.paymentSheet {
@@ -147,10 +146,14 @@ struct HomeView: View {
                  }
              }
                  Button("Connect with Stripe") {
-                         print("creating account")
+                         print("creating link")
 
                      paymentManager.createStripeAccountLink(stripeAccountID: "acct_1Ovoc6QQyo8likZn")
                  }
+                Button("get paid") {
+                        print("creating account")
+                    paymentManager.createExpressConnectAccountAndOnboardingLink(email: userViewModel.email)
+                }
                 Spacer()
                 
                 if let selectedGroup = selectedGroup {

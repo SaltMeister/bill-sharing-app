@@ -7,7 +7,6 @@ class PaymentManager: ObservableObject {
     @Published var  paymentSheet: PaymentSheet?
     
     var clientSecret: String?
-    
     func preparePaymentSheet(customerId: String, ephemeralKey: String) {
         // Ensure the clientSecret is set
         guard let clientSecret = self.clientSecret else {
@@ -28,14 +27,12 @@ class PaymentManager: ObservableObject {
         self.paymentResult = result
     }
     
-    
     func fetchPaymentDataAndPrepareSheet(uid: String, amount: Int) {
         DatabaseAPI.retrieveStripeCustomerId(uid: uid) { [weak self] customerId in
             guard let self = self, let customerId = customerId else {
                 print("No Stripe Customer ID found for this UID.")
                 return
             }
-            
             // Fetch Ephemeral Key and PaymentIntent client secret
             self.fetchEphemeralKeyAndClientSecret(customerId: customerId, amount: amount) { clientSecret, ephemeralKey in
                 self.preparePaymentSheet(customerId: customerId, ephemeralKey: ephemeralKey)
@@ -65,35 +62,43 @@ class PaymentManager: ObservableObject {
             }
         }
     }
-    
-    func createExpressAccount(email: String){
-        let data: [String: Any] = [
-            "email": email
-        ]
-        
-        Functions.functions().httpsCallable("createExpressAccount").call(data) { (result, error) in
-            if let error = error as NSError? {
+    func createExpressConnectAccountAndOnboardingLink(email: String) {
+        createExpressAccount(email: email) { [weak self] accountId in
+            guard let accountId = accountId else {
+                print("Failed to create Express Account.")
+                return
+            }
+            self?.createStripeAccountLink(stripeAccountID: accountId)
+        }
+    }
+
+    private func createExpressAccount(email: String, completion: @escaping (String?) -> Void) {
+        let data: [String: Any] = ["email": email]
+        Functions.functions().httpsCallable("createExpressAccount").call(data) { result, error in
+            if let error = error {
                 print("Error calling createExpressAccount:", error.localizedDescription)
+                completion(nil)
                 return
             }
             
-            guard let accountID = (result?.data as? [String: Any])?["accountId"] as? String else {
+            guard let accountId = (result?.data as? [String: Any])?["accountId"] as? String else {
                 print("Error parsing account ID from createExpressAccount function result")
+                completion(nil)
                 return
             }
-            print("Created Express Account with ID:", accountID)
-            DatabaseAPI.setStripeConnectAccountId(accountId: accountID) { error in
+            
+            print("Created Express Account with ID:", accountId)
+            DatabaseAPI.setStripeConnectAccountId(accountId: accountId) { error in
                 if let error = error {
                     print("Error setting Stripe Connect Account ID in Firestore: \(error.localizedDescription)")
                 } else {
                     print("Stripe Connect Account ID set successfully in Firestore.")
                 }
             }
-            //                                    // Proceed with your app flow, now that the account is created
-            //
+            completion(accountId)
         }
-    
     }
+
      func createStripeAccountLink(stripeAccountID: String) {
             let functions = Functions.functions()
         functions.httpsCallable("createAccountLink").call(["accountId": stripeAccountID]) { result, error in
@@ -115,8 +120,7 @@ class PaymentManager: ObservableObject {
                     }
                 }else {print("error creating link2")}
             }
-        
-        }
+    }
     func transferMoney(amount: Int, destinationAccountId: String) {
         let functions = Functions.functions()
         functions.httpsCallable("createTransfer").call(["amount": amount, "destinationAccountId": destinationAccountId]) { result, error in
