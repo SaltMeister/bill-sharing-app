@@ -62,6 +62,7 @@ class PaymentManager: ObservableObject {
             }
         }
     }
+    
     func createExpressConnectAccountAndOnboardingLink(email: String) {
         createExpressAccount(email: email) { [weak self] accountId in
             guard let accountId = accountId else {
@@ -98,8 +99,23 @@ class PaymentManager: ObservableObject {
             completion(accountId)
         }
     }
+    func checkStripeBalance(accountId: String, completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        let functions = Functions.functions()
+        functions.httpsCallable("getStripeBalance").call(["accountId": accountId]) { result, error in
+            if let error = error {
+                print("Error fetching Stripe balance:", error.localizedDescription)
+                completion(.failure(error))
+            } else if let balance = result?.data as? [String: Any] {
+                // The balance object will contain various details about the balance.
+                print("Balance: \(balance)")
+                completion(.success(balance))
+            }
+        }
+    }
+
 
      func createStripeAccountLink(stripeAccountID: String) {
+         
             let functions = Functions.functions()
         functions.httpsCallable("createAccountLink").call(["accountId": stripeAccountID]) { result, error in
                 if let error = error as NSError? {

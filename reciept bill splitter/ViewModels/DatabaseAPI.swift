@@ -296,12 +296,55 @@ class DatabaseAPI {
             }
         }
     }
+    static func getStripeConnectAccountId(completion: @escaping (String?, Error?) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            print("User does not exist")
+            completion(nil, NSError(domain: "AuthError", code: 401, userInfo: [NSLocalizedDescriptionKey: "Authentication required"]))
+            return
+        }
+        let userRef = db.collection("customers").document(user.uid)
+        
+        userRef.getDocument { document, error in
+            if let error = error {
+                print("Error retrieving Stripe Connect Account ID: \(error.localizedDescription)")
+                completion(nil, error)
+                return
+            }
+            guard let document = document, document.exists else {
+                print("Document does not exist")
+                completion(nil, NSError(domain: "FirestoreError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document not found"]))
+                return
+            }
+            let accountId = document.data()?["stripeConnectAccountId"] as? String
+            completion(accountId, nil)
+        }
+    }
+
+    static func getStripeConnectAccountId(forUserId userId: String, completion: @escaping (String?, Error?) -> Void) {
+        let userRef = db.collection("customers").document(userId)
+        
+        userRef.getDocument { document, error in
+            if let error = error {
+                print("Error retrieving Stripe Connect Account ID: \(error.localizedDescription)")
+                completion(nil, error)
+                return
+            }
+            guard let document = document, document.exists else {
+                print("Document does not exist")
+                completion(nil, NSError(domain: "FirestoreError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document not found"]))
+                return
+            }
+            let accountId = document.data()?["stripeConnectAccountId"] as? String
+            completion(accountId, nil)
+        }
+    }
+
     static func setStripeConnectAccountId(accountId: String, completion: @escaping (Error?) -> Void) {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return
         }
-        let userRef = db.collection("users").document(user.uid)
+        let userRef = db.collection("customers").document(user.uid)
         
         // Update the user document with the Stripe Connect Account ID
         userRef.updateData(["stripeConnectAccountId": accountId]) { error in

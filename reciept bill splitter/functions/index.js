@@ -129,4 +129,22 @@ exports.createTransfer = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('internal', 'Unable to create transfer');
     }
 });
+exports.getStripeBalance = functions.https.onCall(async (data, context) => {
+    // Check authentication
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'The function must be called while authenticated.');
+    }
 
+    try {
+        // Replace `data.accountId` with the ID of the Stripe account you want to check.
+        // You might have stored this in your users' database records.
+        const balance = await stripe.balance.retrieve({
+            stripeAccount: data.accountId,
+        });
+
+        return balance;
+    } catch (error) {
+        console.error('Error retrieving Stripe balance:', error);
+        throw new functions.https.HttpsError('internal', 'Unable to retrieve balance');
+    }
+});

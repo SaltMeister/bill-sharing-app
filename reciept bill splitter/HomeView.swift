@@ -138,6 +138,7 @@ struct HomeView: View {
                      switch result {
                      case .completed:
                          Text("Payment complete")
+                         
                      case .failed(let error):
                          Text("Payment failed: \(error.localizedDescription)")
                      case .canceled:
@@ -145,11 +146,48 @@ struct HomeView: View {
                      }
                  }
              }
-                 Button("Connect with Stripe") {
-                         print("creating link")
+                Button("Connect with Stripe") {
+                    print("creating link")
+                    
+                    DatabaseAPI.getStripeConnectAccountId { accountId, error in
+                        if let error = error {
+                            print("Error retrieving account ID: \(error.localizedDescription)")
+                        } else if let accountId = accountId {
+                            print("Retrieved Stripe Connect Account ID: \(accountId)")
+                            // Use the accountId for whatever you need, like creating an account link
+                            paymentManager.createStripeAccountLink(stripeAccountID: accountId)
+                        } else {
+                            print("Stripe Connect Account ID not found")
+                        }
+                    }
+                }
+                Button("Check Stripe Balance") {
+                    print("Fetching balance")
 
-                     paymentManager.createStripeAccountLink(stripeAccountID: "acct_1Ovoc6QQyo8likZn")
-                 }
+                    DatabaseAPI.getStripeConnectAccountId(forUserId: userViewModel.user_id) { accountId, error in
+                            if let error = error {
+                                print("Error retrieving account ID: \(error.localizedDescription)")
+                            } else if let accountId = accountId {
+                                print("Retrieved Stripe Connect Account ID: \(accountId)")
+                                
+                                // Use the retrieved account ID to fetch the Stripe balance
+                                paymentManager.checkStripeBalance(accountId: accountId) { result in
+                                    switch result {
+                                    case .success(let balance):
+                                        // Here you can update some state to display the balance in your UI
+                                        print("Retrieved Stripe balance: \(balance)")
+                                    case .failure(let error):
+                                        print("Error fetching Stripe balance: \(error.localizedDescription)")
+                                    }
+                                }
+                            } else {
+                                print("Stripe Connect Account ID not found")
+                            }
+                        }
+                 
+                }
+
+
                 Button("get paid") {
                         print("creating account")
                     paymentManager.createExpressConnectAccountAndOnboardingLink(email: userViewModel.email)
@@ -187,6 +225,7 @@ struct HomeView: View {
                                }
                 // Bottom toolbar
                 BottomToolbar()
+                    .environmentObject(paymentManager)
             }
             .navigationTitle("Home")
             .onAppear {
@@ -198,16 +237,20 @@ struct HomeView: View {
         .navigationDestination(isPresented: $isViewingTransaction) {
             TransactionView()
         }
+        
     }
+    
 }
 
 struct BottomToolbar: View {
+    @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
+
     var body: some View {
         HStack(spacing: 0.2) {
             ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
             //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
             ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
+            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView().environmentObject(paymentManager)))
         }
         .frame(height: 50)
         .background(Color(UIColor.systemBackground))
@@ -216,10 +259,10 @@ struct BottomToolbar: View {
     }
 }
 
-struct ToolbarItem: View {
+struct ToolbarItem<Destination: View>: View {
     let iconName: String
     let text: String
-    let destination: AnyView
+    var destination: Destination
     
     var body: some View {
         NavigationLink(destination: destination) {
@@ -233,4 +276,3 @@ struct ToolbarItem: View {
         }
     }
 }
-
