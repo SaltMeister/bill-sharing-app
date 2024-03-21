@@ -225,6 +225,7 @@ class DatabaseAPI {
                     "name": transactionData.name,
                     "items": itemList,
                     "itemBidders": itemBidderDict,
+                    "bidderPayments": {}, // USERID To Payment Amount
                     "group_id": groupID,
                     "isCompleted": false,
                     "dateCreated": Firebase.FieldValue.serverTimestamp()
@@ -234,6 +235,47 @@ class DatabaseAPI {
         } catch {
             print("Error creating group: \(error)")
         }
+    }
+    
+    static func grabTransaction(transaction_id: String) async -> Transaction? {
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return nil
+        }
+        
+        let transactionRef = db.collection("transactions").document(transaction_id)
+        
+        do {
+            let document = try await transactionRef.getDocument()
+            if document.exists {
+                let data = document.data()
+                // Create Transaction to return if data exists
+                if let data = data {
+                    // Create Transaction
+                    let name = data["name"] as? String ?? ""
+                    let items = data["items"] as? [[String : Any]] ?? [[:]]
+                    
+                    var newItemList: [Item] = []
+                    for item in items {
+                        let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
+                        newItemList.append(newItem)
+                    }
+                    let transaction_id = document.documentID
+                    let date = data["dateCreated"] as? Timestamp
+                    let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
+                    let isCompleted = data["isCompleted"] as? Bool ?? false
+                    let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted, dateCreated: date)
+                    
+                    return newTransaction
+                }
+            } else {
+                return nil
+            }
+        } catch {
+            print("Error finding transactions: \(error)")
+        }
+        
+        return nil
     }
     // Create Transaction Struct List and return
     static func grabAllTransactionsForGroup(groupID: String?) async -> [Transaction]? {
@@ -291,6 +333,8 @@ class DatabaseAPI {
                     "isCompleted": completion
                 ])
             }
+            
+            
             print("Transaction \(transactionID) updated to completion status \(completion).")
         } catch let error {
             print("Error updating transaction: \(error)")

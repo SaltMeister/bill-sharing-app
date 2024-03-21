@@ -1,105 +1,11 @@
-//
-//  HomeView.swift
-//  reciept bill splitter
-//
-//  Created by Josh Vu on 2/21/24.
-//
 
 import SwiftUI
-
-/*struct HomeView: View {
-    @State private var isSplitViewActive: Bool = false
-    @State private var isViewingGroup = false
-    @State private var isJoiningGroup = false
-    @State private var isEmptyDisplayFormat = true
-    @EnvironmentObject var user: UserViewModel
-    
-    var body: some View {
-        NavigationStack {
-            VStack {
-                Spacer()
-                if isEmptyDisplayFormat {
-                    Text("Looks like you aren't in any groups.")
-                    Text("Create or Join one.")
-                } else {
-                    Text("USER IS IN GROUPS PLEASE DISPLAY THEM CODERS.")
-                }
-                HStack {
-                    Spacer()
-                    Button {
-                        isJoiningGroup = true
-                    } label: {
-                        Text("+")
-                            .frame(width: 60, height: 60)
-                            .font(.title2)
-                            .foregroundColor(Color.white)
-                            .background(Color.black)
-                            .clipShape(Circle())
-                            .padding()
-                    }
-                }
-                BottomToolbar()
-            }
-        }
-        .onAppear {
-            Task {
-                await user.getUserData()
-                if user.groups.count > 0 {
-                    isEmptyDisplayFormat = false
-                }
-            }
-        }
-        .navigationDestination(isPresented: $isJoiningGroup) {
-            JoinGroupView()
-        }
-        .navigationDestination(isPresented: $isViewingGroup) {
-            GroupView()
-        }
-    }
-}
-
-struct BottomToolbar: View {
-    var body: some View {
-        NavigationStack{
-            HStack(spacing: 0.2) {
-                ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
-                ToolbarItem(iconName: "person.3", text: "Groups", destination: AnyView(GroupView()))
-                ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-                ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView()))
-            }
-            .frame(height: 50)
-            .background(Color(UIColor.systemBackground))
-            .cornerRadius(10)
-            .shadow(radius: 3)
-        }
-    }
-}
-
-struct ToolbarItem: View {
-    let iconName: String
-    let text: String
-    let destination: AnyView
-    
-    var body: some View {
-        NavigationLink(destination: destination) {
-            VStack {
-                Image(systemName: iconName)
-                    .font(.system(size: 24))
-                Text(text)
-                    .font(.caption)
-            }
-            .padding(.horizontal, 20)
-        }
-    }
-}
-
-#Preview {
-    HomeView()
-        .environmentObject(UserViewModel())
-}*/
-import SwiftUI
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct HomeView: View {
+    let db = Firestore.firestore()
+    
     @StateObject private var userViewModel = UserViewModel()
     @State private var isCameraPresented = false
     @State private var isCreatingGroup = false
@@ -117,6 +23,13 @@ struct HomeView: View {
                     List(userViewModel.groups, id: \.groupID) { group in
                         NavigationLink(destination: GroupDetailView(selectedGroup: group)) {
                             Text(group.group_name)
+                            Text(group.groupID)              
+                        }
+
+                        .onAppear {
+                            Task {
+                                listenToTransactionsForGroup(groupId: group.groupID)
+                            }
                         }
                     }
                 }
@@ -162,10 +75,55 @@ struct HomeView: View {
                 }
             }
         }
-        .navigationDestination(isPresented: $isViewingTransaction) {
-            TransactionView()
-        }
     }
+    
+    private func listenToTransactionsForGroup(groupId: String) {
+        print("LISTENING TO DOCUMENTS")
+        db.collection("transactions").whereField("group_id", isEqualTo: groupId)
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshots = querySnapshot else {
+                    print("Error fetching documents: \(error!)")
+                    return
+                }
+                
+                if let error = error {
+                    print("Error retreiving collection: \(error)")
+                }
+                
+                // Find Changes where document is a diff
+                snapshots.documentChanges.forEach { diff in
+                    if diff.type == .modified {
+                        // Check if the proper field is adjusted
+                        print("GROUP TRANSACTION HAS BEEN MODIFIED")
+//                        let data = diff.document.data()
+//                        let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
+//                        print(isTransactionCompleted)
+//                        
+//                        // Alert if modified document is true
+//                        if isTransactionCompleted {
+//                            isAlert = true
+                       // }
+                    }
+                    else if diff.type == .added {
+                        print("NEW TRANSACTION CREATED FOR GROUP")
+                        // Update Transaction List append
+//                        Task {
+//                            if let transactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
+//                                DispatchQueue.main.async {
+//                                    user.currentSelectedGroupTransactions = transactions // Store all transactions
+//                                    totalSpent = transactions.map { transaction in
+//                                        transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
+//                                    }.reduce(0, +)
+//                                }
+//                            } else {
+//                                print("No transactions found for group \(selectedGroup?.groupID ?? "")")
+//                            }
+                        //}
+                    }
+                }
+            }
+    }
+    
 }
 
 struct BottomToolbar: View {
