@@ -18,6 +18,8 @@ struct SignUpView: View {
     
     @EnvironmentObject var user: UserViewModel
     
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         VStack {
             Text("Sign Up")
@@ -62,6 +64,7 @@ struct SignUpView: View {
                             await user.createUserInDB(username: "")
                             print("user is true")
                             isLoggedIn = true
+                            dismiss()
                         }
                     }
                     
@@ -69,7 +72,7 @@ struct SignUpView: View {
                     errorMessage = "Password should have at least a length of 6"
                 }
             } label: {
-                Text("Login")
+                Text("Create Account")
                     .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)
