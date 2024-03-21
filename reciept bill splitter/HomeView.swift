@@ -23,7 +23,7 @@ struct HomeView: View {
                     List(userViewModel.groups, id: \.groupID) { group in
                         NavigationLink(destination: GroupDetailView(selectedGroup: group)) {
                             Text(group.group_name)
-                            Text(group.groupID)              
+                            Text(group.invite_code)              
                         }
 
                         .onAppear {
