@@ -118,18 +118,8 @@ struct HomeView: View {
                     }
                 }
                 Button("Transfer Money") {
-                    DatabaseAPI.setCanGetPaid(forUserId: userViewModel.user_id, canGetPaid: true) { error in
-                        if let error = error {
-                            // Handle the error
-                            print("Error setting canGetPaid: \(error.localizedDescription)")
-                        } else {
-                            // Update was successful
-                            print("canGetPaid successfully set for the user")
-                        }
-                    }
-
-                        //paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn") // this is the stripeconnectedID destinatin
-                                    }
+                        paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn") // this is the stripeconnectedID destinatin
+                }
                 Button("Collect Payment") {
                         paymentManager.fetchPaymentDataAndPrepareSheet(uid: userViewModel.user_id, amount: 1000)
                 }
@@ -200,7 +190,16 @@ struct HomeView: View {
 
                 Button("get paid") {
                         print("creating account")
-                    paymentManager.createExpressConnectAccountAndOnboardingLink(email: userViewModel.email)
+                    DatabaseAPI.setCanGetPaid(forUserId: userViewModel.user_id, canGetPaid: true) { error in // Pass the userId here
+                        if let error = error {
+                            // Handle the error
+                            print("Error setting canGetPaid: \(error.localizedDescription)")
+                        } else {
+                            // Update was successful
+                            print("canGetPaid successfully set for the user")
+                        }
+                    }
+                   // paymentManager.createExpressConnectAccountAndOnboardingLink(email: userViewModel.email)
                 }
                 Spacer()
                 

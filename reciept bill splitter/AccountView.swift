@@ -1,9 +1,13 @@
 import SwiftUI
+import FirebaseAuth
 
 struct AccountView: View {
     @State private var isEditing = false
     @State private var newUsername = ""
     @State private var userEmail = "" // Add state to store user email
+    @State private var userCanGetPaid = false // Add state to store user email
+    @State private var user_id = ""
+
     @EnvironmentObject var user: UserViewModel
     @EnvironmentObject var paymentManager: PaymentManager
     @State private var balanceData: [String: Any]? = nil
@@ -40,24 +44,62 @@ struct AccountView: View {
             Text("Email: \(userEmail)") // Display user email
                 .padding()
             // Stripe balance section
-            if let balanceData = balanceData {
-                VStack {
-                    Text("Stripe Balance")
-                        .font(.title)
-                        .padding()
-                    if let availableArray = balanceData["available"] as? [[String: Any]],
-                       let available = availableArray.first,
-                       let availableAmount = available["amount"] as? Int {
-                        Text("Available Balance: \(formatAmount(availableAmount))")
+            if userCanGetPaid {
+                if let balanceData = balanceData {
+                    VStack {
+                        Text("Stripe Balance")
+                            .font(.title)
+                            .padding()
+                        if let availableArray = balanceData["available"] as? [[String: Any]],
+                           let available = availableArray.first,
+                           let availableAmount = available["amount"] as? Int {
+                            Text("Available Balance: \(formatAmount(availableAmount))")
+                        }
+                        if let pendingArray = balanceData["pending"] as? [[String: Any]],
+                           let pending = pendingArray.first,
+                           let pendingAmount = pending["amount"] as? Int {
+                            Text("Pending Balance: \(formatAmount(pendingAmount))")
+                        }
+                        Button("Update payment methods") {
+                            print("creating link")
+                            
+                            DatabaseAPI.getStripeConnectAccountId { accountId, error in
+                                if let error = error {
+                                    print("Error retrieving account ID: \(error.localizedDescription)")
+                                } else if let accountId = accountId {
+                                    print("Retrieved Stripe Connect Account ID: \(accountId)")
+                                    // Use the accountId for whatever you need, like creating an account link
+                                    paymentManager.createStripeAccountLink(stripeAccountID: accountId)
+                                } else {
+                                    print("Stripe Connect Account ID not found")
+                                }
+                            }
+                        }
                     }
-                    if let pendingArray = balanceData["pending"] as? [[String: Any]],
-                       let pending = pendingArray.first,
-                       let pendingAmount = pending["amount"] as? Int {
-                        Text("Pending Balance: \(formatAmount(pendingAmount))")
+                } else {
+                    Text("")
+                }
+            }
+            else {
+                Button("Setup Payments") {
+                        print("creating account")
+                    paymentManager.createExpressConnectAccountAndOnboardingLink(email: userEmail)
+                    self.userCanGetPaid = true
+
+                    //SETUP after onboarding it is the only way and have to check for reauth fuckkkkkkkkkkk (setup the cangetpaid of course)
+                    
+                    DatabaseAPI.setCanGetPaid(forUserId: user_id, canGetPaid: true) { error in // Pass the userId here
+                        if let error = error {
+                            // Handle the error
+                            print("Error setting canGetPaid: \(error.localizedDescription)")
+                        } else {
+                            // Update was successful
+                            self.userCanGetPaid = true
+                            user.canGetPaid = true
+                            print("canGetPaid successfully set for the user")
+                        }
                     }
                 }
-            } else {
-                Text("")
             }
         }
         .navigationTitle("Accounts")
@@ -76,6 +118,9 @@ struct AccountView: View {
             if let user = await DatabaseAPI.grabUserData() {
                 self.newUsername = user.userName
                 self.userEmail = user.email 
+            }
+            if let user = Auth.auth().currentUser {
+                self.user_id = user.uid
             }
         }
     }

@@ -45,27 +45,23 @@ struct SignUpView: View {
             }
             
             Button {
-                // Simulating password validation, replace with your validation logic
                 if password.count >= 6 {
                     Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                         guard let result = authResult else {
                             if let x = error { print(x) }
                             return
                         }
-                        
-                        
                         print(result)
                         print("Created Account")
-                        
-                        print("Successful login")
-                        
-                        // Create Database user before loading into home
-                        Task {
-                            await user.createUserInDB()
-                            print("user is true")
-                            isLoggedIn = true
-                            dismiss()
-                        }
+                        let userId = result.user.uid // This is how you get the user ID
+                            print("User ID: \(userId)")
+                            
+                            Task {
+                                await user.createUserInDB()
+                          
+                                isLoggedIn = true
+                                dismiss()
+                            }
                     }
                     
                 } else {
