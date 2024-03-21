@@ -104,7 +104,7 @@ struct GroupDetailView: View {
                 Alert(title: Text("ALERT"), message: Text("You have been assigned a transaction"), dismissButton: .cancel())
             }
             .navigationDestination(isPresented: $isTransactionSelected) {
-                TransactionView()
+                //TransactionView()
             }
             .navigationDestination(isPresented: $isManualInputPresented) {
                 ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup?.groupID ?? "")

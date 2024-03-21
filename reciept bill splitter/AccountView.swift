@@ -3,10 +3,10 @@ import SwiftUI
 struct AccountView: View {
     @State private var isEditing = false
     @State private var newUsername = ""
+    @State private var userEmail = "" // Add state to store user email
     @EnvironmentObject var user: UserViewModel
-    @EnvironmentObject var paymentManager: PaymentManager // Assuming PaymentManager is available as an EnvironmentObject
+    @EnvironmentObject var paymentManager: PaymentManager
     @State private var balanceData: [String: Any]? = nil
-
     var body: some View {
         VStack {
             HStack {
@@ -15,8 +15,10 @@ struct AccountView: View {
                         .padding()
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 } else {
-                    Text("Current Username: " + newUsername)
-                        .padding()
+                        Text("Current Username: " + (newUsername.isEmpty ? "N/A" : newUsername))
+                            .padding()
+                      
+                    
                 }
                 Button(action: {
                     isEditing.toggle()
@@ -25,17 +27,18 @@ struct AccountView: View {
                         .foregroundColor(isEditing ? .green : .blue)
                 }
             }
-            
+
             if isEditing {
                 Button("Save") {
                     Task {
-                        await user.createUserInDB(username: newUsername)
+                        await user.updateUserName(newName: newUsername)
                         isEditing.toggle()
                     }
                 }
                 .padding()
             }
-            
+            Text("Email: \(userEmail)") // Display user email
+                .padding()
             // Stripe balance section
             if let balanceData = balanceData {
                 VStack {
@@ -54,43 +57,58 @@ struct AccountView: View {
                     }
                 }
             } else {
-                Text("Loading balance...")
+                Text("")
             }
         }
         .navigationTitle("Accounts")
         .onAppear {
-            fetchStripeBalance()
+            Task{
+                await fetchUserDetails()
+            }
+        }
+        .onChange(of: userEmail){
+           fetchStripeBalance()
         }
     }
     
-    private func fetchStripeBalance() {
-        // Check if the current user has a Stripe Connect Account ID
-        DatabaseAPI.getStripeConnectAccountId { accountId, error in
-            guard let accountId = accountId, error == nil else {
-                print("Stripe Connect Account ID not found or error occurred: \(error?.localizedDescription ?? "Unknown error")")
-                // Handle UI update for users without Stripe account here
-                // For example, show a message or hide the balance section
-                return
-            }
-            
-            // If the account ID exists, fetch the Stripe balance
-            paymentManager.checkStripeBalance(accountId: accountId) { result in
-                switch result {
-                case .success(let balance):
-                    // Here you can update some state to display the balance in your UI
-                    self.balanceData = balance
-                    print("Retrieved Stripe balance: \(balance)")
-                case .failure(let error):
-                    print("Error fetching Stripe balance: \(error.localizedDescription)")
-                }
+    private func fetchUserDetails() async{
+        Task {
+            if let user = await DatabaseAPI.grabUserData() {
+                self.newUsername = user.userName
+                self.userEmail = user.email 
             }
         }
     }
 
-    private func formatAmount(_ amount: Int) -> String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .currency
-        numberFormatter.currencyCode = "USD"
-        return numberFormatter.string(from: NSNumber(value: Double(amount) / 100)) ?? "$0.00"
-    }
+    private func fetchStripeBalance() {
+           // Check if the current user has a Stripe Connect Account ID
+           DatabaseAPI.getStripeConnectAccountId { accountId, error in
+               guard let accountId = accountId, error == nil else {
+                   print("Stripe Connect Account ID not found or error occurred: \(error?.localizedDescription ?? "Unknown error")")
+                   // Handle UI update for users without Stripe account here
+                   // For example, show a message or hide the balance section
+                   return
+               }
+               
+               // If the account ID exists, fetch the Stripe balance
+               paymentManager.checkStripeBalance(accountId: accountId) { result in
+                   switch result {
+                   case .success(let balance):
+                       // Here you can update some state to display the balance in your UI
+                       self.balanceData = balance
+                       print("Retrieved Stripe balance: \(balance)")
+                   case .failure(let error):
+                       print("Error fetching Stripe balance: \(error.localizedDescription)")
+                   }
+               }
+           }
+       }
+
+       private func formatAmount(_ amount: Int) -> String {
+           let numberFormatter = NumberFormatter()
+           numberFormatter.numberStyle = .currency
+           numberFormatter.currencyCode = "USD"
+           return numberFormatter.string(from: NSNumber(value: Double(amount) / 100)) ?? "$0.00"
+       }
+ 
 }

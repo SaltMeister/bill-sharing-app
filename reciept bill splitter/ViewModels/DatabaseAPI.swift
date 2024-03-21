@@ -296,6 +296,59 @@ class DatabaseAPI {
             }
         }
     }
+    static func grabTransaction(transaction_id: String) async -> Transaction? {
+         guard let _ = Auth.auth().currentUser else {
+             print("User Does not exist")
+             return nil
+         }
+         
+         let transactionRef = db.collection("transactions").document(transaction_id)
+         
+         do {
+             let document = try await transactionRef.getDocument()
+             if document.exists {
+                 let data = document.data()
+                 // Create Transaction to return if data exists
+                 if let data = data {
+                     // Create Transaction
+                     let name = data["name"] as? String ?? ""
+                     let items = data["items"] as? [[String : Any]] ?? [[:]]
+                     
+                     var newItemList: [Item] = []
+                     for item in items {
+                         let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
+                         newItemList.append(newItem)
+                     }
+                     let transaction_id = document.documentID
+                     let date = data["dateCreated"] as? Timestamp
+                     let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
+                     let isCompleted = data["isCompleted"] as? Bool ?? false
+                     let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted, dateCreated: date)
+                     
+                     return newTransaction
+                 }
+             } else {
+                 return nil
+             }
+         } catch {
+             print("Error finding transactions: \(error)")
+         }
+         
+         return nil
+     }
+    static func setCanGetPaid(forUserId userId: String, canGetPaid: Bool, completion: @escaping (Error?) -> Void) {
+        let userRef = db.collection("customers").document(userId)
+
+        userRef.updateData(["canGetPaid": canGetPaid]) { error in
+            if let error = error {
+                print("Error updating canGetPaid: \(error.localizedDescription)")
+                completion(error)
+            } else {
+                print("Successfully updated canGetPaid to \(canGetPaid) for user \(userId)")
+                completion(nil)
+            }
+        }
+    }
     static func getStripeConnectAccountId(completion: @escaping (String?, Error?) -> Void) {
         guard let user = Auth.auth().currentUser else {
             print("User does not exist")

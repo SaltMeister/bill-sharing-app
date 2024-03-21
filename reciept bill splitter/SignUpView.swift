@@ -61,7 +61,7 @@ struct SignUpView: View {
                         
                         // Create Database user before loading into home
                         Task {
-                            await user.createUserInDB(username: "")
+                            await user.createUserInDB()
                             print("user is true")
                             isLoggedIn = true
                             dismiss()

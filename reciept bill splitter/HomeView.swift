@@ -118,7 +118,17 @@ struct HomeView: View {
                     }
                 }
                 Button("Transfer Money") {
-                        paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn") // this is the stripeconnectedID destinatin
+                    DatabaseAPI.setCanGetPaid(forUserId: userViewModel.user_id, canGetPaid: true) { error in
+                        if let error = error {
+                            // Handle the error
+                            print("Error setting canGetPaid: \(error.localizedDescription)")
+                        } else {
+                            // Update was successful
+                            print("canGetPaid successfully set for the user")
+                        }
+                    }
+
+                        //paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn") // this is the stripeconnectedID destinatin
                                     }
                 Button("Collect Payment") {
                         paymentManager.fetchPaymentDataAndPrepareSheet(uid: userViewModel.user_id, amount: 1000)
@@ -235,7 +245,7 @@ struct HomeView: View {
             }
         }
         .navigationDestination(isPresented: $isViewingTransaction) {
-            TransactionView()
+           // TransactionView(selectedTransactionId: Binding<String>, groupData: <#Binding<Group>#>)
         }
         
     }

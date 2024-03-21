@@ -155,7 +155,6 @@
 				32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */,
 				32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */,
 				E5AB946A2BAAA75B00836C2E /* ManualTransactionView.swift */,
-				E50B498E2BAA0A640080CEAB /* PaymentManager.swift */,
 				32B1A4C42B828F9D00A20FDD /* Preview Content */,
 				32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */,
 				E52146C82B9FE060007571A2 /* reciept-bill-splitter-Info.plist */,
@@ -183,6 +182,7 @@
 		32C3CD472B8711A700FB2BF1 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				E50B498E2BAA0A640080CEAB /* PaymentManager.swift */,
 				32E58BD72B8A9B1300F9B44E /* UserViewModel.swift */,
 				328EEB5B2B9199520021F461 /* DatabaseAPI.swift */,
 			);
