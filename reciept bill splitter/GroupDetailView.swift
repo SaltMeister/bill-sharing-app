@@ -41,6 +41,7 @@ struct GroupDetailView: View {
                 if !user.currentSelectedGroupTransactions.isEmpty {
                     List {
                         ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
+                            print(user.currentSelectedGroupTransactions[index].dateCreated)
                             if user.currentSelectedGroupTransactions[index].isCompleted {
                                 HStack {
                                     Text(user.currentSelectedGroupTransactions[index].name)
@@ -54,7 +55,6 @@ struct GroupDetailView: View {
                             } else {
                                 HStack {
                                     Text(user.currentSelectedGroupTransactions[index].name)
-                                    Text(user.currentSelectedGroupTransactions[index].transaction_id)
                                 }
                                 .onTapGesture {
                                     user.selectedTransaction = user.currentSelectedGroupTransactions[index]
@@ -91,8 +91,6 @@ struct GroupDetailView: View {
                     }
                 }
                 
-                
-
                 Spacer()
                 
                 Button(action: {
@@ -103,8 +101,6 @@ struct GroupDetailView: View {
                 .popover(isPresented: $isViewMembersPopoverPresented, arrowEdge: .bottom) {
                     MembersListView(members: selectedGroup.members)
                 }
-
-
             }
             .navigationDestination(isPresented: $isTransactionSelected) {
                 TransactionView(selectedTransactionId: $selectedTransactionID, groupData: $selectedGroup)
@@ -130,53 +126,6 @@ struct GroupDetailView: View {
         }
     }
     
-    private func listenToDocuments() {
-        print("LISTENING TO DOCUMENTS")
-        db.collection("transactions").whereField("group_id", isEqualTo: selectedGroup.groupID)
-            .addSnapshotListener { querySnapshot, error in
-                guard let snapshots = querySnapshot else {
-                    print("Error fetching documents: \(error!)")
-                    return
-                }
-                
-                if let error = error {
-                    print("Error retreiving collection: \(error)")
-                }
-                
-                // Find Changes where document is a diff
-                snapshots.documentChanges.forEach { diff in
-                    if diff.type == .modified {
-                        // Check if the proper field is adjusted
-                        print("GROUP TRANSACTION HAS BEEN MODIFIED")
-                        let data = diff.document.data()
-                        let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
-                        print(isTransactionCompleted)
-                        
-                        // Alert if modified document is true
-                        if isTransactionCompleted {
-                            isAlert = true
-                        }
-                    }
-                    else if diff.type == .added {
-                        print("NEW TRANSACTION CREATED FOR GROUP")
-                        // Update Transaction List append
-                        Task {
-                            if let transactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup.groupID) {
-                                DispatchQueue.main.async {
-                                    user.currentSelectedGroupTransactions = transactions // Store all transactions
-                                    totalSpent = transactions.map { transaction in
-                                        transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
-                                    }.reduce(0, +)
-                                }
-                            } else {
-                                print("No transactions found for group \(selectedGroup.groupID ?? "")")
-                            }
-                        }
-                    }
-                }
-            }
-    }
-
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }

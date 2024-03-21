@@ -71,10 +71,7 @@ class UserViewModel : ObservableObject {
     @Published var friends: [String]?
     @Published var completedTransactions: [String]?
     
-    @Published var selectedGroupIndex = 0
-    
     @Published var currentSelectedGroupTransactions: [Transaction] = []
-    @Published var groupTransactionData: [String : Transaction] = [:]
     @Published var selectedTransaction: Transaction?
     
     // Initialize Env Variable Data
@@ -95,7 +92,7 @@ class UserViewModel : ObservableObject {
     }
     
     // Creates user in database
-    func createUserInDB(username: String) async -> Void {
+    func createUserInDB() async -> Void {
         // Check if User exists
         guard let user = Auth.auth().currentUser else { 
             print("User Does not exist")
@@ -105,10 +102,26 @@ class UserViewModel : ObservableObject {
         do {
             try await Firestore.firestore().collection("users").document(user.uid).setData([
                 "email": user.email ?? "",
-                "userName": username,
+                "userName": "Unnamed",
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
                 "assignedTransaction": {}
+          ])
+          print("Document created")
+            
+            
+        } catch {
+          print("Error adding document: \(error)")
+        }
+    }
+    func updateUserName(newName: String) async -> Void {
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return
+        }
+        do {
+            try await Firestore.firestore().collection("users").document(user.uid).updateData([
+                "userName": newName
           ])
           print("Document created")
             

@@ -34,7 +34,7 @@ struct SettingsView: View {
             if isEditing {
                 Button("Save") {
                     Task {
-                        await user.createUserInDB(username: newUsername)
+                        await user.updateUserName(newName: newUsername)
                         isEditing.toggle()
                     }
                 }

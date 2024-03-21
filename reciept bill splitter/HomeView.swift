@@ -6,7 +6,8 @@ import FirebaseFirestoreSwift
 struct HomeView: View {
     let db = Firestore.firestore()
     
-    @StateObject private var userViewModel = UserViewModel()
+    @EnvironmentObject private var user: UserViewModel
+    
     @State private var isCameraPresented = false
     @State private var isCreatingGroup = false
     @State private var isJoiningGroup = false
@@ -17,15 +18,14 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if userViewModel.groups.isEmpty {
+                if user.groups.isEmpty {
                     Text("No groups found")
                 } else {
-                    List(userViewModel.groups, id: \.groupID) { group in
+                    List(user.groups, id: \.groupID) { group in
                         NavigationLink(destination: GroupDetailView(selectedGroup: group)) {
                             Text(group.group_name)
                             Text(group.invite_code)              
                         }
-
                         .onAppear {
                             Task {
                                 listenToTransactionsForGroup(groupId: group.groupID)
@@ -42,43 +42,42 @@ struct HomeView: View {
                     // Other views and logic from GroupDetailView can be added here
                 }
                 HStack {
-                                   Spacer()
-                                   // Circular "+" button
-                                   Menu {
-                                       Button("Join Group") {
-                                           isJoiningGroup = true
-                                           print("Join Group tapped")
-                                       }
-                                       Button("Create Group") {
-                                           isCreatingGroup = true
-                                       }
-                                   } label: {
-                                       Image(systemName: "plus.circle.fill")
-                                           .resizable()
-                                           .frame(width: 50, height: 50)
-                                           .foregroundColor(.blue)
-                                   }
-                                   .navigationDestination(isPresented: $isCreatingGroup) {
-                                       CreateGroupView()
-                                   }
-                                   .navigationDestination(isPresented: $isJoiningGroup) {
-                                       JoinGroupView()
-                                   }
-                               }
+                    Spacer()
+                    // Circular "+" button
+                    Menu {
+                       Button("Join Group") {
+                           isJoiningGroup = true
+                           print("Join Group tapped")
+                       }
+                       Button("Create Group") {
+                           isCreatingGroup = true
+                       }
+                    } label: {
+                       Image(systemName: "plus.circle.fill")
+                           .resizable()
+                           .frame(width: 50, height: 50)
+                           .foregroundColor(.blue)
+                    }
+                    .navigationDestination(isPresented: $isCreatingGroup) {
+                       CreateGroupView()
+                    }
+                    .navigationDestination(isPresented: $isJoiningGroup) {
+                       JoinGroupView()
+                    }
+                }
                 // Bottom toolbar
                 BottomToolbar()
             }
             .navigationTitle("Home")
             .onAppear {
                 Task {
-                    await userViewModel.getUserData()
+                    await user.getUserData()
                 }
             }
         }
     }
     
     private func listenToTransactionsForGroup(groupId: String) {
-        print("LISTENING TO DOCUMENTS")
         db.collection("transactions").whereField("group_id", isEqualTo: groupId)
             .addSnapshotListener { querySnapshot, error in
                 guard let snapshots = querySnapshot else {
@@ -95,30 +94,13 @@ struct HomeView: View {
                     if diff.type == .modified {
                         // Check if the proper field is adjusted
                         print("GROUP TRANSACTION HAS BEEN MODIFIED")
-//                        let data = diff.document.data()
-//                        let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
-//                        print(isTransactionCompleted)
-//                        
-//                        // Alert if modified document is true
-//                        if isTransactionCompleted {
-//                            isAlert = true
-                       // }
+                        let data = diff.document.data()
+                        let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
+                        
+                        // Assign Each Member Their Parts to Pay
                     }
                     else if diff.type == .added {
                         print("NEW TRANSACTION CREATED FOR GROUP")
-                        // Update Transaction List append
-//                        Task {
-//                            if let transactions = await DatabaseAPI.grabAllTransactionsForGroup(groupID: selectedGroup?.groupID) {
-//                                DispatchQueue.main.async {
-//                                    user.currentSelectedGroupTransactions = transactions // Store all transactions
-//                                    totalSpent = transactions.map { transaction in
-//                                        transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
-//                                    }.reduce(0, +)
-//                                }
-//                            } else {
-//                                print("No transactions found for group \(selectedGroup?.groupID ?? "")")
-//                            }
-                        //}
                     }
                 }
             }

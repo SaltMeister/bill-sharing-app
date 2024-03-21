@@ -64,7 +64,6 @@ struct TransactionView: View {
         .onAppear {
             Task {
                 transactionData = await DatabaseAPI.grabTransaction(transaction_id: selectedTransactionId)
-                print(transactionData)
             }
         }
         .navigationTitle("Transaction Details")

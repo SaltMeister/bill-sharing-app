@@ -192,7 +192,7 @@ class DatabaseAPI {
             print("GroupID Null")
             return
         }
-        guard let user = Auth.auth().currentUser else {
+        guard let _ = Auth.auth().currentUser else {
             print("User Does not exist")
             return
         }
@@ -225,7 +225,7 @@ class DatabaseAPI {
                     "name": transactionData.name,
                     "items": itemList,
                     "itemBidders": itemBidderDict,
-                    "bidderPayments": {}, // USERID To Payment Amount
+                    "bidderPayments": [:], // USERID To Payment Amount
                     "group_id": groupID,
                     "isCompleted": false,
                     "dateCreated": Firebase.FieldValue.serverTimestamp()
@@ -238,7 +238,7 @@ class DatabaseAPI {
     }
     
     static func grabTransaction(transaction_id: String) async -> Transaction? {
-        guard let user = Auth.auth().currentUser else {
+        guard let _ = Auth.auth().currentUser else {
             print("User Does not exist")
             return nil
         }
@@ -283,7 +283,7 @@ class DatabaseAPI {
             print("GroupID Null")
             return nil
         }
-        guard let user = Auth.auth().currentUser else {
+        guard let _ = Auth.auth().currentUser else {
             print("User Does not exist")
             return nil
         }

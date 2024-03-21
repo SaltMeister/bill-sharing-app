@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
-
+import FirebaseAuth
 
 
 struct LaunchScreenView: View {
-    @State private var isActive = false //bool variable indicating whether or not to go to ContentView
+    @State private var isActive = false //bool variable indicating whether or not to go to
+    
     @State private var size = 0.8
     @State private var opacity = 0.5
     
@@ -55,6 +56,10 @@ struct LaunchScreenView: View {
                 }
                 //After logo and app name are fully displayed, initiates transition into ContentView
                 .onAppear {
+                    if let uid = Auth.auth().currentUser?.uid {
+                        isLoggedIn = true
+                    }
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
                         withAnimation(.easeIn(duration: 0.5)) {
                             self.isActive = true
