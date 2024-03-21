@@ -323,8 +323,8 @@ class DatabaseAPI {
         
         return nil
     }
-    static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
-        let transactionRef = db.collection("transactions").document(transactionID)
+    static func toggleGroupTransactionsCompletion(transaction_id: String, completion: Bool) async {
+        let transactionRef = db.collection("transactions").document(transaction_id)
         
         do {
             let document = try await transactionRef.getDocument()
@@ -335,10 +335,58 @@ class DatabaseAPI {
             }
             
             
-            print("Transaction \(transactionID) updated to completion status \(completion).")
+            print("Transaction \(transaction_id) updated to completion status \(completion).")
         } catch let error {
             print("Error updating transaction: \(error)")
         }
     }
-
+    
+    static func assignAllGroupMembersPayment(transaction_id: String) async -> Void {
+        guard let _ = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return
+        }
+        
+        let transactionRef = db.collection("transactions").document(transaction_id)
+        // Add New AssignedTransaction for transaction in user
+        do {
+            let document = try await transactionRef.getDocument()
+            
+            if !document.exists {
+                return
+            }
+            
+            // Read document and work
+            do {
+                // Firestore Transaction to ensure both documents are written together or both fail
+                let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+                    // LOOP through transactions and create a new assigned transaction for each user
+    //                let gDoc: DocumentSnapshot
+    //                do {
+    //                    try gDoc = transaction.getDocument(docRef)
+    //                } catch let fetchError as NSError {
+    //                    errorPointer?.pointee = fetchError
+    //                    return nil
+    //                }
+    //
+    //                // Add user id to group members
+    //                transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
+    //                // Add group id to user groups
+    //                transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
+                    return nil
+                })
+                
+                return
+            } catch {
+                // Handle error during transaction
+                print("Error Assigning Transaction: \(error)")
+                return
+            }
+                
+        } catch let error {
+            print("Error updating transaction: \(error)")
+        }
+        
+        
+    }
 }

@@ -97,6 +97,9 @@ struct HomeView: View {
                         let data = diff.document.data()
                         let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
                         
+                        if isTransactionCompleted {
+                            
+                        }
                         // Assign Each Member Their Parts to Pay
                     }
                     else if diff.type == .added {
@@ -104,6 +107,9 @@ struct HomeView: View {
                     }
                 }
             }
+    }
+    private func assignUsersTransaction() {
+        
     }
     
 }
