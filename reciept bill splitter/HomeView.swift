@@ -9,7 +9,6 @@ struct HomeView: View {
     @State private var isJoiningGroup = false
     @State private var isEmptyDisplayFormat = true
     @EnvironmentObject var userViewModel: UserViewModel
-    
     @State private var isCreatingGroup = false
     @State private var selectedGroup: Group?
     @State private var isAlert = false
@@ -43,7 +42,6 @@ struct HomeView: View {
 
                 Button("Transfer Money") {
                     paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn")
-
                 }
 
                 Button("Collect Payment") {
@@ -83,16 +81,11 @@ struct HomeView: View {
                             } else {
                                 showInfoAlert = true
                             }
-                        }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`
-                        
-                        
+                        }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`       
                         Button("Join Group") {
                             isJoiningGroup = true
                             print("Join Group tapped")
                         }
-                        
-                        
-                        
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .resizable()
@@ -101,8 +94,6 @@ struct HomeView: View {
                         
                     }
                 }
-          
-        
                 .navigationDestination(isPresented: $isCreatingGroup) {
                     CreateGroupView()
                 }
@@ -135,12 +126,10 @@ private func listenToTransactionsForGroup(groupId: String) {
                 print("Error fetching documents: \(error!)")
                 return
             }
-            
             if let error = error {
                 print("Error retreiving collection: \(error)")
             }
-            
-            // Find Changes where document is a diff
+                        // Find Changes where document is a diff
             snapshots.documentChanges.forEach { diff in
                 if diff.type == .modified {
                     // Check if the proper field is adjusted
@@ -176,7 +165,6 @@ private func listenToTransactionsForGroup(groupId: String) {
 
 struct BottomToolbar: View {
     @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
-
     var body: some View {
         HStack(spacing: 0.2) {
             ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))

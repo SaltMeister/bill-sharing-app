@@ -83,7 +83,7 @@ struct GroupDetailView: View {
                         Task {
                             await createTransaction()
                         }
-                        //isCameraPresented = true
+                        isCameraPresented = true
                     }
                     .sheet(isPresented: $isCameraPresented) {
                         CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
