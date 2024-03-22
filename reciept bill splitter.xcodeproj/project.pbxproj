@@ -46,7 +46,6 @@
 		E591A68D2B9E8AD600AC1F5F /* StripePaymentSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E591A68C2B9E8AD600AC1F5F /* StripePaymentSheet */; };
 		E591A68F2B9E8AD600AC1F5F /* StripePayments in Frameworks */ = {isa = PBXBuildFile; productRef = E591A68E2B9E8AD600AC1F5F /* StripePayments */; };
 		E591A6912B9E8AD600AC1F5F /* StripePaymentsUI in Frameworks */ = {isa = PBXBuildFile; productRef = E591A6902B9E8AD600AC1F5F /* StripePaymentsUI */; };
-		E5AB94692BAAA47F00836C2E /* CreateGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5AB94682BAAA47F00836C2E /* CreateGroupView.swift */; };
 		E5AB946B2BAAA75B00836C2E /* ManualTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5AB946A2BAAA75B00836C2E /* ManualTransactionView.swift */; };
 /* End PBXBuildFile section */
 
@@ -114,6 +113,7 @@
 			children = (
 				36788E402BA766C4006925A6 /* ManualTransactionView.swift */,
 				36788E422BA7EEB3006925A6 /* CreateGroupView.swift */,
+				E5AB94682BAAA47F00836C2E /* CreateGroupView.swift */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -143,7 +143,6 @@
 				36E9BE752B86CAEA0020BE12 /* AddFriendView.swift */,
 				32B1A4C22B828F9D00A20FDD /* Assets.xcassets */,
 				32847F2B2B8D96D50061449F /* ContentView.swift */,
-				36788E422BA7EEB3006925A6 /* CreateGroupView.swift */,
 				36E9BE672B86AD3F0020BE12 /* FriendsView.swift */,
 				32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */,
 				36788E3E2BA50F22006925A6 /* GroupDetailView.swift */,
@@ -305,7 +304,6 @@
 				32E58BD82B8A9B1300F9B44E /* UserViewModel.swift in Sources */,
 				36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */,
 				36E9BE642B86ACE00020BE12 /* SignUpLogInView.swift in Sources */,
-				E5AB94692BAAA47F00836C2E /* CreateGroupView.swift in Sources */,
 				32B1A4BF2B828F9400A20FDD /* reciept_bill_splitterApp.swift in Sources */,
 				36E9BE862BA007F10020BE12 /* TransactionView.swift in Sources */,
 			);
