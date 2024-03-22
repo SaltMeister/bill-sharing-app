@@ -33,7 +33,7 @@ struct Transaction : Codable {
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
     var itemBidders: [String:[String]]
     var name: String
-    var isCompleted: Bool   
+    var isCompleted: Bool
     var dateCreated: Timestamp?
 }
 
@@ -64,7 +64,9 @@ class UserViewModel : ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var user_id = ""
-    
+    @Published var username = ""
+    @Published var canGetPaid = false
+
     @Published var groups: [Group] = []
 
     @Published var groups_id: [String]?
@@ -86,6 +88,7 @@ class UserViewModel : ObservableObject {
             self.friends = userData.friends
             self.completedTransactions = userData.completedTransactions
             self.user_id = Auth.auth().currentUser?.uid ?? ""
+            self.username = userData.userName
         }
         
         await setUserGroupData()
@@ -94,7 +97,7 @@ class UserViewModel : ObservableObject {
     // Creates user in database
     func createUserInDB() async -> Void {
         // Check if User exists
-        guard let user = Auth.auth().currentUser else { 
+        guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return
         }
@@ -105,7 +108,8 @@ class UserViewModel : ObservableObject {
                 "userName": "Unnamed",
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
-                "assignedTransaction": {}
+
+                "assignedTransaction": []
           ])
           print("Document created")
             
@@ -144,4 +148,16 @@ class UserViewModel : ObservableObject {
         }
          
     }
+    func updateCanGetPaidStatus() async {
+         guard let uid = Auth.auth().currentUser?.uid else {
+             print("User is not signed in")
+             return
+         }
+
+         DatabaseAPI.canUserGetPaid(uid: uid) { canGetPaid in
+             DispatchQueue.main.async {
+                 self.canGetPaid = canGetPaid
+             }
+         }
+     }
 }

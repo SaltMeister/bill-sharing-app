@@ -18,6 +18,8 @@ struct SignUpView: View {
     
     @EnvironmentObject var user: UserViewModel
     
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         VStack {
             Text("Sign Up")
@@ -43,15 +45,12 @@ struct SignUpView: View {
             }
             
             Button {
-                // Simulating password validation, replace with your validation logic
                 if password.count >= 6 {
                     Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                         guard let result = authResult else {
                             if let x = error { print(x) }
                             return
                         }
-                        
-                        
                         print(result)
                         print("Created Account")
                         
@@ -63,13 +62,15 @@ struct SignUpView: View {
                             print("user is true")
                             isLoggedIn = true
                         }
+
+               
                     }
                     
                 } else {
                     errorMessage = "Password should have at least a length of 6"
                 }
             } label: {
-                Text("Login")
+                Text("Create Account")
                     .foregroundColor(.white)
                     .padding()
                     .frame(maxWidth: .infinity)

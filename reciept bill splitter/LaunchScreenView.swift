@@ -16,13 +16,15 @@ struct LaunchScreenView: View {
     @State private var opacity = 0.5
     
     @State private var isLoggedIn = false
-    
+    @EnvironmentObject var router: AppRouter
+
+
     @ObservedObject var user = UserViewModel()
     
     var body: some View {
         if isActive {
             NavigationStack {
-                if isLoggedIn {
+                if isLoggedIn || router.currentPage == "onboarding" || router.currentPage == "reauth"  {
                     HomeView()
                 } else {
                     SignUpLogInView(isLoggedIn: $isLoggedIn)
