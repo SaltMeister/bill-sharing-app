@@ -47,7 +47,6 @@ class PaymentManager: ObservableObject {
                 print("Error fetching ephemeral key:", error?.localizedDescription ?? "Unknown error")
                 return
             }
-            
             // Use the passed amount for the PaymentIntent
             functions.httpsCallable("createPaymentIntent").call(["amount": amount, "stripeCustomerId": customerId]) { result, error in
                 guard let clientSecret = (result?.data as? [String: Any])?["clientSecret"] as? String else {
@@ -69,6 +68,7 @@ class PaymentManager: ObservableObject {
                 print("Failed to create Express Account.")
                 return
             }
+            
             self?.createStripeAccountLink(stripeAccountID: accountId)
         }
     }

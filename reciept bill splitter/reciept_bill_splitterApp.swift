@@ -14,7 +14,6 @@ import Stripe
 class AppRouter: ObservableObject {
     static let shared = AppRouter()
     @Published var currentPage: String?
-    
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {

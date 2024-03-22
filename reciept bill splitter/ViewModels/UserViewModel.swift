@@ -147,4 +147,16 @@ class UserViewModel : ObservableObject {
         }
          
     }
+    func updateCanGetPaidStatus() async {
+         guard let uid = Auth.auth().currentUser?.uid else {
+             print("User is not signed in")
+             return
+         }
+
+         DatabaseAPI.canUserGetPaid(uid: uid) { canGetPaid in
+             DispatchQueue.main.async {
+                 self.canGetPaid = canGetPaid
+             }
+         }
+     }
 }

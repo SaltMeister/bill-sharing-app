@@ -23,7 +23,7 @@ struct LaunchScreenView: View {
     var body: some View {
         if isActive {
             NavigationStack {
-                if isLoggedIn || router.currentPage == "onboarding" {
+                if isLoggedIn || router.currentPage == "onboarding" || router.currentPage == "reauth"  {
                     HomeView()
                 } else {
                     SignUpLogInView(isLoggedIn: $isLoggedIn)

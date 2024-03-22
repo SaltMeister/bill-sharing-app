@@ -44,7 +44,7 @@ struct AccountView: View {
             Text("Email: \(userEmail)") // Display user email
                 .padding()
             // Stripe balance section
-            if userCanGetPaid {
+            if user.canGetPaid {
                 if let balanceData = balanceData {
                     VStack {
                         Text("Stripe Balance")
@@ -62,7 +62,6 @@ struct AccountView: View {
                         }
                         Button("Update payment methods") {
                             print("creating link")
-                            
                             DatabaseAPI.getStripeConnectAccountId { accountId, error in
                                 if let error = error {
                                     print("Error retrieving account ID: \(error.localizedDescription)")
@@ -84,7 +83,6 @@ struct AccountView: View {
                 Button("Setup Payments") {
                         print("creating account")
                     paymentManager.createExpressConnectAccountAndOnboardingLink(email: userEmail)
-                    self.userCanGetPaid = true
 
                     //SETUP after onboarding it is the only way and have to check for reauth fuckkkkkkkkkkk (setup the cangetpaid of course)
                     
@@ -106,11 +104,12 @@ struct AccountView: View {
         .onAppear {
             Task{
                 await fetchUserDetails()
+                await fetchStripeBalance()
+                 await user.updateCanGetPaidStatus()
+
             }
         }
-        .onChange(of: userEmail){
-           fetchStripeBalance()
-        }
+     
     }
     
     private func fetchUserDetails() async{
@@ -125,7 +124,7 @@ struct AccountView: View {
         }
     }
 
-    private func fetchStripeBalance() {
+    private func fetchStripeBalance() async {
            // Check if the current user has a Stripe Connect Account ID
            DatabaseAPI.getStripeConnectAccountId { accountId, error in
                guard let accountId = accountId, error == nil else {

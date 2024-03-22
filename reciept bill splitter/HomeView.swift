@@ -102,6 +102,7 @@ struct HomeView: View {
     @State private var selectedGroup: Group?
     @State private var isViewingTransaction = false
     @State private var isAlert = false
+    @State private var showInfoAlert = false
     
     @StateObject private var paymentManager = PaymentManager()
       @State private var showPaymentSheet = false
@@ -199,7 +200,7 @@ struct HomeView: View {
                             print("canGetPaid successfully set for the user")
                         }
                     }
-                   // paymentManager.createExpressConnectAccountAndOnboardingLink(email: userViewModel.email)
+                   paymentManager.createExpressConnectAccountAndOnboardingLink(email: userViewModel.email)
                 }
                 Spacer()
                 
@@ -209,29 +210,37 @@ struct HomeView: View {
                     // Other views and logic from GroupDetailView can be added here
                 }
                 HStack {
-                                   Spacer()
-                                   // Circular "+" button
-                                   Menu {
-                                       Button("Join Group") {
-                                           isJoiningGroup = true
-                                           print("Join Group tapped")
-                                       }
-                                       Button("Create Group") {
-                                           isCreatingGroup = true
-                                       }
-                                   } label: {
-                                       Image(systemName: "plus.circle.fill")
-                                           .resizable()
-                                           .frame(width: 50, height: 50)
-                                           .foregroundColor(.blue)
-                                   }
-                                   .navigationDestination(isPresented: $isCreatingGroup) {
-                                       CreateGroupView()
-                                   }
-                                   .navigationDestination(isPresented: $isJoiningGroup) {
-                                       JoinGroupView()
-                                   }
+                   Spacer()
+                   // Circular "+" button
+                   Menu {
+                       Button("Join Group") {
+                           isJoiningGroup = true
+                           print("Join Group tapped")
+                       }
+               
+                       Button("Create Group") {
+                               if userViewModel.canGetPaid {
+                                   isCreatingGroup = true
+                               } else {
+                                   showInfoAlert = true
                                }
+                           }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`
+
+
+                       
+                   } label: {
+                       Image(systemName: "plus.circle.fill")
+                           .resizable()
+                           .frame(width: 50, height: 50)
+                           .foregroundColor(.blue)
+                   }
+                   .navigationDestination(isPresented: $isCreatingGroup) {
+                       CreateGroupView()
+                   }
+                   .navigationDestination(isPresented: $isJoiningGroup) {
+                       JoinGroupView()
+                   }
+               }
                 // Bottom toolbar
                 BottomToolbar()
                     .environmentObject(paymentManager)
@@ -240,13 +249,21 @@ struct HomeView: View {
             .onAppear {
                 Task {
                     await userViewModel.getUserData()
+                    await userViewModel.updateCanGetPaidStatus()
+
                 }
             }
         }
         .navigationDestination(isPresented: $isViewingTransaction) {
            // TransactionView(selectedTransactionId: Binding<String>, groupData: <#Binding<Group>#>)
         }
-        
+        .alert(isPresented: $showInfoAlert) {
+            Alert(
+                title: Text("Action Required"),
+                message: Text("You need to complete your payment setup to create a group."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
     }
     
 }

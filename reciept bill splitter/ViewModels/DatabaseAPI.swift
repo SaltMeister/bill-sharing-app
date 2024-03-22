@@ -391,7 +391,20 @@ class DatabaseAPI {
             completion(accountId, nil)
         }
     }
+    static func canUserGetPaid(uid: String, completion: @escaping (Bool) -> Void) {
+        let db = Firestore.firestore()
+        let userRef = db.collection("customers").document(uid)
 
+        userRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let canGetPaid = document.data()?["canGetPaid"] as? Bool ?? false
+                completion(canGetPaid)
+            } else {
+                print("Document does not exist or error: \(error?.localizedDescription ?? "Unknown error")")
+                completion(false)
+            }
+        }
+    }
     static func setStripeConnectAccountId(accountId: String, completion: @escaping (Error?) -> Void) {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
