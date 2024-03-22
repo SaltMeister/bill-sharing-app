@@ -25,7 +25,7 @@ struct LaunchScreenView: View {
         if isActive {
             NavigationStack {
                 if isLoggedIn || router.currentPage == "onboarding" || router.currentPage == "reauth"  {
-                    HomeView()
+                    HomeView(isLoggedIn: $isLoggedIn)
                 } else {
                     SignUpLogInView(isLoggedIn: $isLoggedIn)
                         .accentColor(.purple) // Match color with logo

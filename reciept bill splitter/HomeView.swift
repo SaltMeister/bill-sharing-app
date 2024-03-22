@@ -10,6 +10,8 @@ struct HomeView: View {
     @State private var isEmptyDisplayFormat = true
     @EnvironmentObject var userViewModel: UserViewModel
     
+    @Binding var isLoggedIn: Bool
+    
     @State private var isCreatingGroup = false
     @State private var selectedGroup: Group?
     @State private var isAlert = false
@@ -77,7 +79,7 @@ struct HomeView: View {
                     CreateGroupView()
                 }
 
-                BottomToolbar().environmentObject(paymentManager)
+                BottomToolbar(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)
             }
             .navigationTitle("Home")
             .alert(isPresented: $showInfoAlert) {
@@ -93,6 +95,10 @@ struct HomeView: View {
                 }
             }
         }
+        .environmentObject(userViewModel)
+               /*.navigationDestination(isPresented: $isLoggedIn) { // Use isLoggedIn for navigation
+                   SignUpLogInView(isLoggedIn: $isLoggedIn)
+               }*/
     }
 
     private func listenToTransactionsForGroup(groupId: String) {
@@ -141,6 +147,8 @@ struct HomeView: View {
 
 
 struct BottomToolbar: View {
+    @Binding var isLoggedIn: Bool // Receive isLoggedIn as a binding
+
     @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
 
     var body: some View {
@@ -148,7 +156,7 @@ struct BottomToolbar: View {
             ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
             //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
             ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView().environmentObject(paymentManager)))
+            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
         }
         .frame(height: 50)
         .background(

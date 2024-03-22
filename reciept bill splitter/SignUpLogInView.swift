@@ -131,6 +131,9 @@ struct SignUpLogInView: View {
             .navigationDestination(isPresented: $isSignUpActive){
                 SignUpView(isLoggedIn: $isLoggedIn)
             }
+            .navigationDestination(isPresented: $isLoggedIn){
+                HomeView(isLoggedIn: $isLoggedIn)
+            }
         }
     }
     

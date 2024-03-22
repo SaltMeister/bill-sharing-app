@@ -8,6 +8,8 @@ struct AccountView: View {
     @State private var userCanGetPaid = false
     @State private var user_id = ""
 
+    @Binding var isLoggedIn: Bool
+    
     @EnvironmentObject var user: UserViewModel
     @EnvironmentObject var paymentManager: PaymentManager
     @State private var balanceData: [String: Any]? = nil
@@ -135,9 +137,10 @@ struct AccountView: View {
             }
 
             Button(action: {
-                // Sign out action
+                isLoggedIn = false
                 do {
                     try Auth.auth().signOut()
+                    isLoggedIn = false
                     isLoggedOut = true
                 } catch {
                     print("Error signing out: \(error.localizedDescription)")
@@ -153,7 +156,7 @@ struct AccountView: View {
             .buttonStyle(PlainButtonStyle())
         }
         .navigationDestination(isPresented: $isLoggedOut) {
-            SignUpLogInView(isLoggedIn: $isLoggedOut)
+            SignUpLogInView(isLoggedIn: $isLoggedIn)
                 .navigationBarHidden(true)
         }
     }

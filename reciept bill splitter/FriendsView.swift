@@ -79,9 +79,6 @@ struct FriendsView: View {
                                .frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height/15)
             }
             .navigationTitle("Friends")
-            .navigationDestination(isPresented: $isAddFriendsActive){
-                AddFriendView()
-            }
         }
     }
     func deleteFriend(_ friend: (String, String)) {
