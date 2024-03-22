@@ -22,21 +22,28 @@ struct TransactionView: View {
                 // index of the bidding members and get the dictiionary count inside
                 List {
                     ForEach(transaction.itemList.indices, id: \.self) { index in
-                        let bidders = transaction.itemBidders[String(index)] ?? []
-                        let biddersCount = bidders.count
-                        let isCurrentUserBidding = bidders.contains(user.user_id)
+                        let isCurrentUserBidding = transaction.itemBidders[String(index)]?.contains(user.user_id) ?? false
                         
                         HStack {
                             Text("\(transaction.itemList[index].name): $\(String(format: "%.2f", Double(transaction.itemList[index].priceInCents) / 100))")
-                                .foregroundColor(isCurrentUserBidding ? .blue : .primary) // Change color if the current user is bidding
                             Spacer()
-                            // Display the number of bidders for each item
-                            Text("Bidders: \(biddersCount)")
-                                .foregroundColor(.gray)
-                                .font(.subheadline)
+                            Button(action: {
+                                Task {
+                                    await bidOnItem(itemIndex: index, transactionID: transaction.transaction_id, userID: user.user_id)
+                                    transactionData = await DatabaseAPI.grabTransaction(transaction_id: selectedTransactionId)
+
+                                }
+                            }) {
+                                Text(isCurrentUserBidding ? "Unbid" : "Bid")
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(isCurrentUserBidding ? Color.red : Color.green)
+                                    .cornerRadius(10)
+                            }
                         }
                     }
                 }
+
                 Text("Your Total Contribution: $\(String(format: "%.2f", calculateUserTotalContribution(transaction: transaction, userID: user.user_id)))")
                     .fontWeight(.bold)
 
@@ -96,6 +103,35 @@ struct TransactionView: View {
 
         return totalContribution
     }
+    func bidOnItem(itemIndex: Int, transactionID: String, userID: String) async {
+        let transactionRef = Firestore.firestore().collection("transactions").document(transactionID)
+        
+        do {
+            let document = try await transactionRef.getDocument()
+            if document.exists, var transactionData = document.data() {
+                var itemBidders = transactionData["itemBidders"] as? [String: [String]] ?? [:]
+                var bidders = itemBidders[String(itemIndex)] ?? []
+                
+                if let index = bidders.firstIndex(of: userID) {
+                    // User is already bidding, remove their bid
+                    bidders.remove(at: index)
+                } else {
+                    // Add user's bid
+                    bidders.append(userID)
+                }
+                
+                // Update the bidders list for the item
+                itemBidders[String(itemIndex)] = bidders
+                transactionData["itemBidders"] = itemBidders
+                
+                // Update the transaction document
+                try await transactionRef.updateData(transactionData)
+            }
+        } catch {
+            print("Error updating transaction: \(error)")
+        }
+    }
+
 //    func parseTransactionData(_ data: [String: Any]) -> Transaction {
 //        // Parse the data into your Transaction model
 //        // Example:
