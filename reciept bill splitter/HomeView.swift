@@ -64,14 +64,33 @@ struct HomeView: View {
                         }
                     }
                 }
+                Menu {
 
-                Button("Create Group") {
-                    if userViewModel.canGetPaid {
-                        isCreatingGroup = true
-                    } else {
-                        showInfoAlert = true
-                    }
-                }
+                    
+                            Button("Create Group") {
+                                    if userViewModel.canGetPaid {
+                                        isCreatingGroup = true
+                                    } else {
+                                        showInfoAlert = true
+                                    }
+                                }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`
+
+
+                                   Button("Join Group") {
+                                       isJoiningGroup = true
+                                       print("Join Group tapped")
+                                   }
+
+                           
+                                   
+                               } label: {
+                                   Image(systemName: "plus.circle.fill")
+                                       .resizable()
+                                       .frame(width: 50, height: 50)
+                                       .foregroundColor(.blue)
+
+                               }
+          
                 .foregroundColor(userViewModel.canGetPaid ? .primary : .red)
                 .navigationDestination(isPresented: $isCreatingGroup) {
                     CreateGroupView()
