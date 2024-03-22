@@ -14,6 +14,12 @@ import Firebase
 class DatabaseAPI {
     static var db = Firestore.firestore()
     
+    // https://stackoverflow.com/questions/26845307/generate-random-alphanumeric-string-in-swift
+    /*static func randomString(length: Int) -> String {
+     let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+     // WAIT FIX THIS ITS FORCE UNWRAP
+     return String((0..<length).map{ _ in letters.randomElement()! })
+     }*/
     static func randomString(length: Int) -> String {
         guard length > 0 else { return "" } // Return empty string if length is non-positive
         
@@ -330,6 +336,100 @@ class DatabaseAPI {
         return nil
     }
     
+    static func assignAllGroupMembersPayment(transaction_id: String) async -> Void {
+        guard let _ = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return
+        }
+        
+        let transactionRef = db.collection("transactions").document(transaction_id)
+        // Add New AssignedTransaction for transaction in user
+        do {
+            let document = try await transactionRef.getDocument()
+            
+            guard let transactionData = document.data() else {
+                return
+            }
+            
+            let groupId = transactionData["group_id"] as? String ?? ""
+            let groupRef = db.collection("groups").document(groupId)
+            let groupDocument = try await groupRef.getDocument()
+            
+            guard let groupData = groupDocument.data() else {
+                return
+            }
+            
+            let groupMembers = groupData["members"] as? [String] ?? []
+            
+            // Read document and work
+            do {
+                // Firestore Transaction to ensure both documents are written together or both fail
+                let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
+                    // LOOP through transactions and create a new assigned transaction for each user
+                    let itemBidders = transactionData["itemBidders"] as? [String:[String]] ?? [:]
+                    let items = transactionData["items"] as? [[String : Any]] ?? [[:]]
+                    
+                    var newItemList: [Item] = []
+                    for item in items {
+                        let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
+                        newItemList.append(newItem)
+                    }
+                    
+                    // An Abomination of Code
+                    for groupMember in groupMembers {
+                        let userReference = db.collection("users").document(groupMember)
+                        let userDocument: DocumentSnapshot
+                        
+                        do {
+                          try userDocument = transaction.getDocument(userReference)
+                        } catch let fetchError as NSError {
+                          errorPointer?.pointee = fetchError
+                          return nil
+                        }
+
+                        var totalCostToPay: Float = 0
+                        // Check every item for user
+                        for (index, item) in newItemList.enumerated() {
+                            // Seach For Member in item bids
+                            let currentIndex = String(index)
+                            let currentItemBidders = itemBidders[currentIndex] ?? []
+                            
+                            for userId in currentItemBidders {
+                                if userId == groupMember {
+                                    // Add Total cost to pay for user
+                                    totalCostToPay += Float(item.priceInCents) / Float(currentItemBidders.count)
+                                }
+                            }
+                        }
+                        // After Adding cost for user for all items
+                        // Create AssignedTransaction for User
+                        var assignedTransactionDict: [String:Any] = [:]
+                        assignedTransactionDict["transactionName"] = transactionData["name"] as? String ?? ""
+                        assignedTransactionDict["associatedTransaction_id"] = transaction_id
+                        assignedTransactionDict["user_idToPay"] = groupData["owner_id"] as? String ?? ""
+                        assignedTransactionDict["isPaid"] = false
+                        assignedTransactionDict["ammountToPay"] = totalCostToPay
+                        
+                        transaction.updateData(["assignedTransaction.\(transaction_id)": assignedTransactionDict], forDocument: userReference)
+                    }
+                    print("FINISHED")
+                    return nil
+                })
+                
+                return
+            } catch {
+                // Handle error during transaction
+                print("Error Assigning Transaction: \(error)")
+                return
+            }
+                
+        } catch let error {
+            print("Error updating transaction: \(error)")
+        }
+
+        
+    }
+    
     static func retrieveStripeCustomerId(uid: String, completion: @escaping (String?) -> Void) {
         let db = Firestore.firestore()
         let customerRef = db.collection("customers").document(uid)
@@ -407,56 +507,7 @@ class DatabaseAPI {
         }
     }
 
-    
-    static func assignAllGroupMembersPayment(transaction_id: String) async -> Void {
-        guard let _ = Auth.auth().currentUser else {
-            print("User Does not exist")
-            return
-        }
-        
-        let transactionRef = db.collection("transactions").document(transaction_id)
-        // Add New AssignedTransaction for transaction in user
-        do {
-            let document = try await transactionRef.getDocument()
-            
-            if !document.exists {
-                return
-            }
-            
-            // Read document and work
-            do {
-                // Firestore Transaction to ensure both documents are written together or both fail
-                let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
-                    // LOOP through transactions and create a new assigned transaction for each user
-                    //                let gDoc: DocumentSnapshot
-                    //                do {
-                    //                    try gDoc = transaction.getDocument(docRef)
-                    //                } catch let fetchError as NSError {
-                    //                    errorPointer?.pointee = fetchError
-                    //                    return nil
-                    //                }
-                    //
-                    //                // Add user id to group members
-                    //                transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
-                    //                // Add group id to user groups
-                    //                transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
-                    return nil
-                })
-                
-                return
-            } catch {
-                // Handle error during transaction
-                print("Error Assigning Transaction: \(error)")
-                return
-            }
-            
-        } catch let error {
-            print("Error updating transaction: \(error)")
-        }
-        
-        
-    }
-    
+
     static func fetchUsernames(for documentIDs: [String], completion: @escaping (Result<[String], Error>) -> Void) {
         let userCollection = db.collection("users")
         

@@ -29,11 +29,6 @@ struct HomeView: View {
                                 Text(group.group_name)
                                 Text("Invite Code: \(group.invite_code)")
                             }
-                            .onAppear {
-                                Task {
-                                    listenToTransactionsForGroup(groupId: group.groupID)
-                                }
-                            }
                         }
                     }
                 }
@@ -61,7 +56,6 @@ struct HomeView: View {
                         switch result {
                         case .completed:
                             Text("Payment complete")
-                            
                         case .failed(let error):
                             Text("Payment failed: \(error.localizedDescription)")
                         case .canceled:
@@ -69,10 +63,6 @@ struct HomeView: View {
                         }
                     }
                 }
-                HStack{
-                    Spacer()
-                        
-                        
 
                 Menu {
                     Button("Create Group") {
@@ -94,12 +84,11 @@ struct HomeView: View {
                         
                     }
                 }
+
                 .navigationDestination(isPresented: $isCreatingGroup) {
                     CreateGroupView()
                 }
-                .navigationDestination(isPresented: $isJoiningGroup) {
-                    JoinGroupView()
-                }
+
                 BottomToolbar().environmentObject(paymentManager)
             }
             .navigationTitle("Home")
@@ -116,51 +105,54 @@ struct HomeView: View {
                 }
             }
         }
-    }
-
-private func listenToTransactionsForGroup(groupId: String) {
-    let db = Firestore.firestore()
-    db.collection("transactions").whereField("group_id", isEqualTo: groupId)
-        .addSnapshotListener { querySnapshot, error in
-            guard let snapshots = querySnapshot else {
-                print("Error fetching documents: \(error!)")
-                return
-            }
-            if let error = error {
-                print("Error retreiving collection: \(error)")
-            }
-                        // Find Changes where document is a diff
-            snapshots.documentChanges.forEach { diff in
-                if diff.type == .modified {
-                    // Check if the proper field is adjusted
-                    print("GROUP TRANSACTION HAS BEEN MODIFIED")
-                    let data = diff.document.data()
-                    let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
-                    
-                    if isTransactionCompleted {
-                        let transactionId = diff.document.documentID
-                        Task {
-                            await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: transactionId)
-                        }
-                        
-                    }
-                    // Assign Each Member Their Parts to Pay
-                }
-                else if diff.type == .added {
-                    print("NEW TRANSACTION CREATED FOR GROUP")
-                }
-            }
-        }
-}
-    
     private func assignUsersTransaction() {
         Task{
             await userViewModel.getUserData()
             await userViewModel.updateCanGetPaidStatus()
         }
+    }
+
+private func listenToTransactionsForGroup(groupId: String) {
+        let db = Firestore.firestore()
+        db.collection("transactions").whereField("group_id", isEqualTo: groupId)
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshots = querySnapshot else {
+                    print("Error fetching documents: (error!)")
+                    return
+                }
+
+                if let error = error {
+                    print("Error retreiving collection: (error)")
+                }
+
+                // Find Changes where document is a diff
+                snapshots.documentChanges.forEach { diff in
+                    if diff.type == .modified {
+                        // Check if the proper field is adjusted
+                        print("GROUP TRANSACTION HAS BEEN MODIFIED")
+                        let data = diff.document.data()
+                        let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
+
+                        if isTransactionCompleted {
+                            Task {
+                               await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: diff.document.documentID)
+                            }
+                        }
+                        // Assign Each Member Their Parts to Pay
+                    }
+                    else if diff.type == .added {
+                        print("NEW TRANSACTION CREATED FOR GROUP")
+                    }
+                }
+            }
+    }
+  
         
     }
-}
+
+
+    
+
 
 
 struct BottomToolbar: View {
