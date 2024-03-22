@@ -28,6 +28,8 @@ struct LaunchScreenView: View {
                     HomeView()
                 } else {
                     SignUpLogInView(isLoggedIn: $isLoggedIn)
+                        .accentColor(.purple) // Match color with logo
+
                 }
             }
             .environmentObject(user)
@@ -36,14 +38,32 @@ struct LaunchScreenView: View {
                 VStack {
                     VStack{
                         //Displaying Logo
-                        Image(systemName: "wallet.pass.fill")
-                            .font(.system(size: 80))
-                            .foregroundColor(.red)
+                        ZStack {
+                            Circle()
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)) // Gradient circle color
+                                .frame(width: 120, height: 120) // Adjust circle size as needed
+                                .shadow(color: .black.opacity(0.5), radius: 5, x: 0, y: 2) // Add shadow for depth
+                            
+                            Image(systemName: "wallet.pass.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 80, height: 80)
+                                .foregroundColor(.white) // Adjust icon color as needed
+                        }
+
                         
                         //Displaying App Name
-                        Text("Bill Split")
-                            .font(Font.custom("Baskerille-Bold", size: 26))
+                        Text("Wonder Wallet")
+                            .font(.system(size: 26))
                             .foregroundColor(.black.opacity(0.80))
+                            .fontWeight(.light)
+                        
+                        // Displaying Slogan
+                                Text("Scan, Split, Simplify.")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.black.opacity(0.60))
+
+
                     }
                     .scaleEffect(size)
                     .opacity(opacity)

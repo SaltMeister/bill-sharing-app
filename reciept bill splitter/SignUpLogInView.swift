@@ -24,7 +24,29 @@ struct SignUpLogInView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {                
+            VStack { 
+                Text("Wonder Wallet")
+                    .font(.system(size: 30))
+                    .foregroundColor(.black.opacity(0.80))
+                    .fontWeight(.light)
+                    .padding()
+                
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .frame(width: 80, height: 80) // Adjust circle size as needed
+                        .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 2) // Adjust shadow radius as needed
+                    
+                    Image(systemName: "wallet.pass.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 50, height: 50) // Adjust icon size as needed
+                        .foregroundColor(.white) // Adjust icon color as needed
+                }
+                .frame(width: 100, height: 100) // Adjust total size of the icon
+                .padding()
+
+                
                 TextField("Email", text: $email)
                     .padding()
                     .background(Color.gray.opacity(0.2))
@@ -87,12 +109,13 @@ struct SignUpLogInView: View {
                     
                 } label: {
                     Text("Login")
-                        .foregroundColor(.white)
+                        .font(.headline)
+                        .foregroundColor(.white) // Set text color to white
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .cornerRadius(8.0)
-                        .padding(.horizontal, 20)
+                        .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)) // Use gradient background
+                        .cornerRadius(8) // Round the corners of the button
+                        .padding(.horizontal) // Add horizontal padding
                 }
                 
                 Button {
