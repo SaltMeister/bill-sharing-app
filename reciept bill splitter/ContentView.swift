@@ -16,12 +16,10 @@ struct ContentView: View {
                   List(scanReceipt.receiptItems) { item in
                       Text("\(item.name): $\(item.price, specifier: "%.2f")")
                   }
-              
                   if let tax = scanReceipt.tax {
                       Text("Tax: $\(tax.price, specifier: "%.2f")")
                           .foregroundColor(.red)
                   }
-                  
                   if let total = scanReceipt.total {
                       Text("Total: $\(total.price, specifier: "%.2f")")
                           .foregroundColor(.red)

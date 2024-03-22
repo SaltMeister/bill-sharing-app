@@ -111,6 +111,8 @@ struct GroupDetailView: View {
             }
             .navigationDestination(isPresented: $isTransactionSelected) {
                 TransactionView(selectedTransactionId: $selectedTransactionID, groupData: $selectedGroup)
+                //TransactionView()
+
             }
             .navigationDestination(isPresented: $isManualInputPresented) {
                 ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup.groupID)
