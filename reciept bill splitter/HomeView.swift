@@ -18,6 +18,7 @@ struct HomeView: View {
     @StateObject private var paymentManager = PaymentManager()
     @State private var showPaymentSheet = false
 
+    @Binding var isLoggedIn: Bool
     var body: some View {
         NavigationStack {
             VStack {
@@ -82,7 +83,7 @@ struct HomeView: View {
                     CreateGroupView()
                 }
 
-                BottomToolbar().environmentObject(paymentManager)
+                BottomToolbar(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)
             }
             .navigationTitle("Home")
             .alert(isPresented: $showInfoAlert) {
@@ -150,13 +151,15 @@ struct HomeView: View {
 
 struct BottomToolbar: View {
     @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
-
+    
+    @Binding var isLoggedIn: Bool
+    
     var body: some View {
         HStack(spacing: 0.2) {
             ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
             //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
-            ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView().environmentObject(paymentManager)))
+            ToolbarItem(iconName: "bolt", text: "Activate Transactions", destination: AnyView(AllAssignedTransactions()))
+            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
         }
         .frame(height: 50)
         .background(Color(UIColor.systemBackground))
