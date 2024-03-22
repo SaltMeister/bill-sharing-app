@@ -135,7 +135,7 @@ private func listenToTransactionsForGroup(groupId: String) {
 
                         if isTransactionCompleted {
                             Task {
-                               await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: diff.document.documentID)
+                                await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: diff.document.documentID)
                             }
                         }
                         // Assign Each Member Their Parts to Pay
