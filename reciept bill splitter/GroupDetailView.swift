@@ -44,30 +44,46 @@ struct GroupDetailView: View {
                     List {
                         
                         ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
+                            
                             let transactionData = user.currentSelectedGroupTransactions[index]
                             let date = formatter.string(from: transactionData.dateCreated?.dateValue() ?? Date())
-
-                            if transactionData.isCompleted {
-                                HStack {
-                                    Text(transactionData.name)
-                                    Text(date)
+                            NavigationLink(destination: TransactionView(selectedTransactionId: $user.currentSelectedGroupTransactions[index].transaction_id, groupData: $selectedGroup)) {
+                                if transactionData.isCompleted {
+                                    HStack {
+                                        Text(transactionData.name)
+                                        Text(date)
+                                    }
+                                    .opacity(0.5)
+                                } else {
+                                    HStack {
+                                        Text(transactionData.name)
+                                        Text(date)
+                                    }
                                 }
-                                .onTapGesture {
-                                    user.selectedTransaction = transactionData
-                                    selectedTransactionID = transactionData.transaction_id
-                                    isTransactionSelected = true
-                                }
-                                .opacity(0.5)
-                            } else {
-                                HStack {
-                                    Text(transactionData.name)
-                                    Text(date)
-                                }
-                                .onTapGesture {
-                                    user.selectedTransaction = transactionData
-                                    selectedTransactionID = transactionData.transaction_id
-                                    isTransactionSelected = true
-                                }
+                                
+                                
+//                            if transactionData.isCompleted {
+//                                HStack {
+//                                    Text(transactionData.name)
+//                                    Text(date)
+//                                }
+//                                .onTapGesture {
+//                                    user.selectedTransaction = transactionData
+//                                    selectedTransactionID = transactionData.transaction_id
+//                                    isTransactionSelected = true
+//                                }
+//                                .opacity(0.5)
+//                            } else {
+//                                HStack {
+//                                    Text(transactionData.name)
+//                                    Text(date)
+//                                }
+//                                .onTapGesture {
+//                                    user.selectedTransaction = transactionData
+//                                    selectedTransactionID = transactionData.transaction_id
+//                                    isTransactionSelected = true
+//                                }
+//                            }
                             }
                         }
                     }
@@ -111,8 +127,6 @@ struct GroupDetailView: View {
             }
             .navigationDestination(isPresented: $isTransactionSelected) {
                 TransactionView(selectedTransactionId: $selectedTransactionID, groupData: $selectedGroup)
-                //TransactionView()
-
             }
             .navigationDestination(isPresented: $isManualInputPresented) {
                 ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup.groupID)
