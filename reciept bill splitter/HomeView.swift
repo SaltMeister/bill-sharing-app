@@ -38,6 +38,7 @@ struct HomeView: View {
 
                 Button("Transfer Money") {
                     paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn")
+
                 }
 
                 Button("Collect Payment") {
@@ -57,6 +58,7 @@ struct HomeView: View {
                         switch result {
                         case .completed:
                             Text("Payment complete")
+                            
                         case .failed(let error):
                             Text("Payment failed: \(error.localizedDescription)")
                         case .canceled:
@@ -64,38 +66,43 @@ struct HomeView: View {
                         }
                     }
                 }
-                Menu {
-
-                    
-                            Button("Create Group") {
-                                    if userViewModel.canGetPaid {
-                                        isCreatingGroup = true
-                                    } else {
-                                        showInfoAlert = true
-                                    }
-                                }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`
-
-
-                                   Button("Join Group") {
-                                       isJoiningGroup = true
-                                       print("Join Group tapped")
-                                   }
-
-                           
-                                   
-                               } label: {
-                                   Image(systemName: "plus.circle.fill")
-                                       .resizable()
-                                       .frame(width: 50, height: 50)
-                                       .foregroundColor(.blue)
-
-                               }
+                HStack{
+                    Spacer()
+                    Menu {
+                        
+                        
+                        Button("Create Group") {
+                            if userViewModel.canGetPaid {
+                                isCreatingGroup = true
+                            } else {
+                                showInfoAlert = true
+                            }
+                        }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`
+                        
+                        
+                        Button("Join Group") {
+                            isJoiningGroup = true
+                            print("Join Group tapped")
+                        }
+                        
+                        
+                        
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.blue)
+                        
+                    }
+                }
           
                 .foregroundColor(userViewModel.canGetPaid ? .primary : .red)
                 .navigationDestination(isPresented: $isCreatingGroup) {
                     CreateGroupView()
                 }
-
+                .navigationDestination(isPresented: $isJoiningGroup) {
+                    JoinGroupView()
+                }
                 BottomToolbar().environmentObject(paymentManager)
             }
             .navigationTitle("Home")
