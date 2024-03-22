@@ -61,6 +61,7 @@ struct SignUpView: View {
                             await user.createUserInDB()
                             print("user is true")
                             isLoggedIn = true
+                            dismiss()
                         }
 
                
