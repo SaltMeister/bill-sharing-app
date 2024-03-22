@@ -30,11 +30,6 @@ struct HomeView: View {
                                 Text(group.group_name)
                                 Text("Invite Code: \(group.invite_code)")
                             }
-                            .onAppear {
-                                Task {
-                                    listenToTransactionsForGroup(groupId: group.groupID)
-                                }
-                            }
                         }
                     }
                 }
@@ -43,7 +38,6 @@ struct HomeView: View {
 
                 Button("Transfer Money") {
                     paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn")
-
                 }
 
                 Button("Collect Payment") {
@@ -63,7 +57,6 @@ struct HomeView: View {
                         switch result {
                         case .completed:
                             Text("Payment complete")
-                            
                         case .failed(let error):
                             Text("Payment failed: \(error.localizedDescription)")
                         case .canceled:
@@ -71,44 +64,19 @@ struct HomeView: View {
                         }
                     }
                 }
-                HStack{
-                    Spacer()
-                        
-                        
 
-                Menu {
-                    Button("Create Group") {
-                            if userViewModel.canGetPaid {
-                                isCreatingGroup = true
-                            } else {
-                                showInfoAlert = true
-                            }
-                        }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`
-                        
-                        
-                        Button("Join Group") {
-                            isJoiningGroup = true
-                            print("Join Group tapped")
-                        }
-                        
-                        
-                        
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.blue)
-                        
+                Button("Create Group") {
+                    if userViewModel.canGetPaid {
+                        isCreatingGroup = true
+                    } else {
+                        showInfoAlert = true
                     }
                 }
-          
-        
+                .foregroundColor(userViewModel.canGetPaid ? .primary : .red)
                 .navigationDestination(isPresented: $isCreatingGroup) {
                     CreateGroupView()
                 }
-                .navigationDestination(isPresented: $isJoiningGroup) {
-                    JoinGroupView()
-                }
+
                 BottomToolbar().environmentObject(paymentManager)
             }
             .navigationTitle("Home")
@@ -127,43 +95,38 @@ struct HomeView: View {
         }
     }
 
-private func listenToTransactionsForGroup(groupId: String) {
-    let db = Firestore.firestore()
-    db.collection("transactions").whereField("group_id", isEqualTo: groupId)
-        .addSnapshotListener { querySnapshot, error in
-            guard let snapshots = querySnapshot else {
-                print("Error fetching documents: \(error!)")
-                return
-            }
-            
-            if let error = error {
-                print("Error retreiving collection: \(error)")
-            }
-            
-            // Find Changes where document is a diff
-            snapshots.documentChanges.forEach { diff in
-                if diff.type == .modified {
-                    // Check if the proper field is adjusted
-                    print("GROUP TRANSACTION HAS BEEN MODIFIED")
-                    let data = diff.document.data()
-                    let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
-                    
-                    if isTransactionCompleted {
-                        let transactionId = diff.document.documentID
-                        Task {
-                            await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: transactionId)
-                        }
+    private func listenToTransactionsForGroup(groupId: String) {
+        let db = Firestore.firestore()
+        db.collection("transactions").whereField("group_id", isEqualTo: groupId)
+            .addSnapshotListener { querySnapshot, error in
+                guard let snapshots = querySnapshot else {
+                    print("Error fetching documents: \(error!)")
+                    return
+                }
+                
+                if let error = error {
+                    print("Error retreiving collection: \(error)")
+                }
+                
+                // Find Changes where document is a diff
+                snapshots.documentChanges.forEach { diff in
+                    if diff.type == .modified {
+                        // Check if the proper field is adjusted
+                        print("GROUP TRANSACTION HAS BEEN MODIFIED")
+                        let data = diff.document.data()
+                        let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
                         
+                        if isTransactionCompleted {
+                            
+                        }
+                        // Assign Each Member Their Parts to Pay
                     }
-                    // Assign Each Member Their Parts to Pay
-                }
-                else if diff.type == .added {
-                    print("NEW TRANSACTION CREATED FOR GROUP")
+                    else if diff.type == .added {
+                        print("NEW TRANSACTION CREATED FOR GROUP")
+                    }
                 }
             }
-        }
-}
-    
+    }
     private func assignUsersTransaction() {
         Task{
             await userViewModel.getUserData()
@@ -172,6 +135,9 @@ private func listenToTransactionsForGroup(groupId: String) {
         
     }
 }
+
+    
+
 
 
 struct BottomToolbar: View {

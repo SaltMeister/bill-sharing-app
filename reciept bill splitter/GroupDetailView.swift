@@ -140,10 +140,11 @@ struct GroupDetailView: View {
     private func createTransaction() async {
         let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
+        let tempTransaction = Transaction(transaction_id: "", itemList: [], itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: nil)
         
         let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: nil)
        
-        await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup.groupID)
+        await DatabaseAPI.createTransaction(transactionData: tempTransaction, groupID: selectedGroup.groupID)
     }
     
     private func loadTransactions() async {
@@ -161,6 +162,21 @@ struct GroupDetailView: View {
         }
     }
 }
+
+/*struct MembersListView: View {
+    let members: [GroupMember]
+    
+    var body: some View {
+        List {
+            ForEach(members, id: \.id) { member in
+                Text(member.id)
+            }
+        }
+        .onAppear {
+                    print("Members: \(members)")
+                }
+    }
+}*/
 
 struct MembersListView: View {
     let members: [GroupMember]
