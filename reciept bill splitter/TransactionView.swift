@@ -1,4 +1,7 @@
 import SwiftUI
+import Firebase
+import SwiftUI
+import StripePaymentSheet
 
 struct TransactionView: View {
 
@@ -66,6 +69,22 @@ struct TransactionView: View {
                 transactionData = await DatabaseAPI.grabTransaction(transaction_id: selectedTransactionId)
             }
         }
+        .onAppear {
+            let transactionRef = Firestore.firestore().collection("transactions").document(selectedTransactionId)
+            transactionRef.addSnapshotListener { documentSnapshot, error in
+                guard let document = documentSnapshot, error == nil else {
+                    print("Error fetching document: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                guard let data = document.data() else {
+                    print("Document data was empty.")
+                    return
+                }
+                // Parse the data into your Transaction model and update the state
+                self.transactionData = self.parseTransactionData(data)
+            }
+        }
+
         .navigationTitle("Transaction Details")
         
 
@@ -82,6 +101,18 @@ struct TransactionView: View {
         }
 
         return totalContribution
+    }
+    func parseTransactionData(_ data: [String: Any]) -> Transaction {
+        // Parse the data into your Transaction model
+        // Example:
+        let name = data["name"] as? String ?? "Unknown"
+        let itemList = data["itemList"] as? [[String: Any]] ?? []
+        let itemObjects = itemList.map { itemData -> Item in
+            let name = itemData["name"] as? String ?? "Item"
+            let priceInCents = itemData["priceInCents"] as? Int ?? 0
+            return Item(priceInCents: priceInCents, name: name)
+        }
+        return Transaction(name: name, itemList: itemObjects, ...)
     }
 
 }

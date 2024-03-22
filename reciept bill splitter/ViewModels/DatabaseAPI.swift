@@ -598,5 +598,5 @@ class DatabaseAPI {
                 }
             }
             
-        }
+    }
     

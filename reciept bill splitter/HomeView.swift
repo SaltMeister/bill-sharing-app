@@ -93,7 +93,9 @@ struct HomeView: View {
                 .navigationDestination(isPresented: $isCreatingGroup) {
                     CreateGroupView()
                 }
-
+                .navigationDestination(isPresented: $isJoiningGroup) {
+                    JoinGroupView()
+                }
                 BottomToolbar().environmentObject(paymentManager)
             }
             .navigationTitle("Home")
@@ -129,7 +131,6 @@ private func listenToTransactionsForGroup(groupId: String) {
                 if let error = error {
                     print("Error retreiving collection: (error)")
                 }
-
                 // Find Changes where document is a diff
                 snapshots.documentChanges.forEach { diff in
                     if diff.type == .modified {
