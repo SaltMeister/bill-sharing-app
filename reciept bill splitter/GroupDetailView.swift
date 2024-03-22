@@ -12,7 +12,6 @@ import FirebaseFirestoreSwift
 struct GroupDetailView: View {
     let db = Firestore.firestore()
     @State private var isCameraPresented = false
-    @State private var isTransactionSelected = false
     @State private var selectedImage: UIImage?
     @State private var isTaken = false
     
@@ -20,10 +19,7 @@ struct GroupDetailView: View {
     @State private var totalSpent: Double = 0
     
     @State private var isViewMembersPopoverPresented = false
-    
-    @State private var isManualInputPresented = false
 
-    
     @State private var transactionName = ""
     @State private var transactionPrice = ""
     
@@ -60,35 +56,8 @@ struct GroupDetailView: View {
                                         Text(date)
                                     }
                                 }
-                                
-                                
-//                            if transactionData.isCompleted {
-//                                HStack {
-//                                    Text(transactionData.name)
-//                                    Text(date)
-//                                }
-//                                .onTapGesture {
-//                                    user.selectedTransaction = transactionData
-//                                    selectedTransactionID = transactionData.transaction_id
-//                                    isTransactionSelected = true
-//                                }
-//                                .opacity(0.5)
-//                            } else {
-//                                HStack {
-//                                    Text(transactionData.name)
-//                                    Text(date)
-//                                }
-//                                .onTapGesture {
-//                                    user.selectedTransaction = transactionData
-//                                    selectedTransactionID = transactionData.transaction_id
-//                                    isTransactionSelected = true
-//                                }
-//                            }
                             }
                         }
-                    }
-                    Button("Add Transaction") {
-                        isManualInputPresented.toggle()
                     }
                 } else {
                     Text("No transactions found")
@@ -124,12 +93,6 @@ struct GroupDetailView: View {
                 .popover(isPresented: $isViewMembersPopoverPresented, arrowEdge: .bottom) {
                     MembersListView(members: selectedGroup.members)
                 }
-            }
-            .navigationDestination(isPresented: $isTransactionSelected) {
-                TransactionView(selectedTransactionId: $selectedTransactionID, groupData: $selectedGroup)
-            }
-            .navigationDestination(isPresented: $isManualInputPresented) {
-                ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup.groupID)
             }
             .onChange(of: scanReceipt.isScanning) {
                 if !scanReceipt.isScanning {
