@@ -59,6 +59,46 @@ class DatabaseAPI {
         return nil
     }
     
+    static func grabUserAssignedTransactions() async -> [AssignedTransaction]? {
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return nil
+        }
+        
+        let userRef = db.collection("users").document(user.uid)
+        
+        do {
+            let document = try await userRef.getDocument()
+            
+            var userAssignedTransactions: [AssignedTransaction] = []
+            
+            if document.exists {
+                let data = document.data()
+                guard let data = data else {
+                    return nil
+                }
+                let assignedTransactions = data["assignedTransaction"] as? [String : [String : Any]] ?? [:]
+                
+                for (transaction_id, dataDict) in assignedTransactions {
+                    let ammountToPay = dataDict["ammountToPay"] as? Int ?? 0
+                    let associatedTransaction_id = transaction_id
+                    let isPaid = dataDict["isPaid"] as? Bool ?? false
+                    let transactionName = data["transactionName"] as? String ?? "Unknown Transaction Name"
+                    let user_idToPay = data["user_idToPay"] as? String ?? ""
+                    
+                    let newAssignment = AssignedTransaction(transactionName: transactionName, associatedTransaction_id: associatedTransaction_id, user_idToPay: user_idToPay, isPaid: isPaid, amountToPay: ammountToPay)
+                    
+                    userAssignedTransactions.append(newAssignment)
+                }
+                
+                return userAssignedTransactions
+            }
+        } catch {
+            print("Error Grabbing User Assigned Transactions: \(error)")
+        }
+        return nil
+    }
+    
     static func createGroup(groupName: String) async -> Void {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -375,17 +415,22 @@ class DatabaseAPI {
                         newItemList.append(newItem)
                     }
                     
-                    // An Abomination of Code
-                    for groupMember in groupMembers {
-                        let userReference = db.collection("users").document(groupMember)
+                    var groupMemberReferences: [DocumentReference] = []
+                    
+                    for (index, groupMember) in groupMembers.enumerated() {
+                        groupMemberReferences.append(db.collection("users").document(groupMember))
                         let userDocument: DocumentSnapshot
                         
                         do {
-                          try userDocument = transaction.getDocument(userReference)
+                          try userDocument = transaction.getDocument(groupMemberReferences[index])
                         } catch let fetchError as NSError {
                           errorPointer?.pointee = fetchError
                           return nil
                         }
+                    }
+                    
+                    // An Abomination of Code
+                    for (groupMemberIndex, groupMember) in groupMembers.enumerated() {
 
                         var totalCostToPay: Float = 0
                         // Check every item for user
@@ -410,7 +455,7 @@ class DatabaseAPI {
                         assignedTransactionDict["isPaid"] = false
                         assignedTransactionDict["ammountToPay"] = totalCostToPay
                         
-                        transaction.updateData(["assignedTransaction.\(transaction_id)": assignedTransactionDict], forDocument: userReference)
+                        transaction.updateData(["assignedTransaction.\(transaction_id)": assignedTransactionDict], forDocument: groupMemberReferences[groupMemberIndex])
                     }
                     print("FINISHED")
                     return nil
@@ -429,6 +474,7 @@ class DatabaseAPI {
 
         
     }
+    
     
     static func retrieveStripeCustomerId(uid: String, completion: @escaping (String?) -> Void) {
         let db = Firestore.firestore()

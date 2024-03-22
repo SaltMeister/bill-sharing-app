@@ -122,6 +122,7 @@ struct HomeView: View {
                         let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
                         
                         if isTransactionCompleted {
+                            print("ASSINING PAYMENTRS")
                             Task {
                                 await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: diff.document.documentID)
                             }
