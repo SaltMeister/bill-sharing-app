@@ -56,7 +56,7 @@ struct TransactionView: View {
             if groupData.owner_id == user.user_id {
                 Button("Complete Transaction") {
                     Task {
-                        await DatabaseAPI.toggleGroupTransactionsCompletion(transactionID: user.selectedTransaction?.transaction_id ?? "", completion: true)
+                        await DatabaseAPI.toggleGroupTransactionsCompletion(transaction_id: user.selectedTransaction?.transaction_id ?? "", completion: true)
                     }
                 }
             }

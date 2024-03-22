@@ -65,4 +65,5 @@ struct reciept_bill_splitterApp: App {
         }
     
     }
-
+    
+}

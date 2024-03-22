@@ -53,15 +53,17 @@ struct SignUpView: View {
                         }
                         print(result)
                         print("Created Account")
-                        let userId = result.user.uid // This is how you get the user ID
-                            print("User ID: \(userId)")
-                            
-                            Task {
-                                await user.createUserInDB()
-                          
-                                isLoggedIn = true
-                                dismiss()
-                            }
+                        
+                        print("Successful login")
+                        
+                        // Create Database user before loading into home
+                        Task {
+                            await user.createUserInDB()
+                            print("user is true")
+                            isLoggedIn = true
+                        }
+
+               
                     }
                     
                 } else {
