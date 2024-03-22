@@ -79,6 +79,7 @@ class DatabaseAPI {
                 }
                 let assignedTransactions = data["assignedTransaction"] as? [String : [String : Any]] ?? [:]
                 
+                // Create new AssignedTransaction from list in DB and return it
                 for (transaction_id, dataDict) in assignedTransactions {
                     let ammountToPay = dataDict["ammountToPay"] as? Int ?? 0
                     let associatedTransaction_id = transaction_id
