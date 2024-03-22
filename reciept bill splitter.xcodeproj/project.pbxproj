@@ -11,6 +11,7 @@
 		32847F2A2B8D96C60061449F /* ScanReciept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32847F292B8D96C60061449F /* ScanReciept.swift */; };
 		32847F2C2B8D96D50061449F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32847F2B2B8D96D50061449F /* ContentView.swift */; };
 		328EEB5C2B9199530021F461 /* DatabaseAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EEB5B2B9199520021F461 /* DatabaseAPI.swift */; };
+		329A95DE2BADC39F0028FDEF /* AssignedTransactionDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329A95DD2BADC39F0028FDEF /* AssignedTransactionDetails.swift */; };
 		32A6DA972BA13C81005FAA2C /* JoinGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */; };
 		32B1A4BF2B828F9400A20FDD /* reciept_bill_splitterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */; };
 		32B1A4C32B828F9D00A20FDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32B1A4C22B828F9D00A20FDD /* Assets.xcassets */; };
@@ -27,7 +28,7 @@
 		36E9BE642B86ACE00020BE12 /* SignUpLogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */; };
 		36E9BE662B86AD1C0020BE12 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE652B86AD1C0020BE12 /* HomeView.swift */; };
 		36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE672B86AD3F0020BE12 /* FriendsView.swift */; };
-		36E9BE6C2B86AD5D0020BE12 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE6B2B86AD5D0020BE12 /* HistoryView.swift */; };
+		36E9BE6C2B86AD5D0020BE12 /* AllAssignedTransactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE6B2B86AD5D0020BE12 /* AllAssignedTransactions.swift */; };
 		36E9BE6E2B86AD6E0020BE12 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */; };
 		36E9BE702B86AD8D0020BE12 /* SplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */; };
 		36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BE712B86B6240020BE12 /* SignUpView.swift */; };
@@ -46,7 +47,6 @@
 		E591A68D2B9E8AD600AC1F5F /* StripePaymentSheet in Frameworks */ = {isa = PBXBuildFile; productRef = E591A68C2B9E8AD600AC1F5F /* StripePaymentSheet */; };
 		E591A68F2B9E8AD600AC1F5F /* StripePayments in Frameworks */ = {isa = PBXBuildFile; productRef = E591A68E2B9E8AD600AC1F5F /* StripePayments */; };
 		E591A6912B9E8AD600AC1F5F /* StripePaymentsUI in Frameworks */ = {isa = PBXBuildFile; productRef = E591A6902B9E8AD600AC1F5F /* StripePaymentsUI */; };
-		E5AB946B2BAAA75B00836C2E /* ManualTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5AB946A2BAAA75B00836C2E /* ManualTransactionView.swift */; };
 		E5E6F0D82BAD36A0004A0697 /* CreateGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E6F0D72BAD36A0004A0697 /* CreateGroupView.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +55,7 @@
 		32847F292B8D96C60061449F /* ScanReciept.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanReciept.swift; sourceTree = "<group>"; };
 		32847F2B2B8D96D50061449F /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		328EEB5B2B9199520021F461 /* DatabaseAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseAPI.swift; sourceTree = "<group>"; };
+		329A95DD2BADC39F0028FDEF /* AssignedTransactionDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignedTransactionDetails.swift; sourceTree = "<group>"; };
 		32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupView.swift; sourceTree = "<group>"; };
 		32B1A4BB2B828F9400A20FDD /* reciept bill splitter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "reciept bill splitter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = reciept_bill_splitterApp.swift; sourceTree = "<group>"; };
@@ -69,7 +70,7 @@
 		36E9BE632B86ACE00020BE12 /* SignUpLogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpLogInView.swift; sourceTree = "<group>"; };
 		36E9BE652B86AD1C0020BE12 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		36E9BE672B86AD3F0020BE12 /* FriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsView.swift; sourceTree = "<group>"; };
-		36E9BE6B2B86AD5D0020BE12 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		36E9BE6B2B86AD5D0020BE12 /* AllAssignedTransactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllAssignedTransactions.swift; sourceTree = "<group>"; };
 		36E9BE6D2B86AD6E0020BE12 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		36E9BE6F2B86AD8D0020BE12 /* SplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitView.swift; sourceTree = "<group>"; };
 		36E9BE712B86B6240020BE12 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
@@ -79,7 +80,6 @@
 		E50B498E2BAA0A640080CEAB /* PaymentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentManager.swift; sourceTree = "<group>"; };
 		E52146C92B9FE12C007571A2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		E5AB94682BAAA47F00836C2E /* CreateGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupView.swift; sourceTree = "<group>"; };
-		E5AB946A2BAAA75B00836C2E /* ManualTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualTransactionView.swift; sourceTree = "<group>"; };
 		E5E6F0D72BAD36A0004A0697 /* CreateGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -147,11 +147,10 @@
 				36E9BE672B86AD3F0020BE12 /* FriendsView.swift */,
 				32E5E1882B8DA66C005BF4F4 /* GoogleService-Info.plist */,
 				36788E3E2BA50F22006925A6 /* GroupDetailView.swift */,
-				36E9BE6B2B86AD5D0020BE12 /* HistoryView.swift */,
+				36E9BE6B2B86AD5D0020BE12 /* AllAssignedTransactions.swift */,
 				36E9BE652B86AD1C0020BE12 /* HomeView.swift */,
 				32A6DA962BA13C81005FAA2C /* JoinGroupView.swift */,
 				32B1A4C02B828F9400A20FDD /* LaunchScreenView.swift */,
-				E5AB946A2BAAA75B00836C2E /* ManualTransactionView.swift */,
 				32B1A4C42B828F9D00A20FDD /* Preview Content */,
 				32B1A4BE2B828F9400A20FDD /* reciept_bill_splitterApp.swift */,
 				32847F292B8D96C60061449F /* ScanReciept.swift */,
@@ -164,6 +163,7 @@
 				32847F272B8D96B70061449F /* UIImageExtension.swift */,
 				32C3CD472B8711A700FB2BF1 /* ViewModels */,
 				E5E6F0D72BAD36A0004A0697 /* CreateGroupView.swift */,
+				329A95DD2BADC39F0028FDEF /* AssignedTransactionDetails.swift */,
 			);
 			path = "reciept bill splitter";
 			sourceTree = "<group>";
@@ -290,7 +290,7 @@
 				328EEB5C2B9199530021F461 /* DatabaseAPI.swift in Sources */,
 				E5E6F0D82BAD36A0004A0697 /* CreateGroupView.swift in Sources */,
 				32847F282B8D96B70061449F /* UIImageExtension.swift in Sources */,
-				36E9BE6C2B86AD5D0020BE12 /* HistoryView.swift in Sources */,
+				36E9BE6C2B86AD5D0020BE12 /* AllAssignedTransactions.swift in Sources */,
 				36E9BE6E2B86AD6E0020BE12 /* SettingsView.swift in Sources */,
 				36E9BE682B86AD3F0020BE12 /* FriendsView.swift in Sources */,
 				36788E3F2BA50F22006925A6 /* GroupDetailView.swift in Sources */,
@@ -298,8 +298,8 @@
 				32847F2C2B8D96D50061449F /* ContentView.swift in Sources */,
 				36E9BE742B86C18D0020BE12 /* AccountView.swift in Sources */,
 				36E9BE762B86CAEA0020BE12 /* AddFriendView.swift in Sources */,
-				E5AB946B2BAAA75B00836C2E /* ManualTransactionView.swift in Sources */,
 				E52146CA2B9FE12C007571A2 /* SceneDelegate.swift in Sources */,
+				329A95DE2BADC39F0028FDEF /* AssignedTransactionDetails.swift in Sources */,
 				36E9BE702B86AD8D0020BE12 /* SplitView.swift in Sources */,
 				E50B498F2BAA0A640080CEAB /* PaymentManager.swift in Sources */,
 				36E9BE722B86B6240020BE12 /* SignUpView.swift in Sources */,

@@ -12,18 +12,10 @@ struct TransactionView: View {
     
     @State var transactionData: Transaction?
     
-    var totalSpent: Double {
-        
-        if let transaction = user.selectedTransaction {
-            return transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
-        } else {
-            return Double(0.0)
-        }
-    }
-    
     var body: some View {
         VStack {
             if let transaction = transactionData {
+                let totalSpent = transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
                 
                 Text(transaction.name)
                     .font(.title)
@@ -45,24 +37,26 @@ struct TransactionView: View {
                         }
                     }
                 }
-                Text("Your Total Contribution: $\(String(format: "%.2f", calculateUserTotalContribution(transaction: user.selectedTransaction!, userID: user.user_id)))")
+                Text("Your Total Contribution: $\(String(format: "%.2f", calculateUserTotalContribution(transaction: transaction, userID: user.user_id)))")
                     .fontWeight(.bold)
 
                 Text("Total: $\(String(format: "%.2f", totalSpent))")
                     .fontWeight(.bold)
                 
+                // ONLY group owner can lock in assigned prices
+                if groupData.owner_id == user.user_id {
+                    Button("Complete Transaction") {
+                        Task {
+                            await DatabaseAPI.toggleGroupTransactionsCompletion(transactionID: transaction.transaction_id, completion: true)
+                        }
+                    }
+                }
+                
             } else {
                 Text("LOADING")
             }
             
-            // ONLY group owner can lock in assigned prices
-            if groupData.owner_id == user.user_id {
-                Button("Complete Transaction") {
-                    Task {
-                        await DatabaseAPI.toggleGroupTransactionsCompletion(transactionID: user.selectedTransaction?.transaction_id ?? "", completion: true)
-                    }
-                }
-            }
+
         }
         .onAppear {
             Task {
