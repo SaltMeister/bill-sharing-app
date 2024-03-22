@@ -11,14 +11,41 @@ struct TransactionView: View {
     @Binding var groupData: Group
     
     @State var transactionData: Transaction?
-    
+    @State private var isEditingName = false
+     @State private var editedName: String = ""
+
     var body: some View {
         VStack {
             if let transaction = transactionData {
                 let totalSpent = transaction.itemList.map { Double($0.priceInCents) / 100 }.reduce(0, +)
                 
-                Text(transaction.name)
-                    .font(.title)
+                if isEditingName && groupData.owner_id == user.user_id {
+                                   TextField("Transaction Name", text: $editedName)
+                                       .textFieldStyle(RoundedBorderTextFieldStyle())
+                                   Button("Save") {
+                                       Task {
+                                           await saveTransactionName(transactionId: transaction.transaction_id, newName: editedName)
+                                           isEditingName = false
+                                       }
+                                   }
+                                   .padding()
+                                   .background(Color.blue)
+                                   .foregroundColor(Color.white)
+                                   .cornerRadius(10)
+                               } else {
+                                   Text(transaction.name)
+                                       .font(.title)
+                                   if groupData.owner_id == user.user_id {
+                                      
+                                       Button(action: {
+                                           isEditingName = true
+                                           editedName = transaction.name
+                                       }) {
+                                           Image(systemName: isEditingName ? "checkmark.circle.fill" : "pencil.circle.fill")
+                                               .foregroundColor(isEditingName ? .green : .blue)
+                                       }
+                                   }
+                               }
                 // index of the bidding members and get the dictiionary count inside
                 List {
                     ForEach(transaction.itemList.indices, id: \.self) { index in
@@ -40,6 +67,7 @@ struct TransactionView: View {
                                     .background(isCurrentUserBidding ? Color.red : Color.green)
                                     .cornerRadius(10)
                             }
+                        
                         }
                     }
                 }
@@ -131,18 +159,46 @@ struct TransactionView: View {
             print("Error updating transaction: \(error)")
         }
     }
+    func addItemToTransaction(transactionId: String, newItem: Item) {
+        let transactionRef = Firestore.firestore().collection("transactions").document(transactionId)
 
-//    func parseTransactionData(_ data: [String: Any]) -> Transaction {
-//        // Parse the data into your Transaction model
-//        // Example:
-//        let name = data["name"] as? String ?? "Unknown"
-//        let itemList = data["itemList"] as? [[String: Any]] ?? []
-//        let itemObjects = itemList.map { itemData -> Item in
-//            let name = itemData["name"] as? String ?? "Item"
-//            let priceInCents = itemData["priceInCents"] as? Int ?? 0
-//            return Item(priceInCents: priceInCents, name: name)
-//        }
-//        return Transaction(name: name, itemList: itemObjects, ...)
-//    }
+        transactionRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                var currentItems = document.get("items") as? [[String: Any]] ?? []
+                let newItemDict = ["name": newItem.name, "priceInCents": newItem.priceInCents]
+                currentItems.append(newItemDict)
+
+                transactionRef.updateData(["items": currentItems])
+            }
+        }
+    }
+    func setItemPriceToZero(transactionId: String, itemIndex: Int) {
+        let transactionRef = Firestore.firestore().collection("transactions").document(transactionId)
+
+        transactionRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                var currentItems = document.get("items") as? [[String: Any]] ?? []
+                if itemIndex < currentItems.count {
+                    // Set the item's price to 0 instead of removing it
+                    currentItems[itemIndex]["priceInCents"] = 0
+                    transactionRef.updateData(["items": currentItems])
+                }
+            }
+        }
+    }
+    func saveTransactionName(transactionId: String, newName: String) async {
+          let transactionRef = Firestore.firestore().collection("transactions").document(transactionId)
+
+          do {
+              try await transactionRef.updateData(["name": newName])
+              // Update local transaction data to reflect the new name
+              if var transaction = transactionData {
+                  transaction.name = newName
+                  transactionData = transaction
+              }
+          } catch {
+              print("Error updating transaction name: \(error)")
+          }
+      }
 
 }
