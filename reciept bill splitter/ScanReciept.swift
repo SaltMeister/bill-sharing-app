@@ -41,7 +41,7 @@ class ScanReceipt: ObservableObject {
     private var receiptItemsTemp: [ReceiptItem] = []
     @Published var uiImage: UIImage?
     private var tempimage: UIImage?
-    func scanReceipt(image: UIImage) async {
+    func scanReceipt(image: UIImage) async -> [ReceiptItem]{
         Task { @MainActor in
             self.isScanning = true
             self.receiptItems = []
@@ -69,8 +69,13 @@ class ScanReceipt: ObservableObject {
             self.uiImage = tempimage
             self.title = titleTemp
             self.isScanning = false
-            
+
         }
+        if let tax = finalTax {
+            finalItems.append(tax)
+        }
+        return finalItems
+
     }
     
     private func runModel(image: UIImage) async {

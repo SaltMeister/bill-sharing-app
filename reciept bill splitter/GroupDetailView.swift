@@ -27,7 +27,7 @@ struct GroupDetailView: View {
     @State private var selectedTransactionID = ""
     
     @State var isAlert = false
-    
+    @State var scannedItems: [ReceiptItem] = []
     @StateObject var scanReceipt = ScanReceipt()
     @EnvironmentObject var user: UserViewModel
     
@@ -65,21 +65,21 @@ struct GroupDetailView: View {
                 
                 if selectedGroup.owner_id == user.user_id {
                     Button("Open Camera") {
-                        Task {
-                            await createTransaction()
-                        }
+                    
                         isCameraPresented = true
                     }
                     .sheet(isPresented: $isCameraPresented) {
                         CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
                     }
                     .onChange(of: isTaken) {
-                        if let imageToScan = selectedImage {
+                        if isTaken, let imageToScan = selectedImage {
                             Task {
-                                await scanReceipt.scanReceipt(image: imageToScan)
+                                self.scannedItems = await scanReceipt.scanReceipt(image: imageToScan)
+                                await createTransaction()
+                                isTaken = false // Reset the flag after transaction creation
+                                await loadTransactions()
                             }
                         }
-                        isTaken = false // Reset the flag
                     }
                 }
                 
@@ -95,11 +95,11 @@ struct GroupDetailView: View {
                 }
             }
             .onChange(of: scanReceipt.isScanning) {
-                if !scanReceipt.isScanning {
-                    Task {
-                        await createTransaction()
-                    }
-                }
+//                if !scanReceipt.isScanning {
+//                    Task {
+//                        await createTransaction()
+//                    }
+//                }
             }
             .onAppear {
                 formatter.dateStyle = .short
@@ -115,9 +115,8 @@ struct GroupDetailView: View {
     }
     
     private func createTransaction() async {
-        let scannedItems = scanReceipt.receiptItems // Assume these are the scanned receipt items
+        let scannedItems = scannedItems// Assume these are the scanned receipt items
         let transactionItems = scannedItems.map { Item(priceInCents: Int($0.price * 100), name: $0.name) }
-        let tempTransaction = Transaction(transaction_id: "", itemList: [], itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: nil)
         
         let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: nil)
        

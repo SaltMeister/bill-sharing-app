@@ -12,8 +12,7 @@ struct AssignedTransactionDetails: View {
         VStack {
             Text("Transaction Name: \(assignedTransaction.transactionName)")
                 .font(.headline)
-            Text("Transaction Name: \(assignedTransaction.associatedTransaction_id)")
-                .font(.headline)
+          
             Text("Amount to Pay: $\(String(format: "%.2f", Double(assignedTransaction.amountToPay) / 100))")
                 .font(.subheadline)
             

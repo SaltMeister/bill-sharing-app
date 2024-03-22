@@ -83,13 +83,13 @@ struct HomeView: View {
             .onAppear {
                 Task {
                     await userViewModel.getUserData()
+                    await userViewModel.updateCanGetPaidStatus()
                 }
             }
         }
     private func assignUsersTransaction() {
         Task{
             await userViewModel.getUserData()
-            await userViewModel.updateCanGetPaidStatus()
         }
     }
 
@@ -145,7 +145,7 @@ struct BottomToolbar: View {
     
     var body: some View {
         HStack(spacing: 0.2) {
-            ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
+            //ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
             //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
             ToolbarItem(iconName: "bolt", text: "Activate Transactions", destination: AnyView(AllAssignedTransactions().environmentObject(userViewModel).environmentObject(paymentManager)))
             ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
