@@ -81,7 +81,7 @@ struct TransactionView: View {
                     return
                 }
                 // Parse the data into your Transaction model and update the state
-                self.transactionData = self.parseTransactionData(data)
+               // self.transactionData = self.parseTransactionData(data)
             }
         }
 
@@ -102,17 +102,17 @@ struct TransactionView: View {
 
         return totalContribution
     }
-    func parseTransactionData(_ data: [String: Any]) -> Transaction {
-        // Parse the data into your Transaction model
-        // Example:
-        let name = data["name"] as? String ?? "Unknown"
-        let itemList = data["itemList"] as? [[String: Any]] ?? []
-        let itemObjects = itemList.map { itemData -> Item in
-            let name = itemData["name"] as? String ?? "Item"
-            let priceInCents = itemData["priceInCents"] as? Int ?? 0
-            return Item(priceInCents: priceInCents, name: name)
-        }
-        return Transaction(name: name, itemList: itemObjects, ...)
-    }
+//    func parseTransactionData(_ data: [String: Any]) -> Transaction {
+//        // Parse the data into your Transaction model
+//        // Example:
+//        let name = data["name"] as? String ?? "Unknown"
+//        let itemList = data["itemList"] as? [[String: Any]] ?? []
+//        let itemObjects = itemList.map { itemData -> Item in
+//            let name = itemData["name"] as? String ?? "Item"
+//            let priceInCents = itemData["priceInCents"] as? Int ?? 0
+//            return Item(priceInCents: priceInCents, name: name)
+//        }
+//        return Transaction(name: name, itemList: itemObjects, ...)
+//    }
 
 }
