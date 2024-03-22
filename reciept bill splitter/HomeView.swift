@@ -96,9 +96,6 @@ struct HomeView: View {
             }
         }
         .environmentObject(userViewModel)
-               /*.navigationDestination(isPresented: $isLoggedIn) { // Use isLoggedIn for navigation
-                   SignUpLogInView(isLoggedIn: $isLoggedIn)
-               }*/
     }
 
     private func listenToTransactionsForGroup(groupId: String) {
@@ -153,10 +150,8 @@ struct BottomToolbar: View {
 
     var body: some View {
         HStack(spacing: 0.2) {
-            ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
-            //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
             ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
+            ToolbarItem(iconName: "person.crop.circle", text: "Account", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
         }
         .frame(height: 50)
         .background(
