@@ -30,7 +30,7 @@ struct HomeView: View {
                                 Text(group.group_name)
                                 Text("Invite Code: \(group.invite_code)")
                             }
-                            .onTapGesture {
+                            .onAppear {
                                 Task {
                                     listenToTransactionsForGroup(groupId: group.groupID)
                                 }
