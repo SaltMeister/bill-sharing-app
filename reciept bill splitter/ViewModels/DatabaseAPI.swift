@@ -15,11 +15,23 @@ class DatabaseAPI {
     static var db = Firestore.firestore()
     
     // https://stackoverflow.com/questions/26845307/generate-random-alphanumeric-string-in-swift
-    static func randomString(length: Int) -> String {
+    /*static func randomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         // WAIT FIX THIS ITS FORCE UNWRAP
         return String((0..<length).map{ _ in letters.randomElement()! })
+    }*/
+    static func randomString(length: Int) -> String {
+        guard length > 0 else { return "" } // Return empty string if length is non-positive
+        
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let randomString = (0..<length)
+            .map { _ in letters.randomElement() ?? " " } // Use nil-coalescing operator to handle nil values
+            .map { String($0) } // Convert characters to strings
+            .joined()
+        
+        return randomString
     }
+
     static func grabUserData() async -> User? {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -486,6 +498,47 @@ class DatabaseAPI {
         
         
     }
+
+    static func fetchUsernames(for documentIDs: [String], completion: @escaping (Result<[String], Error>) -> Void) {
+            let userCollection = db.collection("users")
+            
+            // Create a dispatch group to synchronize asynchronous operations
+            let dispatchGroup = DispatchGroup()
+            
+            var usernames: [String] = []
+            var errors: [Error] = []
+            
+            for documentID in documentIDs {
+                dispatchGroup.enter()
+                
+                userCollection.document(documentID).getDocument { documentSnapshot, error in
+                    defer {
+                        dispatchGroup.leave()
+                    }
+                    
+                    if let error = error {
+                        errors.append(error)
+                        return
+                    }
+                    
+                    if let username = documentSnapshot?.get("userName") as? String {
+                        usernames.append(username)
+                    }
+                }
+            }
+            
+            // Notify the completion handler when all fetch operations are completed
+            dispatchGroup.notify(queue: .main) {
+                if !errors.isEmpty {
+                    // If there were errors during fetch, pass the first error to the completion handler
+                    completion(.failure(errors[0]))
+                } else {
+                    // Otherwise, pass the fetched usernames to the completion handler
+                    completion(.success(usernames))
+                }
+            }
+        }
+
 }
             let accountId = document.data()?["stripeConnectAccountId"] as? String
             completion(accountId, nil)
