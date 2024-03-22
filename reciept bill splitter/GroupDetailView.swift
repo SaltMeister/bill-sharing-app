@@ -12,7 +12,6 @@ import FirebaseFirestoreSwift
 struct GroupDetailView: View {
     let db = Firestore.firestore()
     @State private var isCameraPresented = false
-    @State private var isTransactionSelected = false
     @State private var selectedImage: UIImage?
     @State private var isTaken = false
     
@@ -20,10 +19,7 @@ struct GroupDetailView: View {
     @State private var totalSpent: Double = 0
     
     @State private var isViewMembersPopoverPresented = false
-    
-    @State private var isManualInputPresented = false
 
-    
     @State private var transactionName = ""
     @State private var transactionPrice = ""
     
@@ -44,35 +40,24 @@ struct GroupDetailView: View {
                     List {
                         
                         ForEach(user.currentSelectedGroupTransactions.indices, id: \.self) { index in
+                            
                             let transactionData = user.currentSelectedGroupTransactions[index]
                             let date = formatter.string(from: transactionData.dateCreated?.dateValue() ?? Date())
-
-                            if transactionData.isCompleted {
-                                HStack {
-                                    Text(transactionData.name)
-                                    Text(date)
-                                }
-                                .onTapGesture {
-                                    user.selectedTransaction = transactionData
-                                    selectedTransactionID = transactionData.transaction_id
-                                    isTransactionSelected = true
-                                }
-                                .opacity(0.5)
-                            } else {
-                                HStack {
-                                    Text(transactionData.name)
-                                    Text(date)
-                                }
-                                .onTapGesture {
-                                    user.selectedTransaction = transactionData
-                                    selectedTransactionID = transactionData.transaction_id
-                                    isTransactionSelected = true
+                            NavigationLink(destination: TransactionView(selectedTransactionId: $user.currentSelectedGroupTransactions[index].transaction_id, groupData: $selectedGroup)) {
+                                if transactionData.isCompleted {
+                                    HStack {
+                                        Text(transactionData.name)
+                                        Text(date)
+                                    }
+                                    .opacity(0.5)
+                                } else {
+                                    HStack {
+                                        Text(transactionData.name)
+                                        Text(date)
+                                    }
                                 }
                             }
                         }
-                    }
-                    Button("Add Transaction") {
-                        isManualInputPresented.toggle()
                     }
                 } else {
                     Text("No transactions found")
@@ -83,7 +68,7 @@ struct GroupDetailView: View {
                         Task {
                             await createTransaction()
                         }
-                        //isCameraPresented = true
+                        isCameraPresented = true
                     }
                     .sheet(isPresented: $isCameraPresented) {
                         CameraView(isPresented: $isCameraPresented, selectedImage: $selectedImage, isTaken: $isTaken)
@@ -108,14 +93,6 @@ struct GroupDetailView: View {
                 .popover(isPresented: $isViewMembersPopoverPresented, arrowEdge: .bottom) {
                     MembersListView(members: selectedGroup.members)
                 }
-            }
-            .navigationDestination(isPresented: $isTransactionSelected) {
-                TransactionView(selectedTransactionId: $selectedTransactionID, groupData: $selectedGroup)
-                //TransactionView()
-
-            }
-            .navigationDestination(isPresented: $isManualInputPresented) {
-                ManualTransactionInputView(isPresented: $isManualInputPresented, transactionName: $transactionName, transactionPrice: $transactionPrice, groupID: selectedGroup.groupID)
             }
             .onChange(of: scanReceipt.isScanning) {
                 if !scanReceipt.isScanning {

@@ -2,6 +2,13 @@ import StripePaymentSheet
 import FirebaseFunctions
 import SwiftUI
 
+import Foundation
+import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
+import FirebaseFirestoreSwift
+import Firebase
+
 class PaymentManager: ObservableObject {
     @Published var paymentResult: PaymentSheetResult?
     @Published var  paymentSheet: PaymentSheet?
@@ -115,7 +122,7 @@ class PaymentManager: ObservableObject {
 
 
      func createStripeAccountLink(stripeAccountID: String) {
-         
+    
             let functions = Functions.functions()
         functions.httpsCallable("createAccountLink").call(["accountId": stripeAccountID]) { result, error in
                 if let error = error as NSError? {
@@ -151,4 +158,30 @@ class PaymentManager: ObservableObject {
             }
         }
     }
+     func getStripeConnectAccountIdByEmail(email: String, completion: @escaping (String?, Error?) -> Void) {
+        let customersRef = Firestore.firestore().collection("customers")
+        customersRef.whereField("email", isEqualTo: email).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+                completion(nil, error)
+                return
+            }
+            
+            guard let document = querySnapshot?.documents.first else {
+                print("No documents found")
+                completion(nil, NSError(domain: "FirestoreError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document not found"]))
+                return
+            }
+            
+            let data = document.data()
+            if let stripeConnectAccountId = data["stripeConnectAccountId"] as? String {
+                print("Found Stripe Connect Account ID: \(stripeConnectAccountId)")
+                completion(stripeConnectAccountId, nil)
+            } else {
+                print("Stripe Connect Account ID not found in document")
+                completion(nil, NSError(domain: "FirestoreError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Stripe Connect Account ID not found"]))
+            }
+        }
+    }
+
 }

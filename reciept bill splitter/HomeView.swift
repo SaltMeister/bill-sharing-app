@@ -1,160 +1,137 @@
 
 import SwiftUI
-import FirebaseFirestore
-import FirebaseFirestoreSwift
-
-
-
-import SwiftUI
+import Firebase
 import StripePaymentSheet
-/*struct HomeView: View {
-    @State private var isSplitViewActive: Bool = false
+
+struct HomeView: View {
+    @State private var isSplitViewActive = false
     @State private var isViewingGroup = false
     @State private var isJoiningGroup = false
     @State private var isEmptyDisplayFormat = true
-    @EnvironmentObject var user: UserViewModel
-    
-    @EnvironmentObject private var user: UserViewModel
-    
-    @State private var isCameraPresented = false
+    @EnvironmentObject var userViewModel: UserViewModel
     @State private var isCreatingGroup = false
-    @State private var isJoiningGroup = false
     @State private var selectedGroup: Group?
-    @State private var isViewingTransaction = false
     @State private var isAlert = false
     @State private var showInfoAlert = false
     
     @StateObject private var paymentManager = PaymentManager()
-      @State private var showPaymentSheet = false
-struct HomeView: View {
-    let db = Firestore.firestore()
+    @State private var showPaymentSheet = false
+
+    @Binding var isLoggedIn: Bool
     var body: some View {
         NavigationStack {
             VStack {
-                if user.groups.isEmpty {
+                if userViewModel.groups.isEmpty {
                     Text("No groups found")
                 } else {
-                    List(user.groups, id: \.groupID) { group in
+                    List(userViewModel.groups, id: \.groupID) { group in
                         NavigationLink(destination: GroupDetailView(selectedGroup: group)) {
-                            Text(group.group_name)
-                            Text(group.invite_code)              
-                        }
-                        .onAppear {
-                            Task {
-                                listenToTransactionsForGroup(groupId: group.groupID)
+                            VStack(alignment: .leading) {
+                                Text(group.group_name)
+                                Text("Invite Code: \(group.invite_code)")
+                            }
+                            .onAppear {
+                                Task {
+                                    listenToTransactionsForGroup(groupId: group.groupID)
+                                }
                             }
                         }
                     }
                 }
-                Button("Transfer Money") {
-                        paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn") // this is the stripeconnectedID destinatin
-                }
-                Button("Collect Payment") {
-                        paymentManager.fetchPaymentDataAndPrepareSheet(uid: userViewModel.user_id, amount: 1000)
-                }
-                 VStack{
-                 if let paymentSheet = paymentManager.paymentSheet {
-                     PaymentSheet.PaymentButton(
-                         paymentSheet: paymentSheet,
-                         onCompletion: paymentManager.onPaymentCompletion
-                     ) {
-                         Text("Buy")
-                     }
-                 } else {
-                     Text("Loading…")
-                 }
-                 if let result = paymentManager.paymentResult {
-                     switch result {
-                     case .completed:
-                         Text("Payment complete")
-                         
-                     case .failed(let error):
-                         Text("Payment failed: \(error.localizedDescription)")
-                     case .canceled:
-                         Text("Payment canceled.")
-                     }
-                 }
-             }
-   
 
-              
                 Spacer()
-                
-                if let selectedGroup = selectedGroup {
-                    // Here you can integrate the functionality of GroupDetailView
-                    Text(selectedGroup.group_name)
-                    // Other views and logic from GroupDetailView can be added here
+
+                Button("Transfer Money") {
+                    paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn")
                 }
-                HStack {
-                    Spacer()
-                    // Circular "+" button
-                    Menu {
 
-                       Button("Join Group") {
-                           isJoiningGroup = true
-                           print("Join Group tapped")
-                       }
+                Button("Collect Payment") {
+                    paymentManager.fetchPaymentDataAndPrepareSheet(uid: userViewModel.user_id, amount: 1000)
+                }
 
-               
-                       Button("Create Group") {
-                               if userViewModel.canGetPaid {
-                                   isCreatingGroup = true
-                               } else {
-                                   showInfoAlert = true
-                               }
-                           }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`
+                VStack {
+                    if let paymentSheet = paymentManager.paymentSheet {
+                        PaymentSheet.PaymentButton(paymentSheet: paymentSheet, onCompletion: paymentManager.onPaymentCompletion) {
+                            Text("Buy")
+                        }
+                    } else {
+                        Text("Loading…")
+                    }
 
+                    if let result = paymentManager.paymentResult {
+                        switch result {
+                        case .completed:
+                            Text("Payment complete")
+                        case .failed(let error):
+                            Text("Payment failed: \(error.localizedDescription)")
+                        case .canceled:
+                            Text("Payment canceled.")
+                        }
+                    }
+                }
 
-                       
-                   } label: {
-                       Image(systemName: "plus.circle.fill")
-                           .resizable()
-                           .frame(width: 50, height: 50)
-                           .foregroundColor(.blue)
+                Menu {
+                    Button("Create Group") {
+                            if userViewModel.canGetPaid {
+                                isCreatingGroup = true
+                            } else {
+                                showInfoAlert = true
+                            }
+                        }.foregroundColor(userViewModel.canGetPaid ? .white : .red) // Text color changes based on `canGetPaid`       
+                        Button("Join Group") {
+                            isJoiningGroup = true
+                            print("Join Group tapped")
+                        }
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.blue)
+                        
+                    }
+                }
 
-                   }
-                   .navigationDestination(isPresented: $isCreatingGroup) {
-                       CreateGroupView()
-                   }
-                   .navigationDestination(isPresented: $isJoiningGroup) {
-                       JoinGroupView()
-                   }
-               }
-                // Bottom toolbar
-                BottomToolbar()
-                    .environmentObject(paymentManager)
+                .navigationDestination(isPresented: $isCreatingGroup) {
+                    CreateGroupView()
+                }
+                .navigationDestination(isPresented: $isJoiningGroup) {
+                    JoinGroupView()
+                }
+                BottomToolbar(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)
             }
             .navigationTitle("Home")
-          .navigationDestination(isPresented: $isViewingTransaction) {
-           // TransactionView(selectedTransactionId: Binding<String>, groupData: <#Binding<Group>#>)
-        }
-        .alert(isPresented: $showInfoAlert) {
-            Alert(
-                title: Text("Action Required"),
-                message: Text("You need to complete your payment setup to create a group."),
-                dismissButton: .default(Text("OK"))
-            )
-        }
+            .alert(isPresented: $showInfoAlert) {
+                Alert(
+                    title: Text("Action Required"),
+                    message: Text("You need to complete your payment setup to create a group."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
             .onAppear {
                 Task {
-                    await user.getUserData()
+                    await userViewModel.getUserData()
                 }
             }
         }
+    private func assignUsersTransaction() {
+        Task{
+            await userViewModel.getUserData()
+            await userViewModel.updateCanGetPaidStatus()
+        }
     }
-    
-    private func listenToTransactionsForGroup(groupId: String) {
+
+private func listenToTransactionsForGroup(groupId: String) {
+        let db = Firestore.firestore()
         db.collection("transactions").whereField("group_id", isEqualTo: groupId)
             .addSnapshotListener { querySnapshot, error in
                 guard let snapshots = querySnapshot else {
-                    print("Error fetching documents: \(error!)")
+                    print("Error fetching documents: (error!)")
                     return
                 }
-                
+
                 if let error = error {
-                    print("Error retreiving collection: \(error)")
+                    print("Error retreiving collection: (error)")
                 }
-                
                 // Find Changes where document is a diff
                 snapshots.documentChanges.forEach { diff in
                     if diff.type == .modified {
@@ -162,9 +139,12 @@ struct HomeView: View {
                         print("GROUP TRANSACTION HAS BEEN MODIFIED")
                         let data = diff.document.data()
                         let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
-                        
+
                         if isTransactionCompleted {
-                            
+                            print("ASSINING PAYMENTRS")
+                            Task {
+                                await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: diff.document.documentID)
+                            }
                         }
                         // Assign Each Member Their Parts to Pay
                     }
@@ -174,30 +154,27 @@ struct HomeView: View {
                 }
             }
     }
-    private func assignUsersTransaction() {
+  
         
     }
-    
-                    await userViewModel.getUserData()
-                    await userViewModel.updateCanGetPaidStatus()
 
-                }
-            }
-        }
 
-    }
     
-}
+
+
 
 struct BottomToolbar: View {
     @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
 
+    
+    @Binding var isLoggedIn: Bool
+    
     var body: some View {
         HStack(spacing: 0.2) {
             ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
             //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
-            ToolbarItem(iconName: "bolt", text: "Activities", destination: AnyView(HistoryView()))
-            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView().environmentObject(paymentManager)))
+            ToolbarItem(iconName: "bolt", text: "Activate Transactions", destination: AnyView(AllAssignedTransactions()))
+            ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
         }
         .frame(height: 50)
         .background(Color(UIColor.systemBackground))

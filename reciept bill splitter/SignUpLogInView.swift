@@ -24,9 +24,7 @@ struct SignUpLogInView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Text("Log In")
-                
+            VStack {                
                 TextField("Email", text: $email)
                     .padding()
                     .background(Color.gray.opacity(0.2))
