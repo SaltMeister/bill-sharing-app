@@ -10,8 +10,6 @@ struct HomeView: View {
     @State private var isEmptyDisplayFormat = true
     @EnvironmentObject var userViewModel: UserViewModel
     
-    @Binding var isLoggedIn: Bool
-    
     @State private var isCreatingGroup = false
     @State private var selectedGroup: Group?
     @State private var isAlert = false
@@ -20,6 +18,8 @@ struct HomeView: View {
     @StateObject private var paymentManager = PaymentManager()
     @State private var showPaymentSheet = false
 
+    @Binding var isLoggedIn: Bool
+    
     var body: some View {
         NavigationStack {
             VStack {
