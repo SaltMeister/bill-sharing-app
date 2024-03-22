@@ -15,11 +15,23 @@ class DatabaseAPI {
     static var db = Firestore.firestore()
     
     // https://stackoverflow.com/questions/26845307/generate-random-alphanumeric-string-in-swift
-    static func randomString(length: Int) -> String {
+    /*static func randomString(length: Int) -> String {
         let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         // WAIT FIX THIS ITS FORCE UNWRAP
         return String((0..<length).map{ _ in letters.randomElement()! })
+    }*/
+    static func randomString(length: Int) -> String {
+        guard length > 0 else { return "" } // Return empty string if length is non-positive
+        
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let randomString = (0..<length)
+            .map { _ in letters.randomElement() ?? " " } // Use nil-coalescing operator to handle nil values
+            .map { String($0) } // Convert characters to strings
+            .joined()
+        
+        return randomString
     }
+
     static func grabUserData() async -> User? {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
