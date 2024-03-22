@@ -14,12 +14,6 @@ import Firebase
 class DatabaseAPI {
     static var db = Firestore.firestore()
     
-    // https://stackoverflow.com/questions/26845307/generate-random-alphanumeric-string-in-swift
-    /*static func randomString(length: Int) -> String {
-     let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-     // WAIT FIX THIS ITS FORCE UNWRAP
-     return String((0..<length).map{ _ in letters.randomElement()! })
-     }*/
     static func randomString(length: Int) -> String {
         guard length > 0 else { return "" } // Return empty string if length is non-positive
         

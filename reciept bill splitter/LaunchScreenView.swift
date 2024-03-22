@@ -58,8 +58,12 @@ struct LaunchScreenView: View {
                 }
                 //After logo and app name are fully displayed, initiates transition into ContentView
                 .onAppear {
-                    if let uid = Auth.auth().currentUser?.uid {
-                        isLoggedIn = true
+                    let user = Auth.auth().currentUser
+                    print(user)
+                    if (user != nil) {
+                        
+                    } else {
+                        
                     }
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0){
