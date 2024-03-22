@@ -15,14 +15,27 @@ In the home view, the user can view their account that allow them to update thei
 
 ## Special Instructions
 
-Our app uses the phone camera in order to function and as a result will need to be tested with an actual phone.
-To fill out Stripe's onboarding information, these values can be used. 
-Auto-fill 000-000-0000 as the test phone number and 000-000 as the SMS code when prompted (Express)
-Use these personal ID numbers for individual.id_number or the id_number attribute on the Person object to trigger certain verification conditions.
-000000000	Successful verification. 0000 also works for SSN last 4 verification.
-Use these business tax ID numbers for company.tax_id to trigger certain verification conditions.
-000000000	Successful verification.
-Fill out website information https://accessible.stripe.com	
-Address address_full_match You must pass in legitimate values for the city, state, and postal_code arguments.
-Payment Methods
-Number:	4242424242424242,	CVC: Any 3 digits,	Date: Any future date
+### App Testing Requirements
+- **Camera Usage**: Our application requires access to the phone's camera to operate correctly. Ensure testing is on an actual mobile device with camera capabilities.
+
+### Stripe Onboarding Test Data
+Use the following dummy information for testing the Stripe onboarding process:
+
+- **Test Phone Number**: Enter `000-000-0000` for any phone number fields.
+- **SMS Code**: Use `000-000` when prompted for an SMS verification code.
+- **Personal ID Numbers**:
+  - For successful individual verification, use `000000000` for the `individual.id_number` or the `id_number` attribute on the `Person` object. For SSN's last 4 digits, `0000` will work.
+- **Business Tax ID Numbers**:
+  - Input `000000000` in the `company.tax_id` field for successful company verification.
+- **Website Information**: Use `https://accessible.stripe.com` for website-related fields.
+- **Address Validation**:
+  - Input legitimate values for `city`, `state`, and `postal_code` in the `address_full_match`.
+
+### Payment Method Simulation
+For payment testing, use the following mock credit card details:
+- **Card Number**: `4242424242424242`
+- **CVC**: Any 3-digit number
+- **Expiration Date**: Any future date
+
+Note: These values are for testing purposes only. Switch to real data for production.
+
