@@ -30,6 +30,11 @@ struct HomeView: View {
                                 Text(group.group_name)
                                 Text("Invite Code: \(group.invite_code)")
                             }
+                            .onAppear {
+                                Task {
+                                    listenToTransactionsForGroup(groupId: group.groupID)
+                                }
+                            }
                         }
                     }
                 }
@@ -117,7 +122,9 @@ struct HomeView: View {
                         let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
                         
                         if isTransactionCompleted {
-                            
+                            Task {
+                                await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: diff.document.documentID)
+                            }
                         }
                         // Assign Each Member Their Parts to Pay
                     }

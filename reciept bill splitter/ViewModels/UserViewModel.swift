@@ -109,7 +109,7 @@ class UserViewModel : ObservableObject {
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
 
-                "assignedTransaction": []
+                "assignedTransaction": [:]
           ])
           print("Document created")
             
