@@ -204,7 +204,7 @@ struct GroupDetailView: View {
     }
 }
 
-struct MembersListView: View {
+/*struct MembersListView: View {
     let members: [GroupMember]
     
     var body: some View {
@@ -217,6 +217,37 @@ struct MembersListView: View {
                     print("Members: \(members)")
                 }
     }
+}*/
+
+struct MembersListView: View {
+    let members: [GroupMember]
+    
+    @State private var memberUsernames: [String] = []
+    var body: some View {
+            List {
+                ForEach(memberUsernames, id: \.self) { username in
+                    Text(username)
+                }
+            }
+            .onAppear {
+                loadMemberUsernames()
+            }
+    }
+    
+    private func loadMemberUsernames() {
+       // isLoading = true
+        
+        let memberIDs = members.map { $0.id }
+        
+        DatabaseAPI.fetchUsernames(for: memberIDs) { result in
+            print("Chinese food")
+            switch result {
+            case .success(let usernames):
+                memberUsernames = usernames
+                print(usernames)
+            case .failure(let error):
+                print("Error fetching member usernames: \(error)")
+            }
+        }
+    }
 }
-
-

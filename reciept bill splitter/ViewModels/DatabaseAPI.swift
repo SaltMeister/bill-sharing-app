@@ -308,5 +308,44 @@ class DatabaseAPI {
             print("Error updating transaction: \(error)")
         }
     }
+    static func fetchUsernames(for documentIDs: [String], completion: @escaping (Result<[String], Error>) -> Void) {
+            let userCollection = db.collection("users")
+            
+            // Create a dispatch group to synchronize asynchronous operations
+            let dispatchGroup = DispatchGroup()
+            
+            var usernames: [String] = []
+            var errors: [Error] = []
+            
+            for documentID in documentIDs {
+                dispatchGroup.enter()
+                
+                userCollection.document(documentID).getDocument { documentSnapshot, error in
+                    defer {
+                        dispatchGroup.leave()
+                    }
+                    
+                    if let error = error {
+                        errors.append(error)
+                        return
+                    }
+                    
+                    if let username = documentSnapshot?.get("userName") as? String {
+                        usernames.append(username)
+                    }
+                }
+            }
+            
+            // Notify the completion handler when all fetch operations are completed
+            dispatchGroup.notify(queue: .main) {
+                if !errors.isEmpty {
+                    // If there were errors during fetch, pass the first error to the completion handler
+                    completion(.failure(errors[0]))
+                } else {
+                    // Otherwise, pass the fetched usernames to the completion handler
+                    completion(.success(usernames))
+                }
+            }
+        }
 
 }
