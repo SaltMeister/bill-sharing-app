@@ -21,8 +21,6 @@ struct AccountView: View {
                 } else {
                         Text("Current Username: " + (newUsername.isEmpty ? "N/A" : newUsername))
                             .padding()
-                      
-                    
                 }
                 Button(action: {
                     isEditing.toggle()

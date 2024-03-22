@@ -147,61 +147,9 @@ struct HomeView: View {
                      }
                  }
              }
-                Button("Connect with Stripe") {
-                    print("creating link")
-                    
-                    DatabaseAPI.getStripeConnectAccountId { accountId, error in
-                        if let error = error {
-                            print("Error retrieving account ID: \(error.localizedDescription)")
-                        } else if let accountId = accountId {
-                            print("Retrieved Stripe Connect Account ID: \(accountId)")
-                            // Use the accountId for whatever you need, like creating an account link
-                            paymentManager.createStripeAccountLink(stripeAccountID: accountId)
-                        } else {
-                            print("Stripe Connect Account ID not found")
-                        }
-                    }
-                }
-                Button("Check Stripe Balance") {
-                    print("Fetching balance")
+   
 
-                    DatabaseAPI.getStripeConnectAccountId(forUserId: userViewModel.user_id) { accountId, error in
-                            if let error = error {
-                                print("Error retrieving account ID: \(error.localizedDescription)")
-                            } else if let accountId = accountId {
-                                print("Retrieved Stripe Connect Account ID: \(accountId)")
-                                
-                                // Use the retrieved account ID to fetch the Stripe balance
-                                paymentManager.checkStripeBalance(accountId: accountId) { result in
-                                    switch result {
-                                    case .success(let balance):
-                                        // Here you can update some state to display the balance in your UI
-                                        print("Retrieved Stripe balance: \(balance)")
-                                    case .failure(let error):
-                                        print("Error fetching Stripe balance: \(error.localizedDescription)")
-                                    }
-                                }
-                            } else {
-                                print("Stripe Connect Account ID not found")
-                            }
-                        }
-                 
-                }
-
-
-                Button("get paid") {
-                        print("creating account")
-                    DatabaseAPI.setCanGetPaid(forUserId: userViewModel.user_id, canGetPaid: true) { error in // Pass the userId here
-                        if let error = error {
-                            // Handle the error
-                            print("Error setting canGetPaid: \(error.localizedDescription)")
-                        } else {
-                            // Update was successful
-                            print("canGetPaid successfully set for the user")
-                        }
-                    }
-                   paymentManager.createExpressConnectAccountAndOnboardingLink(email: userViewModel.email)
-                }
+              
                 Spacer()
                 
                 if let selectedGroup = selectedGroup {
