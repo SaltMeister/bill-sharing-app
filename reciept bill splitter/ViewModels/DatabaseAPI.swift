@@ -79,18 +79,22 @@ class DatabaseAPI {
                 }
                 let assignedTransactions = data["assignedTransaction"] as? [String : [String : Any]] ?? [:]
                 
-                // Create new AssignedTransaction from list in DB and return it
-                for (transaction_id, dataDict) in assignedTransactions {
-                    let ammountToPay = dataDict["ammountToPay"] as? Int ?? 0
-                    let associatedTransaction_id = transaction_id
-                    let isPaid = dataDict["isPaid"] as? Bool ?? false
-                    let transactionName = data["transactionName"] as? String ?? "Unknown Transaction Name"
-                    let user_idToPay = data["user_idToPay"] as? String ?? ""
-                    
-                    let newAssignment = AssignedTransaction(transactionName: transactionName, associatedTransaction_id: associatedTransaction_id, user_idToPay: user_idToPay, isPaid: isPaid, amountToPay: ammountToPay)
-                    
-                    userAssignedTransactions.append(newAssignment)
+                // Iterate through each assigned transaction
+                for (transactionID, dataDict) in assignedTransactions {
+                    if let amountToPay = dataDict["ammountToPay"] as? Double, // Note the spelling 'ammountToPay' matches your Firestore data
+                       let isPaid = dataDict["isPaid"] as? Bool,
+                       let transactionName = dataDict["transactionName"] as? String,
+                       let user_idToPay = dataDict["user_idToPay"] as? String {
+                        
+                        // Using 'transactionID' from the iteration to set 'associatedTransaction_id'
+                        let newAssignment = AssignedTransaction(transactionName: transactionName, associatedTransaction_id: transactionID, user_idToPay: user_idToPay, isPaid: isPaid, amountToPay: Int(amountToPay)) // Convert double to int representing cents
+                        
+                        userAssignedTransactions.append(newAssignment)
+                    } else {
+                        print("Missing data for assigned transaction")
+                    }
                 }
+
                 
                 return userAssignedTransactions
             }
@@ -99,7 +103,7 @@ class DatabaseAPI {
         }
         return nil
     }
-    
+
     static func createGroup(groupName: String) async -> Void {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -376,7 +380,29 @@ class DatabaseAPI {
         
         return nil
     }
-    
+    static func markTransactionAsPaid(assignedTransactionId: String, completion: @escaping (Error?) -> Void) {
+        guard let user = Auth.auth().currentUser else {
+            print("User does not exist")
+            completion(NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
+            return
+        }
+
+        // Reference to the user's document
+        let userRef = db.collection("users").document(user.uid)
+
+        // Prepare the update for the specific assigned transaction
+        let updateField = "assignedTransaction.\(assignedTransactionId).isPaid"
+
+        // Perform the update
+        userRef.updateData([updateField: true]) { error in
+            if let error = error {
+                print("Error marking transaction as paid: \(error.localizedDescription)")
+            } else {
+                print("Transaction marked as paid successfully.")
+            }
+            completion(error)
+        }
+    }
     static func assignAllGroupMembersPayment(transaction_id: String) async -> Void {
         guard let _ = Auth.auth().currentUser else {
             print("User Does not exist")

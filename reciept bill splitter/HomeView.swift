@@ -41,34 +41,7 @@ struct HomeView: View {
 
                 Spacer()
 
-                Button("Transfer Money") {
-                    paymentManager.transferMoney(amount: 1000, destinationAccountId: "acct_1Ovoc6QQyo8likZn")
-                }
-
-                Button("Collect Payment") {
-                    paymentManager.fetchPaymentDataAndPrepareSheet(uid: userViewModel.user_id, amount: 1000)
-                }
-
-                VStack {
-                    if let paymentSheet = paymentManager.paymentSheet {
-                        PaymentSheet.PaymentButton(paymentSheet: paymentSheet, onCompletion: paymentManager.onPaymentCompletion) {
-                            Text("Buy")
-                        }
-                    } else {
-                        Text("Loading…")
-                    }
-
-                    if let result = paymentManager.paymentResult {
-                        switch result {
-                        case .completed:
-                            Text("Payment complete")
-                        case .failed(let error):
-                            Text("Payment failed: \(error.localizedDescription)")
-                        case .canceled:
-                            Text("Payment canceled.")
-                        }
-                    }
-                }
+         
 
                 Menu {
                     Button("Create Group") {
@@ -97,7 +70,7 @@ struct HomeView: View {
                 .navigationDestination(isPresented: $isJoiningGroup) {
                     JoinGroupView()
                 }
-                BottomToolbar(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)
+            BottomToolbar(isLoggedIn: $isLoggedIn).environmentObject(paymentManager).environmentObject(userViewModel)
             }
             .navigationTitle("Home")
             .alert(isPresented: $showInfoAlert) {
@@ -165,6 +138,7 @@ private func listenToTransactionsForGroup(groupId: String) {
 
 struct BottomToolbar: View {
     @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
+    @EnvironmentObject var userViewModel: UserViewModel // Ensure this is passed down from the parent view
 
     
     @Binding var isLoggedIn: Bool
@@ -173,7 +147,7 @@ struct BottomToolbar: View {
         HStack(spacing: 0.2) {
             ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
             //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
-            ToolbarItem(iconName: "bolt", text: "Activate Transactions", destination: AnyView(AllAssignedTransactions()))
+            ToolbarItem(iconName: "bolt", text: "Activate Transactions", destination: AnyView(AllAssignedTransactions().environmentObject(userViewModel).environmentObject(paymentManager)))
             ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
         }
         .frame(height: 50)

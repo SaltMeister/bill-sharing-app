@@ -144,7 +144,7 @@ class PaymentManager: ObservableObject {
                 }else {print("error creating link2")}
             }
     }
-    func transferMoney(amount: Int, destinationAccountId: String) {
+    func transferMoney(amount: Int, destinationAccountId: String, assignedTransactionId: String) {
         let functions = Functions.functions()
         functions.httpsCallable("createTransfer").call(["amount": amount, "destinationAccountId": destinationAccountId]) { result, error in
             if let error = error {
@@ -153,11 +153,21 @@ class PaymentManager: ObservableObject {
             }
             if let transferId = (result?.data as? [String: Any])?["transferId"] as? String {
                 print("Transfer successful, transferId: \(transferId)")
+                // Mark the transaction as paid
+                DatabaseAPI.markTransactionAsPaid(assignedTransactionId: assignedTransactionId) { error in
+                    if let error = error {
+                        print("Error marking transaction as paid: \(error.localizedDescription)")
+                    } else {
+                        print("Transaction successfully marked as paid")
+                        // Here you can update any UI or state to reflect the payment status
+                    }
+                }
             } else {
                 print("Transfer failed")
             }
         }
     }
+
      func getStripeConnectAccountIdByEmail(email: String, completion: @escaping (String?, Error?) -> Void) {
         let customersRef = Firestore.firestore().collection("customers")
         customersRef.whereField("email", isEqualTo: email).getDocuments { (querySnapshot, error) in

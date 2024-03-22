@@ -1,4 +1,3 @@
-
 import SwiftUI
 import FirebaseAuth
 
@@ -8,16 +7,17 @@ struct AccountView: View {
     @State private var userEmail = ""
     @State private var userCanGetPaid = false
     @State private var user_id = ""
-
+    
     @EnvironmentObject var user: UserViewModel
     @EnvironmentObject var paymentManager: PaymentManager
     @State private var balanceData: [String: Any]? = nil
+
     @Environment(\.dismiss) var dismiss
     
     @Binding var isLoggedIn: Bool
     
     var body: some View {
-        NavigationStack {
+        NavigationStack{
             VStack(spacing: 20) {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
@@ -48,7 +48,7 @@ struct AccountView: View {
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
+                        .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .leading, endPoint: .trailing))
                         .cornerRadius(8)
                     }
                 }
@@ -100,7 +100,7 @@ struct AccountView: View {
                             }
                             .foregroundColor(.white)
                             .padding()
-                            .background(Color.blue)
+                            .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .leading, endPoint: .trailing))
                             .cornerRadius(8)
                         }
                         .padding()
@@ -111,15 +111,17 @@ struct AccountView: View {
                         print("Creating account")
                         paymentManager.createExpressConnectAccountAndOnboardingLink(email: userEmail)
 
-                        DatabaseAPI.setCanGetPaid(forUserId: user_id, canGetPaid: true) { error in
-                            if let error = error {
-                                print("Error setting canGetPaid: \(error.localizedDescription)")
-                            } else {
-                                self.userCanGetPaid = true
-                                user.canGetPaid = true
-                                print("canGetPaid successfully set for the user")
-                            }
-                        }
+                        DatabaseAPI.setCanGetPaid(forUserId: user_id, canGetPaid: true) { error in // Pass the userId here
+                                            if let error = error {
+                                                // Handle the error
+                                                print("Error setting canGetPaid: \(error.localizedDescription)")
+                                            } else {
+                                                // Update was successful
+                                                self.userCanGetPaid = true
+                                                user.canGetPaid = true
+                                                print("canGetPaid successfully set for the user")
+                                            }
+                                        }
                     }
                     .foregroundColor(.white)
                     .padding()
@@ -138,12 +140,11 @@ struct AccountView: View {
             }
 
             Button(action: {
-                // Sign out action
+                isLoggedIn = false
                 do {
                     try Auth.auth().signOut()
                     isLoggedIn = false
                     dismiss()
-                    
                 } catch {
                     print("Error signing out: \(error.localizedDescription)")
                 }
@@ -152,8 +153,7 @@ struct AccountView: View {
                     .foregroundColor(.black)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
+                    .background(LinearGradient(gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]), startPoint: .leading, endPoint: .trailing))                    .cornerRadius(8)
             }
             .padding()
             .buttonStyle(PlainButtonStyle())

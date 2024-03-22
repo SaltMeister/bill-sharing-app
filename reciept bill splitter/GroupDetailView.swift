@@ -121,7 +121,7 @@ struct GroupDetailView: View {
         
         let newTransaction = Transaction(transaction_id: "", itemList: transactionItems, itemBidders: [:], name: scanReceipt.title ?? "Untitled Transaction", isCompleted: false, dateCreated: nil)
        
-        await DatabaseAPI.createTransaction(transactionData: tempTransaction, groupID: selectedGroup.groupID)
+        await DatabaseAPI.createTransaction(transactionData: newTransaction, groupID: selectedGroup.groupID)
     }
     
     private func loadTransactions() async {
