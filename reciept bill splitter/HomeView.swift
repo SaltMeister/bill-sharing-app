@@ -30,6 +30,11 @@ struct HomeView: View {
                                 Text(group.group_name)
                                 Text("Invite Code: \(group.invite_code)")
                             }
+                            .onAppear {
+                                Task {
+                                    listenToTransactionsForGroup(groupId: group.groupID)
+                                }
+                            }
                         }
                     }
                 }
@@ -130,6 +135,10 @@ struct HomeView: View {
                         let isTransactionCompleted = data["isCompleted"] as? Bool ?? false
                         
                         if isTransactionCompleted {
+                            let transactionId = diff.document.documentID
+                            Task {
+                                await DatabaseAPI.assignAllGroupMembersPayment(transaction_id: transactionId)
+                            }
                             
                         }
                         // Assign Each Member Their Parts to Pay
@@ -140,6 +149,7 @@ struct HomeView: View {
                 }
             }
     }
+    
     private func assignUsersTransaction() {
         Task{
             await userViewModel.getUserData()
@@ -148,10 +158,6 @@ struct HomeView: View {
         
     }
 }
-
-    
-
-
 
 struct BottomToolbar: View {
     @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
