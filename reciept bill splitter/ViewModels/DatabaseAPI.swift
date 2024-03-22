@@ -16,10 +16,10 @@ class DatabaseAPI {
     
     // https://stackoverflow.com/questions/26845307/generate-random-alphanumeric-string-in-swift
     /*static func randomString(length: Int) -> String {
-        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        // WAIT FIX THIS ITS FORCE UNWRAP
-        return String((0..<length).map{ _ in letters.randomElement()! })
-    }*/
+     let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+     // WAIT FIX THIS ITS FORCE UNWRAP
+     return String((0..<length).map{ _ in letters.randomElement()! })
+     }*/
     static func randomString(length: Int) -> String {
         guard length > 0 else { return "" } // Return empty string if length is non-positive
         
@@ -31,7 +31,7 @@ class DatabaseAPI {
         
         return randomString
     }
-
+    
     static func grabUserData() async -> User? {
         guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -147,7 +147,7 @@ class DatabaseAPI {
             return .failure(error)
         }
     }
-
+    
     
     
     // Grabs user group data from database
@@ -174,7 +174,7 @@ class DatabaseAPI {
                 let group_name = data["group_name"] as? String ?? ""
                 let members = data["members"] as? [String] ?? []
                 print("Member Database API: \(members)")
-
+                
                 let invite_code = data["invite_code"] as? String ?? ""
                 let owner_id = data["owner_id"] as? String ?? ""
                 // Add Transaction Data in future
@@ -335,7 +335,7 @@ class DatabaseAPI {
         
         return nil
     }
-
+    
     static func retrieveStripeCustomerId(uid: String, completion: @escaping (String?) -> Void) {
         let db = Firestore.firestore()
         let customerRef = db.collection("customers").document(uid)
@@ -351,49 +351,10 @@ class DatabaseAPI {
             }
         }
     }
-    static func grabTransaction(transaction_id: String) async -> Transaction? {
-         guard let _ = Auth.auth().currentUser else {
-             print("User Does not exist")
-             return nil
-         }
-         
-         let transactionRef = db.collection("transactions").document(transaction_id)
-         
-         do {
-             let document = try await transactionRef.getDocument()
-             if document.exists {
-                 let data = document.data()
-                 // Create Transaction to return if data exists
-                 if let data = data {
-                     // Create Transaction
-                     let name = data["name"] as? String ?? ""
-                     let items = data["items"] as? [[String : Any]] ?? [[:]]
-                     
-                     var newItemList: [Item] = []
-                     for item in items {
-                         let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
-                         newItemList.append(newItem)
-                     }
-                     let transaction_id = document.documentID
-                     let date = data["dateCreated"] as? Timestamp
-                     let itemBidders = data["itemBidders"] as? [String:[String]] ?? [:]
-                     let isCompleted = data["isCompleted"] as? Bool ?? false
-                     let newTransaction = Transaction(transaction_id: transaction_id, itemList: newItemList, itemBidders: itemBidders, name: name, isCompleted: isCompleted, dateCreated: date)
-                     
-                     return newTransaction
-                 }
-             } else {
-                 return nil
-             }
-         } catch {
-             print("Error finding transactions: \(error)")
-         }
-         
-         return nil
-     }
+    
     static func setCanGetPaid(forUserId userId: String, canGetPaid: Bool, completion: @escaping (Error?) -> Void) {
         let userRef = db.collection("customers").document(userId)
-
+        
         userRef.updateData(["canGetPaid": canGetPaid]) { error in
             if let error = error {
                 print("Error updating canGetPaid: \(error.localizedDescription)")
@@ -427,9 +388,8 @@ class DatabaseAPI {
             completion(accountId, nil)
         }
     }
-
     static func getStripeConnectAccountId(forUserId userId: String, completion: @escaping (String?, Error?) -> Void) {
-        let userRef = db.collection("customers").document(userId)
+        let userRef = Firestore.firestore().collection("customers").document(userId)
         
         userRef.getDocument { document, error in
             if let error = error {
@@ -442,13 +402,17 @@ class DatabaseAPI {
                 completion(nil, NSError(domain: "FirestoreError", code: 404, userInfo: [NSLocalizedDescriptionKey: "Document not found"]))
                 return
             }
-            
-            
-            print("Transaction \(transaction_id) updated to completion status \(completion).")
-        } catch let error {
-            print("Error updating transaction: \(error)")
+
+            if let stripeConnectAccountId = document.data()?["stripeConnectAccountId"] as? String {
+                print("Retrieved Stripe Connect Account ID: \(stripeConnectAccountId)")
+                completion(stripeConnectAccountId, nil)
+            } else {
+                print("Stripe Connect Account ID not found in the document")
+                completion(nil, nil)
+            }
         }
     }
+
     
     static func assignAllGroupMembersPayment(transaction_id: String) async -> Void {
         guard let _ = Auth.auth().currentUser else {
@@ -470,18 +434,18 @@ class DatabaseAPI {
                 // Firestore Transaction to ensure both documents are written together or both fail
                 let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
                     // LOOP through transactions and create a new assigned transaction for each user
-    //                let gDoc: DocumentSnapshot
-    //                do {
-    //                    try gDoc = transaction.getDocument(docRef)
-    //                } catch let fetchError as NSError {
-    //                    errorPointer?.pointee = fetchError
-    //                    return nil
-    //                }
-    //
-    //                // Add user id to group members
-    //                transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
-    //                // Add group id to user groups
-    //                transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
+                    //                let gDoc: DocumentSnapshot
+                    //                do {
+                    //                    try gDoc = transaction.getDocument(docRef)
+                    //                } catch let fetchError as NSError {
+                    //                    errorPointer?.pointee = fetchError
+                    //                    return nil
+                    //                }
+                    //
+                    //                // Add user id to group members
+                    //                transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
+                    //                // Add group id to user groups
+                    //                transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
                     return nil
                 })
                 
@@ -491,59 +455,56 @@ class DatabaseAPI {
                 print("Error Assigning Transaction: \(error)")
                 return
             }
-                
+            
         } catch let error {
             print("Error updating transaction: \(error)")
         }
         
         
     }
-
+    
     static func fetchUsernames(for documentIDs: [String], completion: @escaping (Result<[String], Error>) -> Void) {
-            let userCollection = db.collection("users")
+        let userCollection = db.collection("users")
+        
+        // Create a dispatch group to synchronize asynchronous operations
+        let dispatchGroup = DispatchGroup()
+        
+        var usernames: [String] = []
+        var errors: [Error] = []
+        
+        for documentID in documentIDs {
+            dispatchGroup.enter()
             
-            // Create a dispatch group to synchronize asynchronous operations
-            let dispatchGroup = DispatchGroup()
-            
-            var usernames: [String] = []
-            var errors: [Error] = []
-            
-            for documentID in documentIDs {
-                dispatchGroup.enter()
-                
-                userCollection.document(documentID).getDocument { documentSnapshot, error in
-                    defer {
-                        dispatchGroup.leave()
-                    }
-                    
-                    if let error = error {
-                        errors.append(error)
-                        return
-                    }
-                    
-                    if let username = documentSnapshot?.get("userName") as? String {
-                        usernames.append(username)
-                    }
+            userCollection.document(documentID).getDocument { documentSnapshot, error in
+                defer {
+                    dispatchGroup.leave()
                 }
-            }
-            
-            // Notify the completion handler when all fetch operations are completed
-            dispatchGroup.notify(queue: .main) {
-                if !errors.isEmpty {
-                    // If there were errors during fetch, pass the first error to the completion handler
-                    completion(.failure(errors[0]))
-                } else {
-                    // Otherwise, pass the fetched usernames to the completion handler
-                    completion(.success(usernames))
+                
+                if let error = error {
+                    errors.append(error)
+                    return
+                }
+                
+                if let username = documentSnapshot?.get("userName") as? String {
+                    usernames.append(username)
                 }
             }
         }
-
-}
-            let accountId = document.data()?["stripeConnectAccountId"] as? String
-            completion(accountId, nil)
+        
+        // Notify the completion handler when all fetch operations are completed
+        dispatchGroup.notify(queue: .main) {
+            if !errors.isEmpty {
+                // If there were errors during fetch, pass the first error to the completion handler
+                completion(.failure(errors[0]))
+            } else {
+                // Otherwise, pass the fetched usernames to the completion handler
+                completion(.success(usernames))
+            }
         }
     }
+
+
+
     static func canUserGetPaid(uid: String, completion: @escaping (Bool) -> Void) {
         let db = Firestore.firestore()
         let userRef = db.collection("customers").document(uid)
@@ -576,7 +537,7 @@ class DatabaseAPI {
             }
         }
     }
-            static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
+    static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
                 let transactionRef = db.collection("transactions").document(transactionID)
                 
                 do {

@@ -47,6 +47,7 @@
 		E591A68F2B9E8AD600AC1F5F /* StripePayments in Frameworks */ = {isa = PBXBuildFile; productRef = E591A68E2B9E8AD600AC1F5F /* StripePayments */; };
 		E591A6912B9E8AD600AC1F5F /* StripePaymentsUI in Frameworks */ = {isa = PBXBuildFile; productRef = E591A6902B9E8AD600AC1F5F /* StripePaymentsUI */; };
 		E5AB946B2BAAA75B00836C2E /* ManualTransactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5AB946A2BAAA75B00836C2E /* ManualTransactionView.swift */; };
+		E5E6F0D82BAD36A0004A0697 /* CreateGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E6F0D72BAD36A0004A0697 /* CreateGroupView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +81,7 @@
 		E52146C92B9FE12C007571A2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		E5AB94682BAAA47F00836C2E /* CreateGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupView.swift; sourceTree = "<group>"; };
 		E5AB946A2BAAA75B00836C2E /* ManualTransactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualTransactionView.swift; sourceTree = "<group>"; };
+		E5E6F0D72BAD36A0004A0697 /* CreateGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateGroupView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +165,7 @@
 				36E9BE852BA007F10020BE12 /* TransactionView.swift */,
 				32847F272B8D96B70061449F /* UIImageExtension.swift */,
 				32C3CD472B8711A700FB2BF1 /* ViewModels */,
+				E5E6F0D72BAD36A0004A0697 /* CreateGroupView.swift */,
 			);
 			path = "reciept bill splitter";
 			sourceTree = "<group>";
@@ -287,6 +290,7 @@
 				32A6DA972BA13C81005FAA2C /* JoinGroupView.swift in Sources */,
 				32E5E18A2B8DA881005BF4F4 /* LaunchScreenView.swift in Sources */,
 				328EEB5C2B9199530021F461 /* DatabaseAPI.swift in Sources */,
+				E5E6F0D82BAD36A0004A0697 /* CreateGroupView.swift in Sources */,
 				32847F282B8D96B70061449F /* UIImageExtension.swift in Sources */,
 				36E9BE6C2B86AD5D0020BE12 /* HistoryView.swift in Sources */,
 				36E9BE6E2B86AD6E0020BE12 /* SettingsView.swift in Sources */,
