@@ -323,24 +323,7 @@ class DatabaseAPI {
         
         return nil
     }
-    static func toggleGroupTransactionsCompletion(transaction_id: String, completion: Bool) async {
-        let transactionRef = db.collection("transactions").document(transaction_id)
-        
-        do {
-            let document = try await transactionRef.getDocument()
-            if document.exists {
-                try await transactionRef.updateData([
-                    "isCompleted": completion
-                ])
-            }
-            
-            
-            print("Transaction \(transaction_id) updated to completion status \(completion).")
-        } catch let error {
-            print("Error updating transaction: \(error)")
-        }
-    }
-    
+
     static func assignAllGroupMembersPayment(transaction_id: String) async -> Void {
         guard let _ = Auth.auth().currentUser else {
             print("User Does not exist")
@@ -352,27 +335,72 @@ class DatabaseAPI {
         do {
             let document = try await transactionRef.getDocument()
             
-            if !document.exists {
+            guard let transactionData = document.data() else {
                 return
             }
+            
+            let groupId = transactionData["group_id"] as? String ?? ""
+            let groupRef = db.collection("groups").document(groupId)
+            let groupDocument = try await groupRef.getDocument()
+            
+            guard let groupData = groupDocument.data() else {
+                return
+            }
+            
+            let groupMembers = groupData["members"] as? [String] ?? []
             
             // Read document and work
             do {
                 // Firestore Transaction to ensure both documents are written together or both fail
                 let _ = try await db.runTransaction({ (transaction, errorPointer) -> Any? in
                     // LOOP through transactions and create a new assigned transaction for each user
-    //                let gDoc: DocumentSnapshot
-    //                do {
-    //                    try gDoc = transaction.getDocument(docRef)
-    //                } catch let fetchError as NSError {
-    //                    errorPointer?.pointee = fetchError
-    //                    return nil
-    //                }
-    //
-    //                // Add user id to group members
-    //                transaction.updateData(["members": FieldValue.arrayUnion([user.uid])], forDocument: gDoc.reference)
-    //                // Add group id to user groups
-    //                transaction.updateData(["groups": FieldValue.arrayUnion([gDoc.documentID])], forDocument: userRef)
+                    let itemBidders = transactionData["itemBidders"] as? [String:[String]] ?? [:]
+                    let items = transactionData["items"] as? [[String : Any]] ?? [[:]]
+                    
+                    var newItemList: [Item] = []
+                    for item in items {
+                        let newItem = Item(priceInCents: item["priceInCents"] as? Int ?? 0, name: item["name"] as? String ?? "Unknown Item")
+                        newItemList.append(newItem)
+                    }
+                    
+                    // An Abomination of Code
+                    for groupMember in groupMembers {
+                        let userReference = db.collection("users").document(groupMember)
+                        let userDocument: DocumentSnapshot
+                        
+                        do {
+                          try userDocument = transaction.getDocument(userReference)
+                        } catch let fetchError as NSError {
+                          errorPointer?.pointee = fetchError
+                          return nil
+                        }
+
+                        var totalCostToPay: Float = 0
+                        // Check every item for user
+                        for (index, item) in newItemList.enumerated() {
+                            // Seach For Member in item bids
+                            let currentIndex = String(index)
+                            let currentItemBidders = itemBidders[currentIndex] ?? []
+                            
+                            for userId in currentItemBidders {
+                                if userId == groupMember {
+                                    // Add Total cost to pay for user
+                                    totalCostToPay += Float(item.priceInCents) / Float(currentItemBidders.count)
+                                }
+                            }
+                        }
+                        // After Adding cost for user for all items
+                        // Create AssignedTransaction for User
+                        var assignedTransactionDict: [String:Any] = [:]
+                        assignedTransactionDict["transactionName"] = transactionData["name"] as? String ?? ""
+                        assignedTransactionDict["associatedTransaction_id"] = transaction_id
+                        assignedTransactionDict["user_idToPay"] = groupData["owner_id"] as? String ?? ""
+                        assignedTransactionDict["isPaid"] = false
+                        assignedTransactionDict["ammountToPay"] = totalCostToPay
+                        
+                        transaction.updateData(["assignedTransaction.\(transaction_id)": assignedTransactionDict], forDocument: userReference)
+                    }
+                    print("FINISHED")
                     return nil
                 })
                 
@@ -386,7 +414,25 @@ class DatabaseAPI {
         } catch let error {
             print("Error updating transaction: \(error)")
         }
-        
+
         
     }
-}
+    
+    static func toggleGroupTransactionsCompletion(transactionID: String, completion: Bool) async {
+            let transactionRef = db.collection("transactions").document(transactionID)
+            
+            do {
+                let document = try await transactionRef.getDocument()
+                if document.exists {
+                    try await transactionRef.updateData([
+                        "isCompleted": completion
+                    ])
+                }
+                print("Transaction \(transactionID) updated to completion status \(completion).")
+            } catch let error {
+                print("Error updating transaction: \(error)")
+            }
+        }
+        
+    }
+
