@@ -50,22 +50,6 @@ struct JoinGroupView: View {
                                .padding(.vertical, 10)
                                .background(Color.black)
                                .cornerRadius(15)
-            
-                        /*Button {
-                            Task {
-                                await DatabaseAPI.createGroup()
-                                await user.getUserData()
-                            }
-                        } label: { Text("Create Group") }
-                            .font(.custom("Avenir", size: 15))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 40)
-                            .padding(.vertical, 10)
-                            .background(Color.black)
-                            .cornerRadius(15)*/
-
-            
-            
         }
     }
 }

@@ -163,21 +163,6 @@ struct GroupDetailView: View {
     }
 }
 
-/*struct MembersListView: View {
-    let members: [GroupMember]
-    
-    var body: some View {
-        List {
-            ForEach(members, id: \.id) { member in
-                Text(member.id)
-            }
-        }
-        .onAppear {
-                    print("Members: \(members)")
-                }
-    }
-}*/
-
 struct MembersListView: View {
     let members: [GroupMember]
     
