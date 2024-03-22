@@ -7,6 +7,8 @@
 
 import SwiftUI
 import FirebaseAuth
+import FirebaseFunctions
+
 struct SignUpLogInView: View {
     @State private var email: String = ""
     @State private var password: String = ""
@@ -15,7 +17,7 @@ struct SignUpLogInView: View {
     @State private var isSignUpActive: Bool = false
     
     @Binding var isLoggedIn: Bool
-
+    
     @EnvironmentObject var user: UserViewModel
     
     @Environment(\.dismiss) var dismiss
@@ -49,7 +51,7 @@ struct SignUpLogInView: View {
                     // Simulating password validation, replace with your validation logic
                     if password.count >= 6 {
                         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
-//                          guard let strongSelf = self else { return }
+                            //                          guard let strongSelf = self else { return }
                             
                             guard let result = authResult else {
                                 if let x = error {
@@ -70,14 +72,17 @@ struct SignUpLogInView: View {
                                 print(uid)
                                 print(email)
                             }
-                            
-                            print("Successful login")
-                            isLoggedIn = true
-                            dismiss() // Back out of navigation destination
-                        }
+                           
 
-//                        errorMessage = nil // Password is valid, clear error message
-//                        print("Login successful with username: \(email)")
+
+                            print("Successful login")
+                                isLoggedIn = true
+                                dismiss()
+                     
+                        }
+                        
+                        //                        errorMessage = nil // Password is valid, clear error message
+                        //                        print("Login successful with username: \(email)")
                     } else {
                         errorMessage = "Invalid username or password. Please try again."
                     }
@@ -107,8 +112,9 @@ struct SignUpLogInView: View {
             }
         }
     }
+    
+    
 }
-
 #Preview {
     SignUpLogInView(isLoggedIn: .constant(false))
 }

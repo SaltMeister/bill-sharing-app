@@ -154,4 +154,3 @@ struct ItemInput {
     var name: String = ""
     var price: String = ""
 }
-

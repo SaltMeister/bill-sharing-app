@@ -33,8 +33,17 @@ struct Transaction : Codable {
     var itemList: [Item] // Items should not be optional, there should always be an item in a transaction
     var itemBidders: [String:[String]]
     var name: String
-    var isCompleted: Bool   
+    var isCompleted: Bool
     var dateCreated: Timestamp?
+}
+
+struct AssignedTransaction : Codable {
+    var transactionName: String
+    var associatedTransaction_id: String
+    var user_idToPay: String
+    var isPaid: Bool
+    var amountToPay: Int
+    
 }
 
 struct User : Codable {
@@ -55,14 +64,14 @@ class UserViewModel : ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var user_id = ""
-    
+    @Published var username = ""
+    @Published var canGetPaid = false
+
     @Published var groups: [Group] = []
 
     @Published var groups_id: [String]?
     @Published var friends: [String]?
     @Published var completedTransactions: [String]?
-    
-    @Published var selectedGroupIndex = 0
     
     @Published var currentSelectedGroupTransactions: [Transaction] = []
     @Published var selectedTransaction: Transaction?
@@ -79,15 +88,16 @@ class UserViewModel : ObservableObject {
             self.friends = userData.friends
             self.completedTransactions = userData.completedTransactions
             self.user_id = Auth.auth().currentUser?.uid ?? ""
+            self.username = userData.userName
         }
         
         await setUserGroupData()
     }
     
     // Creates user in database
-    func createUserInDB(username: String) async -> Void {
+    func createUserInDB() async -> Void {
         // Check if User exists
-        guard let user = Auth.auth().currentUser else { 
+        guard let user = Auth.auth().currentUser else {
             print("User Does not exist")
             return
         }
@@ -95,9 +105,27 @@ class UserViewModel : ObservableObject {
         do {
             try await Firestore.firestore().collection("users").document(user.uid).setData([
                 "email": user.email ?? "",
-                "userName": username,
+                "userName": "Unnamed",
                 "friends": [], // reference document  id of other users uid
                 "groups": [], // group collection document ids
+
+                "assignedTransaction": []
+          ])
+          print("Document created")
+            
+            
+        } catch {
+          print("Error adding document: \(error)")
+        }
+    }
+    func updateUserName(newName: String) async -> Void {
+        guard let user = Auth.auth().currentUser else {
+            print("User Does not exist")
+            return
+        }
+        do {
+            try await Firestore.firestore().collection("users").document(user.uid).updateData([
+                "userName": newName
           ])
           print("Document created")
             
@@ -120,4 +148,16 @@ class UserViewModel : ObservableObject {
         }
          
     }
+    func updateCanGetPaidStatus() async {
+         guard let uid = Auth.auth().currentUser?.uid else {
+             print("User is not signed in")
+             return
+         }
+
+         DatabaseAPI.canUserGetPaid(uid: uid) { canGetPaid in
+             DispatchQueue.main.async {
+                 self.canGetPaid = canGetPaid
+             }
+         }
+     }
 }

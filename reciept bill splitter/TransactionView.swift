@@ -4,7 +4,10 @@ struct TransactionView: View {
 
     @EnvironmentObject var user: UserViewModel
     
-    @State var selectedGroup: Group?
+    @Binding var selectedTransactionId: String
+    @Binding var groupData: Group
+    
+    @State var transactionData: Transaction?
     
     var totalSpent: Double {
         
@@ -17,7 +20,7 @@ struct TransactionView: View {
     
     var body: some View {
         VStack {
-            if let transaction = user.selectedTransaction {
+            if let transaction = transactionData {
                 
                 Text(transaction.name)
                     .font(.title)
@@ -46,20 +49,22 @@ struct TransactionView: View {
                     .fontWeight(.bold)
                 
             } else {
-                Text("ViewModel Did not Update Transactions")
+                Text("LOADING")
             }
             
             // ONLY group owner can lock in assigned prices
-            if selectedGroup?.owner_id == user.user_id {
+            if groupData.owner_id == user.user_id {
                 Button("Complete Transaction") {
                     Task {
-                        await DatabaseAPI.toggleGroupTransactionsCompletion(transactionID: user.selectedTransaction?.transaction_id ?? "", completion: true)
+                        await DatabaseAPI.toggleGroupTransactionsCompletion(transaction_id: user.selectedTransaction?.transaction_id ?? "", completion: true)
                     }
                 }
             }
         }
         .onAppear {
-            selectedGroup = user.groups[user.selectedGroupIndex]
+            Task {
+                transactionData = await DatabaseAPI.grabTransaction(transaction_id: selectedTransactionId)
+            }
         }
         .navigationTitle("Transaction Details")
         

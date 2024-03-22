@@ -11,7 +11,9 @@ struct CreateGroupView: View {
     
     @EnvironmentObject var user: UserViewModel
     @State var groupName = "Default Name"
-
+    
+    @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         VStack {
             TextField("Enter Group Name", text: $groupName)
@@ -21,6 +23,7 @@ struct CreateGroupView: View {
                 Task {
                     await DatabaseAPI.createGroup(groupName: groupName)
                     await user.getUserData()
+                    dismiss()
                 }
             } label: { Text("Create Group") }
                 .font(.custom("Avenir", size: 15))
