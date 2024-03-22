@@ -127,14 +127,8 @@ private func listenToTransactionsForGroup(groupId: String) {
                 }
             }
     }
-  
-        
-    }
-
-
     
-
-
+    }
 
 struct BottomToolbar: View {
     @EnvironmentObject var paymentManager: PaymentManager // Ensure this is passed down from the parent view
@@ -147,7 +141,7 @@ struct BottomToolbar: View {
         HStack(spacing: 0.2) {
             //ToolbarItem(iconName: "person.2", text: "Friends", destination: AnyView(FriendsView()))
             //ToolbarItem(iconName: "person.3", text: "Home", destination: AnyView(HomeView()))
-            ToolbarItem(iconName: "bolt", text: "Activate Transactions", destination: AnyView(AllAssignedTransactions().environmentObject(userViewModel).environmentObject(paymentManager)))
+            ToolbarItem(iconName: "dollarsign", text: "Pay Transactions", destination: AnyView(AllAssignedTransactions().environmentObject(userViewModel).environmentObject(paymentManager)))
             ToolbarItem(iconName: "person.crop.circle", text: "Accounts", destination: AnyView(AccountView(isLoggedIn: $isLoggedIn).environmentObject(paymentManager)))
         }
         .frame(height: 50)

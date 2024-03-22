@@ -64,6 +64,7 @@ struct GroupDetailView: View {
                 }
                 
                 if selectedGroup.owner_id == user.user_id {
+              
                     Button("Open Camera") {
                     
                         isCameraPresented = true
@@ -94,13 +95,7 @@ struct GroupDetailView: View {
                     MembersListView(members: selectedGroup.members)
                 }
             }
-            .onChange(of: scanReceipt.isScanning) {
-//                if !scanReceipt.isScanning {
-//                    Task {
-//                        await createTransaction()
-//                    }
-//                }
-            }
+   
             .onAppear {
                 formatter.dateStyle = .short
                 
@@ -139,20 +134,7 @@ struct GroupDetailView: View {
     }
 }
 
-/*struct MembersListView: View {
-    let members: [GroupMember]
-    
-    var body: some View {
-        List {
-            ForEach(members, id: \.id) { member in
-                Text(member.id)
-            }
-        }
-        .onAppear {
-                    print("Members: \(members)")
-                }
-    }
-}*/
+
 
 struct MembersListView: View {
     let members: [GroupMember]

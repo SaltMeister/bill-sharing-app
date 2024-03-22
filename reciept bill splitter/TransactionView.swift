@@ -13,6 +13,7 @@ struct TransactionView: View {
     @State var transactionData: Transaction?
     @State private var isEditingName = false
      @State private var editedName: String = ""
+    @Environment(\.dismiss) var dismiss // Use the dismiss environment value
 
     var body: some View {
         VStack {
@@ -83,6 +84,9 @@ struct TransactionView: View {
                     Button("Complete Transaction") {
                         Task {
                             await DatabaseAPI.toggleGroupTransactionsCompletion(transactionID: transaction.transaction_id, completion: true)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { // Optional delay to allow users to see the completion message
+                                dismiss() // Dismiss the view
+                            }
                         }
                     }
                 }
