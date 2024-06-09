@@ -1,3 +1,15 @@
+## What is our app
+Our App is a simple bill splitter app that intents to use AI so that the user can take a picture of their reciept and split each item with all other members.
+
+## Use Flow
+Users will first login to their account and from there, they are able to create or join a group.
+
+Groups will have all the users who are planning on splitting a bill.
+
+The creator of the group will be able to take a picture of the reciept and automatically display a listing of all items, and their costs.
+All members of the group will be assigned to each item which will be their split that they pay to the owner of the group.
+
+Users will use Strip to make their payments.
 
 ## Specifications
 Our code is structured where, we have a 2 files that help handle our database interaction, and our User specific data.
